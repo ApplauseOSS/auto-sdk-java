@@ -1,0 +1,22 @@
+{
+  "browserName": "firefox",
+  "acceptInsecureCerts": false,
+  "applause:options": {
+    "device_name": "Local Firefox",
+    "driverType": "Firefox",
+    "factoryKey": "WEB_DESKTOP_FIREFOX"
+  },
+  "moz:firefoxOptions": {
+    "args": [
+      "--headless", 
+      "--bwsi",
+      "--disable-enterprise-policy",
+      "--disable-gpu",
+      "--start-maximized",
+      "--disable-infobars",
+      "--disable-extensions",
+      "--disable-dev-shm-usage",
+      "--no-sandbox"
+    ]
+  }
+} 

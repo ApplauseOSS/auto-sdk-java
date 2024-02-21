@@ -1,0 +1,16 @@
+{
+    "browserName" : "chrome"
+    ,"newCommandTimeout" : 3000
+    ,"idleTimeout":1000
+    ,"commandTimeout": 600
+    ,"name" : "from example 1"
+    ,"applause:options" : {
+      "isW3C" : "false",
+      "isStrict" : "false",
+      "driverName" : "Chrome",
+      "driverType" : "Browser",
+      "factoryKey" : "WebDesktop",
+      "driverOs"   : "Windows",
+      "provider" : "SAUCELABS"
+    }
+}

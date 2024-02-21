@@ -1,0 +1,23 @@
+###
+# NOTE: this file is auto-generated and any changes will be overwritten
+###
+on:
+  pull_request:
+
+jobs:
+  unit-tests:
+    name: 'Unit Tests'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
+      - uses: stCarolas/setup-maven@v4.5
+        with:
+          maven-version: '3.9.6'
+      - name: 'Build'
+        shell: bash
+        run: mvn clean compile test
+    
