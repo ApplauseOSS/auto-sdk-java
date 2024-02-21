@@ -1,0 +1,23 @@
+{
+    "automationName":"XCUITest",
+    "platformName":"IOS",
+    "deviceName":"iPhone X.*",
+    "privateDevicesOnly":false,
+    "idleTimeout":1000,
+    "commandTimeout":600,
+    "wdaEventloopIdleDelay": 5,
+    "applause:options":{
+      "isStrict": true,
+      "isMobileNative": true,
+      "provider": "TestObject",
+      "providerThreadType": "Real",
+      "factoryKey": "MobileIOSPhone",
+      "driverOs" : "anything-can-go-here",
+      "driverType": "mobilenative",
+      "driverName" : "iPhone X DA",
+      "embeddedMap" : {
+           "three" : 3,
+           "plank" : 6.626
+        }
+      }
+}

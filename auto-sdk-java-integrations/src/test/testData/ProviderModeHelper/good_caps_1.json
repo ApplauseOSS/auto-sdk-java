@@ -1,0 +1,11 @@
+{
+    "newCommandTimeout":3000,
+    "commandTimeout":    600,
+    "idleTimeout":      1000,
+    "browserName":      "chrome",
+    "applause:options":{
+      "isW3C":false,
+      "providerId": 1,
+      "driverType": "browser"
+      }
+}

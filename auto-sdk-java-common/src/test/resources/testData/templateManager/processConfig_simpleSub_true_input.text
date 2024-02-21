@@ -1,0 +1,3 @@
+Hello ${name}!
+Does 42 = ${value}?
+false = ${falseIs}, true=${trueIs}

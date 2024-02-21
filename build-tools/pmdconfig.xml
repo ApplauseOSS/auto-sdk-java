@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+
+<!--
+  ~
+  ~ Copyright © 2024 Applause App Quality, Inc.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+
+<ruleset name="Custom 6.X Setup"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+  <description>
+    Main PMD linting ruleset
+  </description>
+  <rule ref="category/java/design.xml">
+    <exclude name="ModifiedCyclomaticComplexity"/><!-- deprecated rule-->
+    <exclude name="StdCyclomaticComplexity"/><!-- deprecated rule-->
+    <exclude name="NcssCount"/><!-- deprecated rule-->
+    <exclude name="NcssMethodCount"/><!-- deprecated rule-->
+    <exclude name="NcssConstructorCount"/><!-- deprecated rule-->
+    <exclude name="NcssTypeCount"/><!-- deprecated rule-->
+    <exclude name="ExcessiveMethodLength"/>
+    <exclude name="TooManyMethods"/>
+    <exclude name="TooManyFields"/>
+    <exclude name="ExcessiveClassLength"/>
+    <exclude name="ExcessiveImports"/>
+    <exclude name="LawOfDemeter"/>
+    <exclude name="AvoidUncheckedExceptionsInSignatures"/>
+    <exclude name="AvoidCatchingGenericException"/>
+    <exclude name="AvoidThrowingRawExceptionTypes"/>
+    <exclude name="LoosePackageCoupling"/><!-- Requires some additional config and I don't think we want it -->
+    <exclude name="CouplingBetweenObjects"/>
+    <exclude name="CognitiveComplexity"/>
+  </rule>
+  <rule ref="category/java/design.xml/CyclomaticComplexity">
+    <properties>
+      <property name="methodReportLevel" value="16"/>
+    </properties>
+  </rule>
+  <rule ref="category/java/codestyle.xml">
+    <exclude name="OnlyOneReturn"/><!-- deprecated rule-->
+    <exclude name="AvoidFinalLocalVariable"/><!-- deprecated rule-->
+    <exclude name="AvoidPrefixingMethodParameters"/><!-- deprecated rule-->
+    <exclude name="ForLoopsMustUseBraces"/><!-- deprecated rule-->
+    <exclude name="IfElseStmtsMustUseBraces"/><!-- deprecated rule-->
+    <exclude name="IfStmtsMustUseBraces"/><!-- deprecated rule-->
+    <exclude name="MIsLeadingVariableName"/><!-- deprecated rule (sic)-->
+    <exclude name="SuspiciousConstantFieldName"/><!-- deprecated rule-->
+    <exclude name="WhileLoopsMustUseBraces"/><!-- deprecated rule-->
+    <exclude name="VariableNamingConventions"/><!-- deprecated rule-->
+    <exclude name="DefaultPackage"/>
+    <exclude name="AtLeastOneConstructor"/>
+    <exclude name="CallSuperInConstructor"/>
+    <exclude name="FieldNamingConventions"/>
+    <exclude name="LongVariable"/>
+    <exclude name="ShortVariable"/>
+    <exclude name="ConfusingTernary"/>
+    <exclude name="CommentDefaultAccessModifier"/>
+    <exclude name="ClassNamingConventions"/> <!-- I like the idea of this one, but it triggers on weird things like BlockingThreadPool -->
+    <exclude name="ShortClassName"/>
+    <exclude name="BooleanGetMethodName"/>
+    <exclude name="LinguisticNaming"/>
+    <exclude name="UnnecessaryAnnotationValueElement"/>
+    <exclude name="MethodArgumentCouldBeFinal"/><!-- one of our other linters does this better, ignoring primitives. PMD doesn't ignore primitives -->
+    <exclude name="LocalVariableCouldBeFinal"/><!-- We should replace flaky lombok val with final vals but will finish doing this another day-->
+    <exclude name="UseDiamondOperator"/><!-- When we replace lombok val this will work as well-->
+    <exclude name="UseUnderscoresInNumericLiterals"/>
+    <exclude name="UnnecessaryImport"/> <!-- Malfunctioning as of PMD 6.41 .... It's saying imports referenced in Javadoc are unused :( -->
+  </rule>
+  <rule ref="category/java/performance.xml">
+    <exclude name="ConsecutiveLiteralAppends"/>
+    <exclude name="InsufficientStringBufferDeclaration"/>
+    <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    <exclude name="UseStringBufferForStringAppends"/>
+    <exclude name="AvoidFileStream"/>
+  </rule>
+  <rule ref="category/java/errorprone.xml" >
+    <exclude name="LoggerIsNotStaticFinal"/><!-- deprecated, will be removed in 7 -->
+    <exclude name="CloseResource"/>
+    <exclude name="InvalidLogMessageFormat"/>
+    <exclude name="AvoidLiteralsInIfCondition"/>
+    <exclude name="MissingSerialVersionUID"/>
+    <exclude name="AvoidDuplicateLiterals"/>
+    <exclude name="BeanMembersShouldSerialize"/>
+    <exclude name="DataflowAnomalyAnalysis"/>
+    <exclude name="TestClassWithoutTestCases"/>
+  </rule>
+  <rule ref="category/java/multithreading.xml" >
+    <exclude name="UnsynchronizedStaticDateFormatter"/><!-- deprecated rule-->
+    <exclude name="UseConcurrentHashMap"/>
+    <exclude name="AvoidUsingVolatile"/><!-- We have another linter for this -->
+    <exclude name="DoNotUseThreads"/>
+  </rule>
+  <rule ref="category/java/bestpractices.xml" >
+    <exclude name="PositionLiteralsFirstInCaseInsensitiveComparisons"/><!-- deprecated rule-->
+    <exclude name="PositionLiteralsFirstInComparisons"/><!-- deprecated rule-->
+    <exclude name="GuardLogStatement"/>
+    <exclude name="UnusedPrivateMethod"/><!-- This doesn't seem to work as of 6.0.25, twigs on stuff that is definitely used. -->
+    <exclude name="UnusedImports"/> <!-- not needed, Google autoformat will delete these -->
+    <exclude name="UnusedAssignment"/><!-- excludes initial null assignments which are harmless -->
+  </rule>
+  <!-- <rule ref="category/java/security.xml" /> We need to fix EncryptionUtil -->
+</ruleset>
