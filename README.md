@@ -50,7 +50,7 @@ The user can then specify the version of the SDK Library to import using the fol
 This section is for detailed technical information related to developing the framework.
 
 #### Example
-`mvn clean compile test -DsuiteFile=testng-unitSandbox.xml -DdriverConfig=local_chrome.json -DreportingEnabled=false -DuseLocalDrivers=true`
+`mvn clean compile test -DsuiteFile=testng-unitSandbox.xml -DcapsFile=local_chrome.json -DreportingEnabled=false -DuseLocalDrivers=true`
 
 #### Testing
 

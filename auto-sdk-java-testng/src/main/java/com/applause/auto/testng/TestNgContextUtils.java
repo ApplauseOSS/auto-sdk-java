@@ -49,7 +49,7 @@ import org.testng.ITestResult;
 
 /** TestNG Specific Context Logic */
 public final class TestNgContextUtils {
-  private static final String DRIVER_CONFIG = "driverConfig";
+  private static final String CAPS_FILE = "capsFile";
 
   private TestNgContextUtils() {}
 
@@ -136,7 +136,7 @@ public final class TestNgContextUtils {
 
     // We are using a driver, try to extract the driver name
     final String driverName =
-        TestNGUtils.extractParameter(context, testClassInstance, "driverConfig")
+        TestNGUtils.extractParameter(context, testClassInstance, CAPS_FILE)
             .orElse(ContextManager.INSTANCE.getDefaultDriverConfig());
     return DriverBuilder.create(driverName)
         .overrideCaps(ContextUtil.getCapsOverrider(testClassInstance.getClass()))
@@ -168,7 +168,7 @@ public final class TestNgContextUtils {
 
     // We are using a driver, try to extract the driver name
     final String driverName =
-        TestNGUtils.extractParameter(testResult, testClassInstance, parameterList, "driverConfig")
+        TestNGUtils.extractParameter(testResult, testClassInstance, parameterList, CAPS_FILE)
             .orElse(ContextManager.INSTANCE.getDefaultDriverConfig());
     final var context =
         DriverBuilder.create(driverName)
@@ -226,17 +226,17 @@ public final class TestNgContextUtils {
    */
   public static Set<String> extractDriversFromSuiteFile(final ISuite suite) {
     final Set<String> fileNames = new HashSet<>();
-    TestNGUtils.extractParameter(suite, DRIVER_CONFIG).ifPresent(fileNames::add);
+    TestNGUtils.extractParameter(suite, CAPS_FILE).ifPresent(fileNames::add);
     suite
         .getXmlSuite()
         .getTests()
         .forEach(
             test -> {
-              TestNGUtils.extractParameter(test, DRIVER_CONFIG).ifPresent(fileNames::add);
+              TestNGUtils.extractParameter(test, CAPS_FILE).ifPresent(fileNames::add);
               test.getClasses()
                   .forEach(
                       xmlClass ->
-                          TestNGUtils.extractParameter(xmlClass, DRIVER_CONFIG)
+                          TestNGUtils.extractParameter(xmlClass, CAPS_FILE)
                               .ifPresent(fileNames::add));
             });
     return fileNames;
