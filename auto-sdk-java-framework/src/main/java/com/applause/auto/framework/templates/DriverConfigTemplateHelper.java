@@ -76,7 +76,7 @@ public final class DriverConfigTemplateHelper {
    */
   public static DriverConfigTemplate makeCapabilities(final @NonNull File capabilitiesFile)
       throws BadJsonFormatException, TemplateGenerationException, IOException {
-    logger.debug("Beginning JSON parse: driverConfig={}", capabilitiesFile.getName());
+    logger.debug("Beginning JSON parse: capsFile={}", capabilitiesFile.getName());
     final var fileContents = FileUtils.readFileToString(capabilitiesFile, Charset.defaultCharset());
     if (fileContents == null) {
       throw new BadJsonFormatException(
