@@ -25,6 +25,7 @@ import com.applause.auto.config.EnvironmentConfigurationManager;
 import com.applause.auto.config.SdkConfigBean;
 import com.applause.auto.framework.ApplauseFramework;
 import com.applause.auto.framework.ContextManager;
+import com.applause.auto.framework.json.BadJsonFormatException;
 import com.applause.auto.helpers.AnalyticsHelper;
 import com.applause.auto.helpers.ApplauseAppPushHelper;
 import com.applause.auto.helpers.ApplauseConfigHelper;
@@ -39,12 +40,14 @@ import com.applause.auto.integrations.TestCycleCloneUtil;
 import com.applause.auto.logging.LogOutputSingleton;
 import com.applause.auto.logging.ResultPropertyMap;
 import com.applause.auto.templates.TemplateManager;
+import com.google.common.collect.Sets;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.EventPublisher;
 import io.cucumber.plugin.event.TestRunStarted;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Objects;
+import java.util.Set;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 
@@ -109,18 +112,7 @@ public class ApplauseFrameworkPlugin implements ConcurrentEventListener {
     }
     TestCycleCloneUtil.performTestCycleCloneIfNecessary();
 
-    // Only run app auto-detect/upload logic if: we are using a remote driver, have
-    // a capability file, and that capability file is a mobile native driver
-    if (!sdkConfigBean.useLocalDrivers()
-        && sdkConfigBean.capsFile() != null
-        && ContextManager.INSTANCE
-            .lookupDriver(sdkConfigBean.capsFile())
-            .getCurrentCapabilities()
-            .getApplauseOptions()
-            .isMobileNative()) {
-      ApplauseAppPushHelper.autoDetectBuildIfNecessary();
-      ApplauseAppPushHelper.performApplicationPushIfNecessary();
-    }
+    performDriverChecks();
 
     // Reload the config and add them to the ResultPropertyMap
     ResultPropertyMap.loadGlobalProperties(
@@ -138,5 +130,41 @@ public class ApplauseFrameworkPlugin implements ConcurrentEventListener {
   @Override
   public void setEventPublisher(final EventPublisher publisher) {
     publisher.registerHandlerFor(TestRunStarted.class, this::testRunStarted);
+  }
+
+  private void performDriverChecks() throws BadJsonFormatException {
+    if (EnvironmentConfigurationManager.INSTANCE.get().capsFile() == null) {
+      log.trace("No capsFile to perform checks on.");
+      return;
+    }
+    final var expectedDrivers = Set.of(EnvironmentConfigurationManager.INSTANCE.get().capsFile());
+    final var missingDrivers =
+        Sets.difference(expectedDrivers, ContextManager.INSTANCE.getDriverMap().keySet());
+    if (!missingDrivers.isEmpty()) {
+      throw new RuntimeException(
+          "Unable to start run, missing local driver config files: "
+              + String.join(", ", missingDrivers));
+    }
+
+    if (EnvironmentConfigurationManager.INSTANCE.get().useLocalDrivers()) {
+      log.trace("App auto-detection/upload is disabled for local drivers");
+      return;
+    }
+
+    // For every driver that we are aware of at this time, check to see if we might need an app for
+    // any of them
+    for (var driver : expectedDrivers) {
+      final var expectedDriverCaps =
+          ContextManager.INSTANCE.lookupDriver(driver).getCurrentCapabilities();
+      if (!expectedDriverCaps.getApplauseOptions().isMobileNative()) {
+        continue;
+      }
+      if (expectedDriverCaps.getCapabilityNames().contains("app")) {
+        continue;
+      }
+      ApplauseAppPushHelper.performApplicationPushIfNecessary();
+      ApplauseAppPushHelper.autoDetectBuildIfNecessary();
+      break;
+    }
   }
 }
