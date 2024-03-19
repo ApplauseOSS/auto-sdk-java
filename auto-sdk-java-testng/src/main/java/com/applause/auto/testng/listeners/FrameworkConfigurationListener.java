@@ -30,6 +30,7 @@ import com.applause.auto.logging.LogOutputSingleton;
 import com.applause.auto.logging.ResultPropertyMap;
 import com.applause.auto.templates.TemplateManager;
 import com.applause.auto.testng.TestNgContextUtils;
+import com.google.common.collect.Sets;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
@@ -111,18 +112,7 @@ public class FrameworkConfigurationListener implements ISuiteListener {
     }
     TestCycleCloneUtil.performTestCycleCloneIfNecessary();
 
-    // Only run app auto-detect/upload logic if: we are using a remote driver, have
-    // a capability file, and that capability file is a mobile native driver
-    if (!sdkConfigBean.useLocalDrivers()
-        && sdkConfigBean.capsFile() != null
-        && ContextManager.INSTANCE
-            .lookupDriver(sdkConfigBean.capsFile())
-            .getCurrentCapabilities()
-            .getApplauseOptions()
-            .isMobileNative()) {
-      ApplauseAppPushHelper.autoDetectBuildIfNecessary();
-      ApplauseAppPushHelper.performApplicationPushIfNecessary();
-    }
+    performDriverChecks(suite);
 
     // Reload the config and add them to the ResultPropertyMap
     ResultPropertyMap.loadGlobalProperties(
@@ -132,15 +122,42 @@ public class FrameworkConfigurationListener implements ISuiteListener {
         ConfigUtils.toPropertyMap(
             ApplauseEnvironmentConfigurationManager.INSTANCE.get(), ApplauseSdkConfigBean.class));
     ResultPropertyMap.loadGlobalProperties(ConfigUtils.getSystemProperties());
-
-    final var drivers = TestNgContextUtils.extractDriversFromSuiteFile(suite);
-    drivers.removeAll(ContextManager.INSTANCE.getDriverMap().keySet());
-    if (!drivers.isEmpty()) {
-      throw new RuntimeException(
-          "Unable to start run, missing local driver config files: " + String.join(", ", drivers));
-    }
-
     // blow away logs, so they contain only stuff from each test
     LogOutputSingleton.flush();
+  }
+
+  private void performDriverChecks(final ISuite suite) throws BadJsonFormatException {
+    final var expectedDrivers = TestNgContextUtils.extractDriversFromSuiteFile(suite);
+    if (EnvironmentConfigurationManager.INSTANCE.get().capsFile() != null) {
+      expectedDrivers.add(EnvironmentConfigurationManager.INSTANCE.get().capsFile());
+    }
+    final var missingDrivers =
+        Sets.difference(expectedDrivers, ContextManager.INSTANCE.getDriverMap().keySet());
+    if (!missingDrivers.isEmpty()) {
+      throw new RuntimeException(
+          "Unable to start run, missing local driver config files: "
+              + String.join(", ", missingDrivers));
+    }
+
+    if (EnvironmentConfigurationManager.INSTANCE.get().useLocalDrivers()) {
+      log.trace("App auto-detection/upload is disabled for local drivers");
+      return;
+    }
+
+    // For every driver that we are aware of at this time, check to see if we might need an app for
+    // any of them
+    for (var driver : expectedDrivers) {
+      final var expectedDriverCaps =
+          ContextManager.INSTANCE.lookupDriver(driver).getCurrentCapabilities();
+      if (!expectedDriverCaps.getApplauseOptions().isMobileNative()) {
+        continue;
+      }
+      if (expectedDriverCaps.getCapabilityNames().contains("app")) {
+        continue;
+      }
+      ApplauseAppPushHelper.performApplicationPushIfNecessary();
+      ApplauseAppPushHelper.autoDetectBuildIfNecessary();
+      break;
+    }
   }
 }
