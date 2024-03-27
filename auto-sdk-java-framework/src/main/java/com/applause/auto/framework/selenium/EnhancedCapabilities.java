@@ -132,7 +132,7 @@ public class EnhancedCapabilities implements Capabilities {
                 new AbstractMap.SimpleImmutableEntry<>(
                     entry.getKey(),
                     entry.getValue() instanceof Capabilities
-                        ? EnhancedCapabilities.asMapDeep((Capabilities) entry.getValue())
+                        ? asMapDeep((Capabilities) entry.getValue())
                         : entry.getValue()))
         .collect(
             ImmutableMap.toImmutableMap(

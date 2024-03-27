@@ -33,7 +33,7 @@ public interface ProductsApi {
    */
   @GET("v2/products/{productId}/app-components")
   CompletableFuture<Response<List<AppComponentDto>>> getProductAppComponents(
-      @retrofit2.http.Path("productId") Long productId);
+      @Path("productId") Long productId);
 
   /**
    * Returns custom fields for given product
@@ -43,5 +43,5 @@ public interface ProductsApi {
    */
   @GET("v2/products/{productId}/custom-fields")
   CompletableFuture<Response<List<CustomFieldDefinitionDto>>> getProductCustomFields(
-      @retrofit2.http.Path("productId") Long productId);
+      @Path("productId") Long productId);
 }

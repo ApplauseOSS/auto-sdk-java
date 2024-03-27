@@ -114,7 +114,7 @@ public final class GsonHelper {
 
   static List<Object> fixGsonDoublesInArray(
       final List<Object> valArray, final JsonArray asJsonArray) {
-    LinkedList<Object> result = new LinkedList<>();
+    List<Object> result = new LinkedList<>();
     int idx = -1;
     for (Object jsonElem : valArray) {
       idx++;
@@ -179,7 +179,7 @@ public final class GsonHelper {
   public static JsonElement str2JsonElement(@NonNull final String jsonStr)
       throws BadJsonFormatException {
     try {
-      return GsonHelper.ourGson().fromJson(jsonStr, JsonElement.class);
+      return ourGson().fromJson(jsonStr, JsonElement.class);
     } catch (JsonSyntaxException jse) {
       throw new BadJsonFormatException(
           String.format("Bad JSON: '%s'.  Original JSON '%s'", jse.getMessage(), jsonStr), jse);
@@ -216,7 +216,7 @@ public final class GsonHelper {
       throw new RuntimeException("Unable to extract body from http response", e);
     }
     try {
-      return GsonHelper.str2JsonObject(rawBody);
+      return str2JsonObject(rawBody);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

@@ -104,9 +104,7 @@ public class EnvironmentHelper implements IPageObjectExtension {
   public boolean isAndroidMobileWeb() {
     String browserName =
         ((RemoteWebDriver) pageObjectContext.getDriver()).getCapabilities().getBrowserName();
-    return isMobileAndroid()
-        && null != browserName
-        && browserName.toLowerCase(Locale.ENGLISH).equals("chrome");
+    return isMobileAndroid() && null != browserName && "chrome".equalsIgnoreCase(browserName);
   }
 
   /**
@@ -117,9 +115,7 @@ public class EnvironmentHelper implements IPageObjectExtension {
   public boolean isIOSMobileWeb() {
     String browserName =
         ((RemoteWebDriver) pageObjectContext.getDriver()).getCapabilities().getBrowserName();
-    return isMobileIOS()
-        && null != browserName
-        && browserName.toLowerCase(Locale.ENGLISH).equals("safari");
+    return isMobileIOS() && null != browserName && "safari".equalsIgnoreCase(browserName);
   }
 
   /**

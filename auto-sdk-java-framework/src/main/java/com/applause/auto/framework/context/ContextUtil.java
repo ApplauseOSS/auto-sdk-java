@@ -171,7 +171,7 @@ public final class ContextUtil {
         .orElseGet(
             () ->
                 Optional.ofNullable(clazz.getSuperclass())
-                    .map(parent -> ContextUtil.getAnnotationForClass(parent, annotation))
+                    .map(parent -> getAnnotationForClass(parent, annotation))
                     .orElse(null));
   }
 }

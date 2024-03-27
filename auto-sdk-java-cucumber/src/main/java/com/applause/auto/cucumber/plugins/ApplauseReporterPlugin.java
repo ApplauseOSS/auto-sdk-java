@@ -43,6 +43,7 @@ import io.cucumber.plugin.event.TestCaseStarted;
 import io.cucumber.plugin.event.TestRunFinished;
 import io.cucumber.plugin.event.TestRunStarted;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.Synchronized;
 
@@ -51,7 +52,7 @@ public class ApplauseReporterPlugin implements ConcurrentEventListener {
   /** Constant describing the attachment file name for the Applause context */
   public static final String APPLAUSE_CONTEXT_ID_ATTACHMENT = "applause-context-id";
 
-  private final ConcurrentHashMap<String, String> testCaseContextMap = new ConcurrentHashMap<>();
+  private final Map<String, String> testCaseContextMap = new ConcurrentHashMap<>();
 
   @SuppressWarnings("PMD.UnusedFormalParameter")
   @Synchronized

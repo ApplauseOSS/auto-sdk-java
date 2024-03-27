@@ -32,7 +32,7 @@ public interface IssuesApi {
    */
   @GET("v2/issues/{issueId}/attachments")
   CompletableFuture<Response<List<AttachmentDto>>> getIssueAttachments(
-      @retrofit2.http.Path("issueId") Long issueId);
+      @Path("issueId") Long issueId);
 
   /**
    * Returns single test issue by its id
@@ -41,8 +41,7 @@ public interface IssuesApi {
    * @return BugDetailsDto
    */
   @GET("v2/issues/{issueId}")
-  CompletableFuture<Response<BugDetailsDto>> getIssueDetails(
-      @retrofit2.http.Path("issueId") Long issueId);
+  CompletableFuture<Response<BugDetailsDto>> getIssueDetails(@Path("issueId") Long issueId);
 
   /**
    * Marks issue as won&#x27;t fix
@@ -54,7 +53,7 @@ public interface IssuesApi {
   @Headers({"Content-Type:application/json"})
   @PUT("v2/issues/{issueId}/wont-fix")
   CompletableFuture<Response<BugDto>> markIssueWontFix(
-      @retrofit2.http.Body BugWontFixDto body, @retrofit2.http.Path("issueId") Long issueId);
+      @Body BugWontFixDto body, @Path("issueId") Long issueId);
 
   /**
    * Marks issue as (un)known
@@ -66,7 +65,7 @@ public interface IssuesApi {
   @Headers({"Content-Type:application/json"})
   @PUT("v2/issues/{issueId}/known-issue")
   CompletableFuture<Response<BugDto>> markKnownIssue(
-      @retrofit2.http.Body BugKnownIssueDto body, @retrofit2.http.Path("issueId") Long issueId);
+      @Body BugKnownIssueDto body, @Path("issueId") Long issueId);
 
   /**
    * Marks issue as (un)resolved
@@ -78,7 +77,7 @@ public interface IssuesApi {
   @Headers({"Content-Type:application/json"})
   @PUT("v2/issues/{issueId}/resolve")
   CompletableFuture<Response<BugDto>> resolveIssue(
-      @retrofit2.http.Body BugResolutionDto body, @retrofit2.http.Path("issueId") Long issueId);
+      @Body BugResolutionDto body, @Path("issueId") Long issueId);
 
   /**
    * Requests the bug fix to be verified
@@ -89,7 +88,7 @@ public interface IssuesApi {
   @Headers({"Content-Type:application/json"})
   @PUT("v2/issues/fix-verification")
   CompletableFuture<Response<Void>> submitIssuesForVerification(
-      @retrofit2.http.Body BugVerificationRequestDto body);
+      @Body BugVerificationRequestDto body);
 
   /**
    * Updates issue by id
@@ -101,7 +100,7 @@ public interface IssuesApi {
   @Headers({"Content-Type:application/json"})
   @PUT("v2/issues/{issueId}")
   CompletableFuture<Response<BugDto>> updateIssue(
-      @retrofit2.http.Body BugUpdateDto body, @retrofit2.http.Path("issueId") Long issueId);
+      @Body BugUpdateDto body, @Path("issueId") Long issueId);
 
   /**
    * Updates BTS manually exported status
@@ -113,6 +112,5 @@ public interface IssuesApi {
   @Headers({"Content-Type:application/json"})
   @PUT("v2/issues/{issueId}/bts/manually-exported")
   CompletableFuture<Response<Void>> updateIssueManuallyExportedStatus(
-      @retrofit2.http.Body BugManuallyExportedUpdateDto body,
-      @retrofit2.http.Path("issueId") Long issueId);
+      @Body BugManuallyExportedUpdateDto body, @Path("issueId") Long issueId);
 }

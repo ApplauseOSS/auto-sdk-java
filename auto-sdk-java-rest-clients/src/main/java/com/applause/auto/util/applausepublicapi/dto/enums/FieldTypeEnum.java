@@ -48,7 +48,7 @@ public enum FieldTypeEnum {
   }
 
   public static FieldTypeEnum fromValue(final String input) {
-    for (FieldTypeEnum b : FieldTypeEnum.values()) {
+    for (FieldTypeEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

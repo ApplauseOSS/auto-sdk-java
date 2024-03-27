@@ -42,7 +42,7 @@ public enum TestCaseTypeEnum {
   }
 
   public static TestCaseTypeEnum fromValue(final String input) {
-    for (TestCaseTypeEnum b : TestCaseTypeEnum.values()) {
+    for (TestCaseTypeEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

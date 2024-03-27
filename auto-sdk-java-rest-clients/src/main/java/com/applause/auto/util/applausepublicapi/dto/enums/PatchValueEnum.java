@@ -48,7 +48,7 @@ public enum PatchValueEnum {
   }
 
   public static PatchValueEnum fromValue(final String input) {
-    for (PatchValueEnum b : PatchValueEnum.values()) {
+    for (PatchValueEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

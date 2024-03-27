@@ -20,6 +20,7 @@ package com.applause.auto.logging;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import lombok.val;
 
 /**
@@ -33,11 +34,11 @@ public enum LogOutputSingleton {
   public static final int MAX_LOG_BUFFER_CAPACITY = 100000;
 
   /** threadsafe global log queue */
-  private static final ThreadLocal<ArrayBlockingQueue<String>> logsQueue =
+  private static final ThreadLocal<BlockingQueue<String>> logsQueue =
       ThreadLocal.withInitial(() -> new ArrayBlockingQueue<>(MAX_LOG_BUFFER_CAPACITY, true));
 
   /** threadsafe global log queue */
-  private static final ThreadLocal<List<ArrayBlockingQueue<String>>> pipedQueues =
+  private static final ThreadLocal<List<BlockingQueue<String>>> pipedQueues =
       ThreadLocal.withInitial(ArrayList::new);
 
   /**
@@ -73,7 +74,7 @@ public enum LogOutputSingleton {
    *
    * @return The underlying logs queue
    */
-  public static ArrayBlockingQueue<String> getLogsQueue() {
+  public static BlockingQueue<String> getLogsQueue() {
     return logsQueue.get();
   }
 
@@ -96,7 +97,7 @@ public enum LogOutputSingleton {
    *
    * @param pipeQueue a queue to pipe the logs to
    */
-  public static void pipeTo(final ArrayBlockingQueue<String> pipeQueue) {
+  public static void pipeTo(final BlockingQueue<String> pipeQueue) {
     pipedQueues.get().add(pipeQueue);
   }
 }

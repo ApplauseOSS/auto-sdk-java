@@ -56,7 +56,7 @@ public enum TestingTypeEnum {
   }
 
   public static TestingTypeEnum fromValue(final String input) {
-    for (TestingTypeEnum b : TestingTypeEnum.values()) {
+    for (TestingTypeEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

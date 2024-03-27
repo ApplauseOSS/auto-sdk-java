@@ -42,7 +42,7 @@ public enum BugFixWorthinessLevelEnum {
   }
 
   public static BugFixWorthinessLevelEnum fromValue(final String input) {
-    for (final BugFixWorthinessLevelEnum b : BugFixWorthinessLevelEnum.values()) {
+    for (final BugFixWorthinessLevelEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

@@ -40,7 +40,7 @@ public enum BugQualityRatingEnum {
   }
 
   public static BugQualityRatingEnum fromValue(final String input) {
-    for (BugQualityRatingEnum b : BugQualityRatingEnum.values()) {
+    for (BugQualityRatingEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

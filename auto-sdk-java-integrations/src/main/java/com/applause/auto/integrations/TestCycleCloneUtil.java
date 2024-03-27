@@ -24,7 +24,7 @@ import com.applause.auto.helpers.CommunityTestCycleUtil;
 import com.applause.auto.helpers.InternalTestCycleUtil;
 import com.applause.auto.logging.ResultPropertyMap;
 import com.google.common.collect.ImmutableMap;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.time.DateUtils;
@@ -87,7 +87,7 @@ public final class TestCycleCloneUtil {
             ApplauseEnvironmentConfigurationManager.INSTANCE.get().applausePublicApiUrl(),
             ApplauseEnvironmentConfigurationManager.INSTANCE.get().apiKey(),
             ApplauseConfigHelper.getHttpProxy());
-    var now = Calendar.getInstance().getTime();
+    var now = new Date();
     return communityTestCycleUtil.cloneCommunityTestCycle(
         templateId,
         ApplauseEnvironmentConfigurationManager.INSTANCE.get().productId(),

@@ -42,7 +42,7 @@ public enum BugFrequencyEnum {
   }
 
   public static BugFrequencyEnum fromValue(final String input) {
-    for (final BugFrequencyEnum b : BugFrequencyEnum.values()) {
+    for (final BugFrequencyEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

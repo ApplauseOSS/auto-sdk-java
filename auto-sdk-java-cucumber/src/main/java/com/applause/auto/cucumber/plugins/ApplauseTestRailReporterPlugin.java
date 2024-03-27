@@ -198,8 +198,8 @@ public class ApplauseTestRailReporterPlugin implements ConcurrentEventListener {
 
     // Provider Session Specific Asset Section
     for (final var providerSessionAssets : testResultAssetLinks.getProviderSessions()) {
-      sb.append("\n---------------------\n");
-      sb.append("\n## Provider SessionID: ")
+      sb.append("\n---------------------\n")
+          .append("\n## Provider SessionID: ")
           .append(providerSessionAssets.getProviderSessionGuid())
           .append("\n\n");
 

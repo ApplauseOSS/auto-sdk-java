@@ -21,6 +21,7 @@ import lombok.Getter;
 
 /** Gets or Sets type */
 @Getter
+@SuppressWarnings("PMD.ExcessivePublicCount")
 public enum BugTypeEnum {
   VISUAL("VISUAL"),
 
@@ -217,7 +218,7 @@ public enum BugTypeEnum {
   }
 
   public static BugTypeEnum fromValue(final String input) {
-    for (BugTypeEnum b : BugTypeEnum.values()) {
+    for (BugTypeEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

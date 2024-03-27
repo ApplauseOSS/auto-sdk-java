@@ -44,7 +44,7 @@ public enum TestSuiteStatusEnum {
   }
 
   public static TestSuiteStatusEnum fromValue(final String input) {
-    for (TestSuiteStatusEnum b : TestSuiteStatusEnum.values()) {
+    for (TestSuiteStatusEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

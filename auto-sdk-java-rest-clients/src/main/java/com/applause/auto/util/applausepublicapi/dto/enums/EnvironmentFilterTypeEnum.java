@@ -35,7 +35,7 @@ public enum EnvironmentFilterTypeEnum {
   }
 
   public static EnvironmentFilterTypeEnum fromValue(final String input) {
-    for (EnvironmentFilterTypeEnum b : EnvironmentFilterTypeEnum.values()) {
+    for (EnvironmentFilterTypeEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

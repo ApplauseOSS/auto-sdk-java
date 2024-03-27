@@ -44,7 +44,7 @@ public enum TestCycleTypeEnum {
   }
 
   public static TestCycleTypeEnum fromValue(final String input) {
-    for (TestCycleTypeEnum b : TestCycleTypeEnum.values()) {
+    for (TestCycleTypeEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

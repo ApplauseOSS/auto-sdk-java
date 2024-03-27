@@ -36,11 +36,10 @@ import java.util.stream.Collectors;
  */
 public final class ResultPropertyMap {
   /** Global Properties allow you to set a property across all threads */
-  private static final ConcurrentHashMap<String, Object> globalProperties =
-      new ConcurrentHashMap<>();
+  private static final Map<String, Object> globalProperties = new ConcurrentHashMap<>();
 
   /** Local Properties allow you to set a property for the current thread */
-  private static final ThreadLocal<ConcurrentHashMap<String, Object>> localProperties =
+  private static final ThreadLocal<Map<String, Object>> localProperties =
       ThreadLocal.withInitial(ConcurrentHashMap::new);
 
   /** Local Properties allow you to set a property for the current thread */
@@ -49,8 +48,7 @@ public final class ResultPropertyMap {
   /**
    * Keyed Properties allow you to transfer data across threads and store it based on a shared "key"
    */
-  private static final ConcurrentHashMap<String, ConcurrentHashMap<String, Object>>
-      keyedProperties = new ConcurrentHashMap<>();
+  private static final Map<String, Map<String, Object>> keyedProperties = new ConcurrentHashMap<>();
 
   // Private Utility Constructor
   private ResultPropertyMap() {}

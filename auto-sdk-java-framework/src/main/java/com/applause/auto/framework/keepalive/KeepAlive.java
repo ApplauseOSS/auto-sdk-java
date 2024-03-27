@@ -104,6 +104,7 @@ public class KeepAlive {
    * @throws ExecutionException If the execution throws an exception
    * @throws InterruptedException If the execution is interrupted
    */
+  @SuppressWarnings("PMD.PreserveStackTrace")
   public <T> T executeWhile(final @NonNull Supplier<T> whileFunction)
       throws ExecutionException, InterruptedException {
     // Since we shut this down every time it is called, set up a new one each time we call this

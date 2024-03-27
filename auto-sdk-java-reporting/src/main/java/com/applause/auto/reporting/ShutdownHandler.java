@@ -25,7 +25,8 @@ import org.apache.logging.log4j.Logger;
 @SuppressWarnings({
   "PMD.AvoidUsingVolatile",
   "PMD.AvoidSynchronizedAtMethodLevel",
-  "PMD.AvoidCatchingThrowable"
+  "PMD.AvoidCatchingThrowable",
+  "PMD.DataClass"
 })
 public final class ShutdownHandler extends Thread {
   private static final Logger logger = LogManager.getLogger(ShutdownHandler.class);
@@ -89,7 +90,7 @@ public final class ShutdownHandler extends Thread {
       logger.warn("Attempting to cancel test run id =" + testRunId);
       try {
         client.cancelTestRun(testRunId, "Shutdown hook activated").join();
-        Thread.sleep(1000); // Give a little time for this message to get out
+        sleep(1000); // Give a little time for this message to get out
       } catch (Throwable t) {
         logger.warn("Shutdown failed to contact auto-api: ", t);
       }

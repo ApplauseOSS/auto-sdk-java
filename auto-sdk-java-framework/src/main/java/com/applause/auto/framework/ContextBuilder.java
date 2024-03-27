@@ -173,6 +173,6 @@ public final class ContextBuilder {
             builder.getCaps().getApplauseOptions().getDriverType(),
             builder.getCaps().getApplauseOptions().getFactoryKey(),
             options);
-    return ContextBuilder.setup().setPageObjectContext(poc);
+    return setup().setPageObjectContext(poc);
   }
 }

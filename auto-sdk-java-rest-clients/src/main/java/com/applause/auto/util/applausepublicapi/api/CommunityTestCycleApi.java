@@ -35,7 +35,7 @@ public interface CommunityTestCycleApi {
    */
   @POST("v2/community-test-cycles/{testCycleId}/close")
   CompletableFuture<Response<CommunityTestCycleDto>> closeTestCycle(
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Path("testCycleId") Long testCycleId);
 
   /**
    * Activates test cycle (Automation only)
@@ -45,7 +45,7 @@ public interface CommunityTestCycleApi {
    */
   @POST("v2/community-test-cycles/{testCycleId}/activate")
   CompletableFuture<Response<CommunityTestCycleDto>> activateTestCycle(
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Path("testCycleId") Long testCycleId);
 
   /**
    * Creates test cycle. Requires at least one previously created test cycle of the given type and
@@ -63,9 +63,9 @@ public interface CommunityTestCycleApi {
   @Headers({"Content-Type:application/json"})
   @POST("v2/community-test-cycles")
   CompletableFuture<Response<CommunityTestCycleDto>> createTestCycle(
-      @retrofit2.http.Body CommunityTestCycleCreateDto body,
-      @retrofit2.http.Query("type") TestingTypeEnum type,
-      @retrofit2.http.Query("methodology") TestingMethodologyEnum methodology);
+      @Body CommunityTestCycleCreateDto body,
+      @Query("type") TestingTypeEnum type,
+      @Query("methodology") TestingMethodologyEnum methodology);
 
   /**
    * Creates test cycle. Requires at least one previously created test cycle of the given type and
@@ -84,9 +84,9 @@ public interface CommunityTestCycleApi {
   @Headers({"Content-Type:application/json"})
   @POST("v2/community-test-cycles")
   CompletableFuture<Response<CommunityTestCycleDto>> cloneTestCycle(
-      @retrofit2.http.Body CommunityTestCycleCreateDto body,
-      @retrofit2.http.Query("templateTestCycleId") Long templateTestCycleId,
-      @retrofit2.http.Query("cloneSlots") Boolean cloneSlots);
+      @Body CommunityTestCycleCreateDto body,
+      @Query("templateTestCycleId") Long templateTestCycleId,
+      @Query("cloneSlots") Boolean cloneSlots);
 
   /**
    * Discards test cycle
@@ -96,7 +96,7 @@ public interface CommunityTestCycleApi {
    */
   @POST("v2/community-test-cycles/{testCycleId}/discard")
   CompletableFuture<Response<CommunityTestCycleDto>> discardTestCycle(
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Path("testCycleId") Long testCycleId);
 
   /**
    * Generate csv from test case results
@@ -108,8 +108,7 @@ public interface CommunityTestCycleApi {
   @Headers({"Content-Type:application/json"})
   @POST("v2/community-test-cycles/{testCycleId}/test-case-results/export")
   CompletableFuture<Response<Object>> exportTestCaseResultsToCsv(
-      @retrofit2.http.Body TestCaseResultExportCriteria body,
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Body TestCaseResultExportCriteria body, @Path("testCycleId") Long testCycleId);
 
   /**
    * Returns a paged list of test case results for the given test cycle.Default sort is by id
@@ -128,13 +127,13 @@ public interface CommunityTestCycleApi {
    */
   @GET("v2/community-test-cycles/{testCycleId}/test-case-results")
   CompletableFuture<Response<PageBaseTestCaseResultDto>> getCommunityTestCaseResults(
-      @retrofit2.http.Path("testCycleId") Long testCycleId,
-      @retrofit2.http.Query("testCaseId") Long testCaseId,
-      @retrofit2.http.Query("statuses") List<Long> statuses,
-      @retrofit2.http.Query("approvalStatuses") List<Long> approvalStatuses,
-      @retrofit2.http.Query("page") Long page,
-      @retrofit2.http.Query("size") Long size,
-      @retrofit2.http.Query("sort") String sort);
+      @Path("testCycleId") Long testCycleId,
+      @Query("testCaseId") Long testCaseId,
+      @Query("statuses") List<Long> statuses,
+      @Query("approvalStatuses") List<Long> approvalStatuses,
+      @Query("page") Long page,
+      @Query("size") Long size,
+      @Query("sort") String sort);
 
   /**
    * Returns details of test cycle by ID
@@ -144,7 +143,7 @@ public interface CommunityTestCycleApi {
    */
   @GET("v2/community-test-cycles/{testCycleId}")
   CompletableFuture<Response<CommunityCommunityTestCycleDetailsDto>> getTestCycleDetails(
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Path("testCycleId") Long testCycleId);
 
   /**
    * Returns information about test cycle progress
@@ -154,7 +153,7 @@ public interface CommunityTestCycleApi {
    */
   @GET("v2/community-test-cycles/{testCycleId}/progress")
   CompletableFuture<Response<CommunityTestCycleProgressDto>> getTestCycleProgress(
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Path("testCycleId") Long testCycleId);
 
   /**
    * Returns a paged list of test cycles for the company and product ids that the api-key has access
@@ -170,10 +169,10 @@ public interface CommunityTestCycleApi {
    */
   @GET("v2/community-test-cycles")
   CompletableFuture<Response<PageCommunityTestCycleDto>> getTestCycles(
-      @retrofit2.http.Query("productIds") List<Long> productIds,
-      @retrofit2.http.Query("page") Long page,
-      @retrofit2.http.Query("size") Long size,
-      @retrofit2.http.Query("sort") String sort);
+      @Query("productIds") List<Long> productIds,
+      @Query("page") Long page,
+      @Query("size") Long size,
+      @Query("sort") String sort);
 
   /**
    * Locks test cycle
@@ -183,7 +182,7 @@ public interface CommunityTestCycleApi {
    */
   @POST("v2/community-test-cycles/{testCycleId}/lock")
   CompletableFuture<Response<CommunityTestCycleDto>> lockTestCycle(
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Path("testCycleId") Long testCycleId);
 
   /**
    * Reactivates test cycle
@@ -193,7 +192,7 @@ public interface CommunityTestCycleApi {
    */
   @POST("v2/community-test-cycles/{testCycleId}/reactivate")
   CompletableFuture<Response<CommunityTestCycleDto>> reactivateTestCycle(
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Path("testCycleId") Long testCycleId);
 
   /**
    * Requests activation of a test cycle
@@ -203,7 +202,7 @@ public interface CommunityTestCycleApi {
    */
   @POST("v2/community-test-cycles/{testCycleId}/request-activation")
   CompletableFuture<Response<CommunityTestCycleDto>> requestTestCycleActivation(
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Path("testCycleId") Long testCycleId);
 
   /**
    * Requests test cycle closure
@@ -213,7 +212,7 @@ public interface CommunityTestCycleApi {
    */
   @POST("v2/community-test-cycles/{testCycleId}/request-closure")
   CompletableFuture<Response<CommunityTestCycleDto>> requestTestCycleClosure(
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Path("testCycleId") Long testCycleId);
 
   /**
    * Updates specified fields of an existing test cycle
@@ -225,8 +224,7 @@ public interface CommunityTestCycleApi {
   @Headers({"Content-Type:application/json"})
   @PATCH("v2/community-test-cycles/{testCycleId}")
   CompletableFuture<Response<CommunityCommunityTestCycleDetailsDto>> updateTestCycle(
-      @retrofit2.http.Body CommunityTestCyclePatchDto body,
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Body CommunityTestCyclePatchDto body, @Path("testCycleId") Long testCycleId);
 
   /**
    * Uploads a new general attachment for a test cycle specified by id
@@ -235,11 +233,10 @@ public interface CommunityTestCycleApi {
    * @param file (optional)
    * @return AttachmentDto
    */
-  @retrofit2.http.Multipart
+  @Multipart
   @POST("v2/community-test-cycles/{testCycleId}/attachments")
   CompletableFuture<Response<AttachmentDto>> createTestCycleAttachments(
-      @retrofit2.http.Path("testCycleId") Long testCycleId,
-      @retrofit2.http.Part("file\"; filename=\"file") RequestBody file);
+      @Path("testCycleId") Long testCycleId, @Part("file\"; filename=\"file") RequestBody file);
 
   /**
    * Returns information about a test cycle attachment specified by id
@@ -250,8 +247,7 @@ public interface CommunityTestCycleApi {
    */
   @GET("v2/community-test-cycles/{testCycleId}/attachments/{attachmentId}")
   CompletableFuture<Response<AttachmentDto>> getTestCycleAttachment(
-      @retrofit2.http.Path("testCycleId") Long testCycleId,
-      @retrofit2.http.Path("attachmentId") Long attachmentId);
+      @Path("testCycleId") Long testCycleId, @Path("attachmentId") Long attachmentId);
 
   /**
    * Returns general attachments for a given test cycle ID
@@ -261,7 +257,7 @@ public interface CommunityTestCycleApi {
    */
   @GET("v2/community-test-cycles/{testCycleId}/attachments")
   CompletableFuture<Response<List<AttachmentDto>>> getTestCycleAttachments(
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Path("testCycleId") Long testCycleId);
 
   /**
    * Deletes a general attachment with specified id
@@ -272,8 +268,7 @@ public interface CommunityTestCycleApi {
    */
   @DELETE("v2/community-test-cycles/{testCycleId}/attachments/{attachmentId}")
   CompletableFuture<Response<Void>> removeTestCycleAttachment(
-      @retrofit2.http.Path("testCycleId") Long testCycleId,
-      @retrofit2.http.Path("attachmentId") Long attachmentId);
+      @Path("testCycleId") Long testCycleId, @Path("attachmentId") Long attachmentId);
 
   /**
    * Returns a list of issues for a given test cycle, based on provided criteria. Supported sort
@@ -289,11 +284,11 @@ public interface CommunityTestCycleApi {
    */
   @GET("v2/community-test-cycles/{testCycleId}/issues")
   CompletableFuture<Response<PageBugDto>> getTestCycleIssues(
-      @retrofit2.http.Path("testCycleId") Long testCycleId,
-      @retrofit2.http.Query("excludeBugStatuses") List<Long> excludeBugStatuses,
-      @retrofit2.http.Query("page") Long page,
-      @retrofit2.http.Query("size") Long size,
-      @retrofit2.http.Query("sort") String sort);
+      @Path("testCycleId") Long testCycleId,
+      @Query("excludeBugStatuses") List<Long> excludeBugStatuses,
+      @Query("page") Long page,
+      @Query("size") Long size,
+      @Query("sort") String sort);
 
   /**
    * Returns a list of known issues for given test cycle, based on provided criteria. Supported sort
@@ -309,11 +304,11 @@ public interface CommunityTestCycleApi {
    */
   @GET("v2/community-test-cycles/{testCycleId}/known-issues")
   CompletableFuture<Response<PageBugDto>> getTestCycleKnownIssues(
-      @retrofit2.http.Path("testCycleId") Long testCycleId,
-      @retrofit2.http.Query("includeDisabled") Boolean includeDisabled,
-      @retrofit2.http.Query("page") Long page,
-      @retrofit2.http.Query("size") Long size,
-      @retrofit2.http.Query("sort") String sort);
+      @Path("testCycleId") Long testCycleId,
+      @Query("includeDisabled") Boolean includeDisabled,
+      @Query("page") Long page,
+      @Query("size") Long size,
+      @Query("sort") String sort);
 
   /**
    * Add new test cases to existing test cycle test cases list.
@@ -325,7 +320,7 @@ public interface CommunityTestCycleApi {
   @Headers({"Content-Type:application/json"})
   @POST("v2/community-test-cycles/{testCycleId}/test-cases")
   CompletableFuture<Response<Void>> addTestCycleTestCases(
-      @retrofit2.http.Body List<Long> body, @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Body List<Long> body, @Path("testCycleId") Long testCycleId);
 
   /**
    * Get test cases from test cycle by its id.
@@ -335,7 +330,7 @@ public interface CommunityTestCycleApi {
    */
   @GET("v2/community-test-cycles/{testCycleId}/test-cases")
   CompletableFuture<Response<List<CommunityTestCycleTestCaseDto>>> getTestCycleTestCases(
-      @retrofit2.http.Path("testCycleId") Long testCycleId);
+      @Path("testCycleId") Long testCycleId);
 
   /**
    * Remove included test case by its id.
@@ -346,6 +341,5 @@ public interface CommunityTestCycleApi {
    */
   @DELETE("v2/community-test-cycles/{testCycleId}/test-cases/{testCaseId}")
   CompletableFuture<Response<Void>> removeTestCycleTestCase(
-      @retrofit2.http.Path("testCycleId") Long testCycleId,
-      @retrofit2.http.Path("testCaseId") Long testCaseId);
+      @Path("testCycleId") Long testCycleId, @Path("testCaseId") Long testCaseId);
 }

@@ -44,7 +44,7 @@ public enum TestCaseStepModuleTypeEnum {
   }
 
   public static TestCaseStepModuleTypeEnum fromValue(final String input) {
-    for (TestCaseStepModuleTypeEnum b : TestCaseStepModuleTypeEnum.values()) {
+    for (TestCaseStepModuleTypeEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

@@ -101,9 +101,6 @@ public final class ApplauseConfigHelper {
    */
   public static InputStreamReader getResourceAsStream(final Class<?> clazz, final String name) {
     try (var resource = clazz.getResourceAsStream(name)) {
-      if (resource == null) {
-        throw new IOException("Could not find resource " + name);
-      }
       return new InputStreamReader(resource, StandardCharsets.UTF_8);
     } catch (IOException rte) {
       if (name.endsWith(".json")) {

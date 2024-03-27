@@ -51,7 +51,7 @@ public final class SessionHandler implements IApplauseReporter {
   private final @NonNull AutoApi autoApi;
   @Getter private final @NonNull Long testRunId;
   private @Getter TestRunAssetLinksDto assets;
-  private final ConcurrentHashMap<String, ResultRecord> resultRecords = new ConcurrentHashMap<>();
+  private final Map<String, ResultRecord> resultRecords = new ConcurrentHashMap<>();
 
   private final SdkHeartBeatService heartBeatService;
 

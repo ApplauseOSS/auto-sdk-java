@@ -41,11 +41,11 @@ public interface InternalTestCycleApi {
   @Headers({"Content-Type:application/json"})
   @POST("v2/internal-test-cycles")
   CompletableFuture<Response<InternalTestCycleGetDto>> createTestCycle(
-      @retrofit2.http.Body NewInternalTestCycleOptions body,
-      @retrofit2.http.Query("templateTestCycleId") Long templateTestCycleId,
-      @retrofit2.http.Query("cloneKnownIssues") Boolean cloneKnownIssues,
-      @retrofit2.http.Query("cloneSlots") Boolean cloneSlots,
-      @retrofit2.http.Query("timeZoneOffsetSeconds") Long timeZoneOffsetSeconds,
-      @retrofit2.http.Query("newTestCycleName") String newTestCycleName,
-      @retrofit2.http.Query("cloneAttachmentIds") List<Long> cloneAttachmentIds);
+      @Body NewInternalTestCycleOptions body,
+      @Query("templateTestCycleId") Long templateTestCycleId,
+      @Query("cloneKnownIssues") Boolean cloneKnownIssues,
+      @Query("cloneSlots") Boolean cloneSlots,
+      @Query("timeZoneOffsetSeconds") Long timeZoneOffsetSeconds,
+      @Query("newTestCycleName") String newTestCycleName,
+      @Query("cloneAttachmentIds") List<Long> cloneAttachmentIds);
 }

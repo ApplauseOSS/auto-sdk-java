@@ -18,6 +18,7 @@
 package com.applause.auto.framework.selenium;
 
 /** A list of capability constants used by the Applause framework */
+@SuppressWarnings("PMD.DataClass")
 public final class ApplauseCapabilitiesConstants {
   /** The Applause Options sub capability */
   public static final String APPLAUSE_OPTIONS = "applause:options";

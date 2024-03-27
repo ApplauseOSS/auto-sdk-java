@@ -42,7 +42,8 @@
     <exclude name="AvoidUncheckedExceptionsInSignatures"/>
     <exclude name="AvoidCatchingGenericException"/>
     <exclude name="AvoidThrowingRawExceptionTypes"/>
-    <exclude name="LoosePackageCoupling"/><!-- Requires some additional config and I don't think we want it -->
+    <exclude name="SimplifyBooleanReturns"/>
+    <exclude name="LoosePackageCoupling"/>
     <exclude name="CouplingBetweenObjects"/>
     <exclude name="CognitiveComplexity"/>
   </rule>
@@ -62,6 +63,7 @@
     <exclude name="SuspiciousConstantFieldName"/><!-- deprecated rule-->
     <exclude name="WhileLoopsMustUseBraces"/><!-- deprecated rule-->
     <exclude name="VariableNamingConventions"/><!-- deprecated rule-->
+    <exclude name="UseExplicitTypes"/>
     <exclude name="DefaultPackage"/>
     <exclude name="AtLeastOneConstructor"/>
     <exclude name="CallSuperInConstructor"/>
@@ -70,16 +72,17 @@
     <exclude name="ShortVariable"/>
     <exclude name="ConfusingTernary"/>
     <exclude name="CommentDefaultAccessModifier"/>
-    <exclude name="ClassNamingConventions"/> <!-- I like the idea of this one, but it triggers on weird things like BlockingThreadPool -->
+    <exclude name="ClassNamingConventions"/>
     <exclude name="ShortClassName"/>
+    <exclude name="ShortMethodName"/>
     <exclude name="BooleanGetMethodName"/>
     <exclude name="LinguisticNaming"/>
     <exclude name="UnnecessaryAnnotationValueElement"/>
-    <exclude name="MethodArgumentCouldBeFinal"/><!-- one of our other linters does this better, ignoring primitives. PMD doesn't ignore primitives -->
-    <exclude name="LocalVariableCouldBeFinal"/><!-- We should replace flaky lombok val with final vals but will finish doing this another day-->
-    <exclude name="UseDiamondOperator"/><!-- When we replace lombok val this will work as well-->
+    <exclude name="MethodArgumentCouldBeFinal"/>
+    <exclude name="LocalVariableCouldBeFinal"/>
+    <exclude name="UseDiamondOperator"/>
     <exclude name="UseUnderscoresInNumericLiterals"/>
-    <exclude name="UnnecessaryImport"/> <!-- Malfunctioning as of PMD 6.41 .... It's saying imports referenced in Javadoc are unused :( -->
+    <exclude name="UnnecessaryImport"/>
   </rule>
   <rule ref="category/java/performance.xml">
     <exclude name="ConsecutiveLiteralAppends"/>
@@ -89,7 +92,6 @@
     <exclude name="AvoidFileStream"/>
   </rule>
   <rule ref="category/java/errorprone.xml" >
-    <exclude name="LoggerIsNotStaticFinal"/><!-- deprecated, will be removed in 7 -->
     <exclude name="CloseResource"/>
     <exclude name="InvalidLogMessageFormat"/>
     <exclude name="AvoidLiteralsInIfCondition"/>
@@ -100,18 +102,17 @@
     <exclude name="TestClassWithoutTestCases"/>
   </rule>
   <rule ref="category/java/multithreading.xml" >
-    <exclude name="UnsynchronizedStaticDateFormatter"/><!-- deprecated rule-->
+    <exclude name="UnsynchronizedStaticDateFormatter"/>
     <exclude name="UseConcurrentHashMap"/>
-    <exclude name="AvoidUsingVolatile"/><!-- We have another linter for this -->
+    <exclude name="AvoidUsingVolatile"/>
     <exclude name="DoNotUseThreads"/>
   </rule>
   <rule ref="category/java/bestpractices.xml" >
     <exclude name="PositionLiteralsFirstInCaseInsensitiveComparisons"/><!-- deprecated rule-->
     <exclude name="PositionLiteralsFirstInComparisons"/><!-- deprecated rule-->
     <exclude name="GuardLogStatement"/>
-    <exclude name="UnusedPrivateMethod"/><!-- This doesn't seem to work as of 6.0.25, twigs on stuff that is definitely used. -->
-    <exclude name="UnusedImports"/> <!-- not needed, Google autoformat will delete these -->
-    <exclude name="UnusedAssignment"/><!-- excludes initial null assignments which are harmless -->
+    <exclude name="UnusedPrivateMethod"/>
+    <exclude name="UnusedImports"/>
+    <exclude name="UnusedAssignment"/>
   </rule>
-  <!-- <rule ref="category/java/security.xml" /> We need to fix EncryptionUtil -->
 </ruleset>

@@ -148,7 +148,7 @@ public final class AppPushHelper {
               + String.join(", ", sdkInput.missingParameters()));
     }
     // This call will throw an exception on error with the source input
-    AppPushHelper.validateSource(sdkInput.appPushSource());
+    validateSource(sdkInput.appPushSource());
     // We have a complete configuration.
     final String src = sdkInput.appPushSource();
     if (src.startsWith("http://") || src.startsWith("https://")) {

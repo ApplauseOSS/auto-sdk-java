@@ -94,11 +94,7 @@ public class ApplauseFrameworkPlugin implements ConcurrentEventListener {
       log.error(
           "Could not parse local results directory template, not setting local results directory to user configured value (using default)",
           e);
-      try {
-        ApplauseFramework.INSTANCE.setOutputPath(sdkConfigBean.localResultsDirectory());
-      } catch (TemplateManager.TemplateGenerationException ex) {
-        throw new RuntimeException(ex);
-      }
+      ApplauseFramework.INSTANCE.setOutputPath(sdkConfigBean.localResultsDirectory());
     }
 
     // Handling of the DriverManager setup
@@ -159,12 +155,10 @@ public class ApplauseFrameworkPlugin implements ConcurrentEventListener {
       if (!expectedDriverCaps.getApplauseOptions().isMobileNative()) {
         continue;
       }
-      if (expectedDriverCaps.getCapabilityNames().contains("app")) {
-        continue;
+      if (!expectedDriverCaps.getCapabilityNames().contains("app")) {
+        ApplauseAppPushHelper.performApplicationPushIfNecessary();
+        ApplauseAppPushHelper.autoDetectBuildIfNecessary();
       }
-      ApplauseAppPushHelper.performApplicationPushIfNecessary();
-      ApplauseAppPushHelper.autoDetectBuildIfNecessary();
-      break;
     }
   }
 }

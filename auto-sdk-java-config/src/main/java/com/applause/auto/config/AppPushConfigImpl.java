@@ -174,7 +174,7 @@ public class AppPushConfigImpl implements AppPushConfig {
 
   @Override
   public List<String> missingParameters() {
-    LinkedList<String> params = new LinkedList<>();
+    List<String> params = new LinkedList<>();
     if (StringUtils.isBlank(providerName)) {
       params.add(PARAM_APP_PUSH_PVD);
     }

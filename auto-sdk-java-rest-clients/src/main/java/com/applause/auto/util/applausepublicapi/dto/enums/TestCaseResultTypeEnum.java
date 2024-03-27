@@ -38,7 +38,7 @@ public enum TestCaseResultTypeEnum {
   }
 
   public static TestCaseResultTypeEnum fromValue(final String input) {
-    for (TestCaseResultTypeEnum b : TestCaseResultTypeEnum.values()) {
+    for (TestCaseResultTypeEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }
