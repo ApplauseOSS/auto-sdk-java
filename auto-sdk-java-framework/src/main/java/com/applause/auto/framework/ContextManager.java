@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -56,21 +57,18 @@ public final class ContextManager {
 
   @Getter private final ThreadLocal<FrameworkContext> threadContext = new ThreadLocal<>();
 
-  @Getter
-  private final ConcurrentHashMap<String, Set<String>> resultDriverMap = new ConcurrentHashMap<>();
+  @Getter private final Map<String, Set<String>> resultDriverMap = new ConcurrentHashMap<>();
+
+  @Getter private final Map<String, DriverConfigTemplate> driverMap = new ConcurrentHashMap<>();
 
   @Getter
-  private final ConcurrentHashMap<String, DriverConfigTemplate> driverMap =
-      new ConcurrentHashMap<>();
-
-  @Getter
-  private final ConcurrentHashMap<
+  private final Map<
           Class<? extends IFrameworkExtension>,
           Function<FrameworkContext, ? extends IFrameworkExtension>>
       frameworkExtensionSuppliers = new ConcurrentHashMap<>();
 
   @Getter
-  private final ConcurrentHashMap<
+  private final Map<
           Class<? extends IPageObjectExtension>,
           Function<IPageObjectContext, ? extends IPageObjectExtension>>
       pageObjectExtensionSuppliers = new ConcurrentHashMap<>();

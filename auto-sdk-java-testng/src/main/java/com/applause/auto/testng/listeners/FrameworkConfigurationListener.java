@@ -152,12 +152,11 @@ public class FrameworkConfigurationListener implements ISuiteListener {
       if (!expectedDriverCaps.getApplauseOptions().isMobileNative()) {
         continue;
       }
-      if (expectedDriverCaps.getCapabilityNames().contains("app")) {
-        continue;
+      if (!expectedDriverCaps.getCapabilityNames().contains("app")) {
+        ApplauseAppPushHelper.performApplicationPushIfNecessary();
+        ApplauseAppPushHelper.autoDetectBuildIfNecessary();
+        break;
       }
-      ApplauseAppPushHelper.performApplicationPushIfNecessary();
-      ApplauseAppPushHelper.autoDetectBuildIfNecessary();
-      break;
     }
   }
 }

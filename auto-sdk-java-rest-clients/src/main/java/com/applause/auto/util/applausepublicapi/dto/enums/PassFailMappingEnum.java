@@ -40,7 +40,7 @@ public enum PassFailMappingEnum {
   }
 
   public static PassFailMappingEnum fromValue(final String input) {
-    for (PassFailMappingEnum b : PassFailMappingEnum.values()) {
+    for (PassFailMappingEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

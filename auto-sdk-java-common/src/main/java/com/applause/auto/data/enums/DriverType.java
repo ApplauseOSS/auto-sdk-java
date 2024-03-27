@@ -58,7 +58,7 @@ public enum DriverType {
    * @return null if unknown, the enum otherwise
    */
   public static DriverType fromString(final String val) {
-    for (DriverType dt : DriverType.values()) {
+    for (DriverType dt : values()) {
       if (dt.toString().equalsIgnoreCase(val)) {
         return dt;
       }

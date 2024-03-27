@@ -18,6 +18,7 @@
 package com.applause.auto.reporting;
 
 import com.google.common.collect.ImmutableSet;
+import java.util.Set;
 
 /** Enum describing the valid states of the Applause Reporter */
 public enum ApplauseReporterState {
@@ -31,6 +32,6 @@ public enum ApplauseReporterState {
   ENDED;
 
   /** A set of configuration states that occur before the reporting has started */
-  public static final ImmutableSet<ApplauseReporterState> CONFIGURATION_STATES =
+  public static final Set<ApplauseReporterState> CONFIGURATION_STATES =
       ImmutableSet.of(CONFIGURING, CONFIGURED);
 }

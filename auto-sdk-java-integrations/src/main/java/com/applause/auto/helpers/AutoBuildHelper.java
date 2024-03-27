@@ -38,7 +38,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -143,15 +143,14 @@ public final class AutoBuildHelper {
     if (applauseConfigBean.buildId() != null && applauseConfigBean.versionId() != null) {
       // get build based on version and build ids, because they have been specified
       build =
-          AutoBuildHelper.getBuild(
-                  publicApiClient, applauseConfigBean.versionId(), applauseConfigBean.buildId())
+          getBuild(publicApiClient, applauseConfigBean.versionId(), applauseConfigBean.buildId())
               .attachments()
               .stream()
               .max(new AttachmentWithHashesDtoComparator())
               .get();
     } else {
       // try to auto-detect build - get latest build based on apiKey
-      build = AutoBuildHelper.getLatestBuild(publicApiClient);
+      build = getLatestBuild(publicApiClient);
     }
     logger.info("Detected build to use for app: {}", build.url());
     return build.url();
@@ -164,19 +163,21 @@ public final class AutoBuildHelper {
     int httpErrorCode = response.code();
     // Normally we get some text or a chunk of JSON.  We are going to pass the whole error body
     // back to the user we just need to make sure we can decode it
+    String errMessage;
     try (var errorBody = response.errorBody()) {
 
-      if (errorBody == null) {
-        throw new RuntimeException(
-            "Http " + httpErrorCode + " returned from auto-api: no error body");
+      if (errorBody != null) {
+
+        errMessage = "Http " + httpErrorCode + " returned from auto-api: " + errorBody.string();
+      } else {
+        errMessage = "Http " + httpErrorCode + " returned from auto-api: no error body";
       }
-      throw new RuntimeException(
-          "Http " + httpErrorCode + " returned from auto-api: " + errorBody.string());
     } catch (Exception e) {
       // Something went wrong
       throw new RuntimeException(
           "Http " + httpErrorCode + " returned from auto-api: unable to parse error body", e);
     }
+    throw new RuntimeException(errMessage);
   }
 
   /**
@@ -327,21 +328,12 @@ public final class AutoBuildHelper {
    * @return The best app file we can find. Null if a value can't be determined
    */
   public static String getApp(final @Nullable EnhancedCapabilities appCaps) {
-    // if using the ExtendedCapabilities, get app from there or else retrieve using our old way
-    // TestObject uses key testobject_app_id - need to figure out what to convert/lookup the
-    // appropriate key
-    String appToUse = null;
-    if (appCaps != null) {
-      // If the "app" is defined in the appCaps file, we prefer that
-      Object maybeApp = appCaps.getCapability("app");
-      // Convert to String
-      appToUse = maybeApp != null ? Objects.toString(maybeApp) : null;
-    }
-    // If still don't have an app, finally, check EnvironmentConfigurationManager
-    if (appToUse == null) {
-      appToUse = EnvironmentConfigurationManager.INSTANCE.get().app();
-    }
-    return appToUse;
+    // if using the ExtendedCapabilities, get app from there or else retrieve using the config
+    // property
+    return Optional.ofNullable(appCaps)
+        .map(caps -> caps.getCapability("app"))
+        .map(Object::toString)
+        .orElseGet(EnvironmentConfigurationManager.INSTANCE.get()::app);
   }
 
   static class TimelineComparator implements Comparator<TimelineDto>, Serializable {

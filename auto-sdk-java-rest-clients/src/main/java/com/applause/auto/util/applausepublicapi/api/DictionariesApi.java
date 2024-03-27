@@ -40,5 +40,5 @@ public interface DictionariesApi {
    */
   @GET("v2/dictionaries/{dictionaryType}")
   CompletableFuture<Response<List<DictionaryValueDto>>> getDictionaryValues(
-      @retrofit2.http.Path("dictionaryType") String dictionaryType);
+      @Path("dictionaryType") String dictionaryType);
 }

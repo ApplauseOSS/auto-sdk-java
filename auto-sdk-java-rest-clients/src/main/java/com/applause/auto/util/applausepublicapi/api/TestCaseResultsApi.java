@@ -32,7 +32,7 @@ public interface TestCaseResultsApi {
    */
   @PATCH("v2/test-case-results/{testCaseResultId}/approve")
   CompletableFuture<Response<Void>> approveTestCaseResult(
-      @retrofit2.http.Path("testCaseResultId") Long testCaseResultId);
+      @Path("testCaseResultId") Long testCaseResultId);
 
   /**
    * Returns details of a specified automation test case result.
@@ -42,7 +42,7 @@ public interface TestCaseResultsApi {
    */
   @GET("v2/test-case-results/auto/{testCaseResultId}")
   CompletableFuture<Response<AutoTestCaseResultDto>> getAutoTestCaseResultDetails(
-      @retrofit2.http.Path("testCaseResultId") Long testCaseResultId);
+      @Path("testCaseResultId") Long testCaseResultId);
 
   /**
    * Returns details of a specified manual test case result.
@@ -52,7 +52,7 @@ public interface TestCaseResultsApi {
    */
   @GET("v2/test-case-results/manual/{testCaseResultId}")
   CompletableFuture<Response<ManualTestCaseResultDto>> getManualTestCaseResultDetails(
-      @retrofit2.http.Path("testCaseResultId") Long testCaseResultId);
+      @Path("testCaseResultId") Long testCaseResultId);
 
   /**
    * Returns a list of bugs related to test case result.
@@ -66,10 +66,10 @@ public interface TestCaseResultsApi {
    */
   @GET("v2/test-case-results/{testCaseResultId}/issues")
   CompletableFuture<Response<PageBugDto>> getTestCaseResultIssues(
-      @retrofit2.http.Path("testCaseResultId") Long testCaseResultId,
-      @retrofit2.http.Query("page") Long page,
-      @retrofit2.http.Query("size") Long size,
-      @retrofit2.http.Query("sort") String sort);
+      @Path("testCaseResultId") Long testCaseResultId,
+      @Query("page") Long page,
+      @Query("size") Long size,
+      @Query("sort") String sort);
 
   /**
    * Returns a paged list of test case results. At least one of filters must be applied by:
@@ -90,13 +90,13 @@ public interface TestCaseResultsApi {
    */
   @GET("v2/test-case-results")
   CompletableFuture<Response<PageBaseTestCaseResultDto>> getTestCaseResults(
-      @retrofit2.http.Query("testCycleId") Long testCycleId,
-      @retrofit2.http.Query("testCaseId") Long testCaseId,
-      @retrofit2.http.Query("statuses") List<Long> statuses,
-      @retrofit2.http.Query("approvalStatuses") List<Long> approvalStatuses,
-      @retrofit2.http.Query("page") Long page,
-      @retrofit2.http.Query("size") Long size,
-      @retrofit2.http.Query("sort") String sort);
+      @Query("testCycleId") Long testCycleId,
+      @Query("testCaseId") Long testCaseId,
+      @Query("statuses") List<Long> statuses,
+      @Query("approvalStatuses") List<Long> approvalStatuses,
+      @Query("page") Long page,
+      @Query("size") Long size,
+      @Query("sort") String sort);
 
   /**
    * Returns basic info about a specified test case result
@@ -106,5 +106,5 @@ public interface TestCaseResultsApi {
    */
   @GET("v2/test-case-results/{testCaseResultId}")
   CompletableFuture<Response<BaseTestCaseResultDto>> getTestCaseResult(
-      @retrofit2.http.Path("testCaseResultId") Long testCaseResultId);
+      @Path("testCaseResultId") Long testCaseResultId);
 }

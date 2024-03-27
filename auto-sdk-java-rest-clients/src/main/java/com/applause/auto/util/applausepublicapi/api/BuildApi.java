@@ -39,14 +39,14 @@ public interface BuildApi {
    * @param releaseUrls (optional)
    * @return ProductVersionDetailsDto
    */
-  @retrofit2.http.Multipart
+  @Multipart
   @POST("v2/builds")
   CompletableFuture<Response<ProductVersionDetailsDto>> createBuild(
-      @retrofit2.http.Query("name") String name,
-      @retrofit2.http.Query("productId") Long productId,
-      @retrofit2.http.Part("file\"; filename=\"file") RequestBody file,
-      @retrofit2.http.Query("description") String description,
-      @retrofit2.http.Query("releaseUrls") List<String> releaseUrls);
+      @Query("name") String name,
+      @Query("productId") Long productId,
+      @Part("file\"; filename=\"file") RequestBody file,
+      @Query("description") String description,
+      @Query("releaseUrls") List<String> releaseUrls);
 
   /**
    * Returns details for a build specified by id
@@ -56,7 +56,7 @@ public interface BuildApi {
    */
   @GET("v2/builds/{buildId}")
   CompletableFuture<Response<ProductVersionDetailsDto>> getBuildDetails(
-      @retrofit2.http.Path("buildId") Long buildId);
+      @Path("buildId") Long buildId);
 
   /**
    * Returns a list of builds for specified criteria
@@ -70,10 +70,10 @@ public interface BuildApi {
    */
   @GET("v2/builds")
   CompletableFuture<Response<PageProductVersionDetailsDto>> getBuilds(
-      @retrofit2.http.Query("productId") Long productId,
-      @retrofit2.http.Query("page") Long page,
-      @retrofit2.http.Query("size") Long size,
-      @retrofit2.http.Query("sort") String sort);
+      @Query("productId") Long productId,
+      @Query("page") Long page,
+      @Query("size") Long size,
+      @Query("sort") String sort);
 
   /**
    * Updates existing build
@@ -85,8 +85,7 @@ public interface BuildApi {
   @Headers({"Content-Type:application/json"})
   @PUT("v2/builds/{buildId}")
   CompletableFuture<Response<ProductVersionDto>> updateBuild(
-      @retrofit2.http.Body ProductVersionUpdateDto body,
-      @retrofit2.http.Path("buildId") Long buildId);
+      @Body ProductVersionUpdateDto body, @Path("buildId") Long buildId);
 
   /**
    * Uploads a new application-type attachment for a build by id
@@ -95,11 +94,10 @@ public interface BuildApi {
    * @param file (optional)
    * @return AttachmentWithHashesDto
    */
-  @retrofit2.http.Multipart
+  @Multipart
   @POST("v2/builds/{buildId}/attachments")
   CompletableFuture<Response<AttachmentWithHashesDto>> createAttachment(
-      @retrofit2.http.Path("buildId") Long buildId,
-      @retrofit2.http.Part("file\"; filename=\"file") RequestBody file);
+      @Path("buildId") Long buildId, @Part("file\"; filename=\"file") RequestBody file);
 
   /**
    * Returns information about a build attachment specified by id
@@ -110,8 +108,7 @@ public interface BuildApi {
    */
   @GET("v2/builds/{buildId}/attachments/{attachmentId}")
   CompletableFuture<Response<AttachmentWithHashesDto>> getAttachment(
-      @retrofit2.http.Path("buildId") Long buildId,
-      @retrofit2.http.Path("attachmentId") Long attachmentId);
+      @Path("buildId") Long buildId, @Path("attachmentId") Long attachmentId);
 
   /**
    * Returns application-type attachments for a given build ID
@@ -121,7 +118,7 @@ public interface BuildApi {
    */
   @GET("v2/builds/{buildId}/attachments")
   CompletableFuture<Response<List<AttachmentWithHashesDto>>> getBuildAttachments(
-      @retrofit2.http.Path("buildId") Long buildId);
+      @Path("buildId") Long buildId);
 
   /**
    * Deletes the attachment with specified id
@@ -132,6 +129,5 @@ public interface BuildApi {
    */
   @DELETE("v2/builds/{buildId}/attachments/{attachmentId}")
   CompletableFuture<Response<Void>> removeAttachment(
-      @retrofit2.http.Path("buildId") Long buildId,
-      @retrofit2.http.Path("attachmentId") Long attachmentId);
+      @Path("buildId") Long buildId, @Path("attachmentId") Long attachmentId);
 }

@@ -40,7 +40,7 @@ public enum TestCaseStepSubmoduleTypeEnum {
   }
 
   public static TestCaseStepSubmoduleTypeEnum fromValue(final String input) {
-    for (TestCaseStepSubmoduleTypeEnum b : TestCaseStepSubmoduleTypeEnum.values()) {
+    for (TestCaseStepSubmoduleTypeEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

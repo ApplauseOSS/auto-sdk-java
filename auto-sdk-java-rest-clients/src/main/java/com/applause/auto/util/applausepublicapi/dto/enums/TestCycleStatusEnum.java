@@ -50,7 +50,7 @@ public enum TestCycleStatusEnum {
   }
 
   public static TestCycleStatusEnum fromValue(final String input) {
-    for (TestCycleStatusEnum b : TestCycleStatusEnum.values()) {
+    for (TestCycleStatusEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

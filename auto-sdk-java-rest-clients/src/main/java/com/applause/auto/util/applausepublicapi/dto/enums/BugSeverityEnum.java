@@ -42,7 +42,7 @@ public enum BugSeverityEnum {
   }
 
   public static BugSeverityEnum fromValue(final String input) {
-    for (BugSeverityEnum b : BugSeverityEnum.values()) {
+    for (BugSeverityEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

@@ -50,10 +50,7 @@ public class Checkbox extends BaseElement {
     if (Platform.hasNativeFallback(this.context.getPlatform())) {
       if (this.context.getDriver() instanceof IOSDriver) {
         final var elementAttributeValue = this.underlying.getAttribute("value");
-        if (elementAttributeValue != null) {
-          return "1".equals(elementAttributeValue);
-        }
-        return false;
+        return "1".equals(elementAttributeValue);
       }
       // assume android style
       return Boolean.parseBoolean(this.underlying.getAttribute("checked"));

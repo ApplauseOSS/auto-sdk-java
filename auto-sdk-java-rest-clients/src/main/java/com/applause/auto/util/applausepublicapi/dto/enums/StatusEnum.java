@@ -27,7 +27,7 @@ public enum StatusEnum {
   }
 
   public static StatusEnum fromValue(final String input) {
-    for (StatusEnum b : StatusEnum.values()) {
+    for (StatusEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

@@ -49,7 +49,7 @@ public final class LocatorHelper {
    *     this occurs, it's not user error; something in the factory is broken
    */
   public static @NonNull Locator getLocator(final Field field, final Platform platform) {
-    if (!LocatorHelper.hasLocator(field)) {
+    if (!hasLocator(field)) {
       throw new IllegalArgumentException(
           String.format(
               "Attempted to retrieve the Locate annotation for a field "

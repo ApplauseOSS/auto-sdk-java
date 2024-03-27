@@ -109,7 +109,6 @@ public class PlatformTest {
   @DataProvider(name = "platformFallbackIsNative")
   public static Object[][] validatePlatformFallbackNative() {
     return new Object[][] {
-      {null, false},
       {Platform.DEFAULT, false},
       {Platform.MOBILE, true},
       {Platform.MOBILE_IOS, true},

@@ -34,7 +34,7 @@ public interface TestSuitesApi {
   @Headers({"Content-Type:application/json"})
   @POST("v2/test-suites/{testSuiteId}/test-cases")
   CompletableFuture<Response<Void>> addTestCasesToTestSuite(
-      @retrofit2.http.Body List<Long> body, @retrofit2.http.Path("testSuiteId") Long testSuiteId);
+      @Body List<Long> body, @Path("testSuiteId") Long testSuiteId);
 
   /**
    * Creates a new test suite
@@ -44,8 +44,7 @@ public interface TestSuitesApi {
    */
   @Headers({"Content-Type:application/json"})
   @POST("v2/test-suites")
-  CompletableFuture<Response<TestSuiteDto>> createTestSuite(
-      @retrofit2.http.Body TestSuiteCreateDto body);
+  CompletableFuture<Response<TestSuiteDto>> createTestSuite(@Body TestSuiteCreateDto body);
 
   /**
    * Deletes a test suite
@@ -54,8 +53,7 @@ public interface TestSuitesApi {
    * @return Void
    */
   @DELETE("v2/test-suites/{testSuiteId}")
-  CompletableFuture<Response<Void>> deleteTestSuite(
-      @retrofit2.http.Path("testSuiteId") Long testSuiteId);
+  CompletableFuture<Response<Void>> deleteTestSuite(@Path("testSuiteId") Long testSuiteId);
 
   /**
    * Generate csv from test case results belonging to test suite
@@ -69,9 +67,9 @@ public interface TestSuitesApi {
    */
   @POST("v2/test-suites/{testSuiteId}/test-case-results/export")
   CompletableFuture<Response<byte[]>> exportTestCaseResultsToCsv(
-      @retrofit2.http.Path("testSuiteId") Long testSuiteId,
-      @retrofit2.http.Query("showColumnSteps") Boolean showColumnSteps,
-      @retrofit2.http.Query("separateMultiSelect") Boolean separateMultiSelect);
+      @Path("testSuiteId") Long testSuiteId,
+      @Query("showColumnSteps") Boolean showColumnSteps,
+      @Query("separateMultiSelect") Boolean separateMultiSelect);
 
   /**
    * Returns test cases for a given test suite
@@ -81,7 +79,7 @@ public interface TestSuitesApi {
    */
   @GET("v2/test-suites/{testSuiteId}/test-cases")
   CompletableFuture<Response<List<TestSuiteTestCaseDto>>> getTestCasesByTestSuiteId(
-      @retrofit2.http.Path("testSuiteId") Long testSuiteId);
+      @Path("testSuiteId") Long testSuiteId);
 
   /**
    * Returns test suite details by id
@@ -91,7 +89,7 @@ public interface TestSuitesApi {
    */
   @GET("v2/test-suites/{testSuiteId}")
   CompletableFuture<Response<TestSuiteDetailsDto>> getTestSuiteDetails(
-      @retrofit2.http.Path("testSuiteId") Long testSuiteId);
+      @Path("testSuiteId") Long testSuiteId);
 
   /**
    * Returns a paged list of test suites for the given product. Default sort is by createDate
@@ -107,10 +105,10 @@ public interface TestSuitesApi {
    */
   @GET("v2/test-suites")
   CompletableFuture<Response<PageTestSuiteDto>> getTestSuites(
-      @retrofit2.http.Query("productId") Long productId,
-      @retrofit2.http.Query("page") Long page,
-      @retrofit2.http.Query("size") Long size,
-      @retrofit2.http.Query("sort") String sort);
+      @Query("productId") Long productId,
+      @Query("page") Long page,
+      @Query("size") Long size,
+      @Query("sort") String sort);
 
   /**
    * Removes a test case from a test suite
@@ -121,6 +119,5 @@ public interface TestSuitesApi {
    */
   @DELETE("v2/test-suites/{testSuiteId}/test-cases/{testCaseId}")
   CompletableFuture<Response<Void>> removeTestCaseFromTestSuite(
-      @retrofit2.http.Path("testSuiteId") Long testSuiteId,
-      @retrofit2.http.Path("testCaseId") Long testCaseId);
+      @Path("testSuiteId") Long testSuiteId, @Path("testCaseId") Long testCaseId);
 }

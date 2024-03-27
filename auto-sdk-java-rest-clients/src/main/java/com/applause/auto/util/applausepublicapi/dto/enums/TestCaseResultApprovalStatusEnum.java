@@ -46,7 +46,7 @@ public enum TestCaseResultApprovalStatusEnum {
   }
 
   public static TestCaseResultApprovalStatusEnum fromValue(final String input) {
-    for (TestCaseResultApprovalStatusEnum b : TestCaseResultApprovalStatusEnum.values()) {
+    for (TestCaseResultApprovalStatusEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

@@ -44,7 +44,7 @@ public enum FrequencyEnum {
   }
 
   public static FrequencyEnum fromValue(final String input) {
-    for (FrequencyEnum b : FrequencyEnum.values()) {
+    for (FrequencyEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

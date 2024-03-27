@@ -75,6 +75,7 @@
     <org.mockito-inline.version>5.2.0</org.mockito-inline.version>
 
     <!-- COMPILE ONLY DEPENDENCIES -->
+    <pmdVersion>7.0.0</pmdVersion>
     <com.github.spotbugs.annotations.version>4.7.3</com.github.spotbugs.annotations.version>
     <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
   </properties>
@@ -452,6 +453,61 @@
         <configuration>
           <tag>${project.artifactId}-${project.version}</tag>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.21.2</version>
+        <configuration>
+          <failOnViolation>true</failOnViolation>
+          <excludeRoots>
+            <excludeRoot>target/generated-sources</excludeRoot>
+          </excludeRoots>
+          <printFailingErrors>true</printFailingErrors>
+          <rulesets>
+            <ruleset>file://${maven.multiModuleProjectDirectory}/build-tools/pmdconfig.xml</ruleset>
+          </rulesets>
+          <analysisCache>true</analysisCache>
+          <!-- enable incremental analysis -->
+          <analysisCacheLocation>${project.build.directory}/pmd/pmd.cache</analysisCacheLocation>
+        </configuration>
+        <dependencies>
+          <!-- Adds support for PMD 7 - must be first in the list-->
+          <dependency>
+            <groupId>net.sourceforge.pmd</groupId>
+            <artifactId>pmd-compat6</artifactId>
+            <version>${pmdVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>net.sourceforge.pmd</groupId>
+            <artifactId>pmd-core</artifactId>
+            <version>${pmdVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>net.sourceforge.pmd</groupId>
+            <artifactId>pmd-java</artifactId>
+            <version>${pmdVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>net.sourceforge.pmd</groupId>
+            <artifactId>pmd-javascript</artifactId>
+            <version>${pmdVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>net.sourceforge.pmd</groupId>
+            <artifactId>pmd-jsp</artifactId>
+            <version>${pmdVersion}</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <!--run after everything is compiled, but before tests run -->
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <phase>process-test-classes</phase>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

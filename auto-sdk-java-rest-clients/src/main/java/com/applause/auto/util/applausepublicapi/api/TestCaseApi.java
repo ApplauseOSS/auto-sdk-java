@@ -31,8 +31,7 @@ public interface TestCaseApi {
    * @return Void
    */
   @POST("v2/test-cases/{testCaseId}/archive")
-  CompletableFuture<Response<Void>> archiveTestCase(
-      @retrofit2.http.Path("testCaseId") Long testCaseId);
+  CompletableFuture<Response<Void>> archiveTestCase(@Path("testCaseId") Long testCaseId);
 
   /**
    * Clones a given test case
@@ -41,8 +40,7 @@ public interface TestCaseApi {
    * @return Long
    */
   @POST("v2/test-cases/{testCaseId}/clone")
-  CompletableFuture<Response<Long>> cloneTestCase(
-      @retrofit2.http.Path("testCaseId") Long testCaseId);
+  CompletableFuture<Response<Long>> cloneTestCase(@Path("testCaseId") Long testCaseId);
 
   /**
    * Creates a new test case
@@ -52,7 +50,7 @@ public interface TestCaseApi {
    */
   @Headers({"Content-Type:application/json"})
   @POST("v2/test-cases")
-  CompletableFuture<Response<Long>> createTestCase(@retrofit2.http.Body TestCaseCreateDto body);
+  CompletableFuture<Response<Long>> createTestCase(@Body TestCaseCreateDto body);
 
   /**
    * Create test case step for given test case id
@@ -64,8 +62,7 @@ public interface TestCaseApi {
   @Headers({"Content-Type:application/json"})
   @POST("v2/test-cases/{testCaseId}/steps")
   CompletableFuture<Response<TestCaseStepDto>> createTestCaseStep(
-      @retrofit2.http.Body TestCaseStepCreateDto body,
-      @retrofit2.http.Path("testCaseId") Long testCaseId);
+      @Body TestCaseStepCreateDto body, @Path("testCaseId") Long testCaseId);
 
   /**
    * Discards test case with specified id
@@ -74,8 +71,7 @@ public interface TestCaseApi {
    * @return Void
    */
   @POST("v2/test-cases/{testCaseId}/discard")
-  CompletableFuture<Response<Void>> discardTestCase(
-      @retrofit2.http.Path("testCaseId") Long testCaseId);
+  CompletableFuture<Response<Void>> discardTestCase(@Path("testCaseId") Long testCaseId);
 
   /**
    * Returns details of a test case with given ID.
@@ -85,7 +81,7 @@ public interface TestCaseApi {
    */
   @GET("v2/test-cases/{testCaseId}")
   CompletableFuture<Response<TestCaseDetailsDto>> getTestCaseDetails(
-      @retrofit2.http.Path("testCaseId") Long testCaseId);
+      @Path("testCaseId") Long testCaseId);
 
   /**
    * Returns test case result history with given test case Id.
@@ -95,7 +91,7 @@ public interface TestCaseApi {
    */
   @GET("v2/test-cases/{testCaseId}/history")
   CompletableFuture<Response<PageTestCaseResultHistoryDto>> getTestCaseResultHistory(
-      @retrofit2.http.Path("testCaseId") Long testCaseId);
+      @Path("testCaseId") Long testCaseId);
 
   /**
    * Returns a paged list of test cases for the given product. Default sort is by createDate
@@ -114,12 +110,12 @@ public interface TestCaseApi {
    */
   @GET("v2/test-cases")
   CompletableFuture<Response<PageTestCaseDto>> getTestCases(
-      @retrofit2.http.Query("productId") Long productId,
-      @retrofit2.http.Query("statusIds") List<Long> statusIds,
-      @retrofit2.http.Query("excludeBfvTestCases") Boolean excludeBfvTestCases,
-      @retrofit2.http.Query("page") Long page,
-      @retrofit2.http.Query("size") Long size,
-      @retrofit2.http.Query("sort") String sort);
+      @Query("productId") Long productId,
+      @Query("statusIds") List<Long> statusIds,
+      @Query("excludeBfvTestCases") Boolean excludeBfvTestCases,
+      @Query("page") Long page,
+      @Query("size") Long size,
+      @Query("sort") String sort);
 
   /**
    * Publishes test case with specified id
@@ -128,8 +124,7 @@ public interface TestCaseApi {
    * @return Void
    */
   @POST("v2/test-cases/{testCaseId}/publish")
-  CompletableFuture<Response<Void>> publishTestCase(
-      @retrofit2.http.Path("testCaseId") Long testCaseId);
+  CompletableFuture<Response<Void>> publishTestCase(@Path("testCaseId") Long testCaseId);
 
   /**
    * Deletes test case step with specified id
@@ -140,8 +135,7 @@ public interface TestCaseApi {
    */
   @DELETE("v2/test-cases/{testCaseId}/steps/{stepId}")
   CompletableFuture<Response<Void>> removeTestCaseStep(
-      @retrofit2.http.Path("testCaseId") Long testCaseId,
-      @retrofit2.http.Path("stepId") Long stepId);
+      @Path("testCaseId") Long testCaseId, @Path("stepId") Long stepId);
 
   /**
    * Updates elements of a test case with given ID.
@@ -153,8 +147,7 @@ public interface TestCaseApi {
   @Headers({"Content-Type:application/json"})
   @PATCH("v2/test-cases/{testCaseId}")
   CompletableFuture<Response<Void>> updateTestCase(
-      @retrofit2.http.Body TestCaseUpdateDto body,
-      @retrofit2.http.Path("testCaseId") Long testCaseId);
+      @Body TestCaseUpdateDto body, @Path("testCaseId") Long testCaseId);
 
   /**
    * Update test case test suites given list of ids
@@ -166,5 +159,5 @@ public interface TestCaseApi {
   @Headers({"Content-Type:application/json"})
   @PUT("v2/test-cases/{testCaseId}/test-suites")
   CompletableFuture<Response<List<TestSuiteTestCaseDto>>> updateTestCaseTestSuites(
-      @retrofit2.http.Body List<Long> body, @retrofit2.http.Path("testCaseId") Long testCaseId);
+      @Body List<Long> body, @Path("testCaseId") Long testCaseId);
 }

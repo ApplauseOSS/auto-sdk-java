@@ -19,6 +19,7 @@ package com.applause.auto.data.enums;
 
 import java.util.Locale;
 import lombok.Getter;
+import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,46 +35,48 @@ import org.apache.logging.log4j.Logger;
  */
 @Getter
 public enum Platform {
-  DEFAULT("Default"),
-  MOBILE("Mobile"),
-  MOBILE_ANDROID("MobileAndroid"),
-  MOBILE_ANDROID_PHONE("MobileAndroidPhone"),
-  MOBILE_ANDROID_TABLET("MobileAndroidTablet"),
-  MOBILE_ANDROID_SMALL_TABLET("MobileAndroidSmallTablet"),
-  MOBILE_IOS("MobileIOS"),
-  MOBILE_IOS_PHONE("MobileIOSPhone"),
-  MOBILE_IOS_TABLET("MobileIOSTablet"),
-  MOBILE_IOS_SMALL_TABLET("MobileIOSSmallTablet"),
-  WEB("Web"),
-  WEB_DESKTOP("WebDesktop"),
-  WEB_DESKTOP_CHROME("WebDesktopChrome"),
-  WEB_DESKTOP_EDGE("WebDesktopEdge"),
-  WEB_DESKTOP_FIREFOX("WebDesktopFirefox"),
-  WEB_DESKTOP_IE("WebDesktopIE"),
-  WEB_DESKTOP_SAFARI("WebDesktopSafari"),
-  WEB_MOBILE("WebMobile"),
-  WEB_MOBILE_PHONE("WebMobilePhone"),
-  WEB_ANDROID_PHONE("WebAndroidPhone"),
-  WEB_IOS_PHONE("WebIOSPhone"),
-  WEB_MOBILE_TABLET("WebMobileTablet"),
-  WEB_ANDROID_TABLET("WebAndroidTablet"),
-  WEB_IOS_TABLET("WebIOSTablet"),
-  WEB_MOBILE_SMALL_TABLET("WebMobileSmallTablet"),
-  WEB_ANDROID_SMALL_TABLET("WebAndroidSmallTablet"),
-  WEB_IOS_SMALL_TABLET("WebIOSSmallTablet"),
-  OTT("OTT"),
-  OTT_FIRE_TV("OttFireTv"),
-  OTT_FIRE_TV_4K("OttFireTv4k"),
-  OTT_APPLE_TV("OttAppleTv"),
-  OTT_APPLE_TV_4K("OttAppleTv4k"),
-  OTT_CHROMECAST("OttChromecast"),
-  OTT_ANDROID_TV("OttAndroidTv");
+  DEFAULT("Default", null),
+  MOBILE("Mobile", DEFAULT),
+  MOBILE_ANDROID("MobileAndroid", MOBILE),
+  MOBILE_ANDROID_PHONE("MobileAndroidPhone", MOBILE_ANDROID),
+  MOBILE_ANDROID_TABLET("MobileAndroidTablet", MOBILE_ANDROID),
+  MOBILE_ANDROID_SMALL_TABLET("MobileAndroidSmallTablet", MOBILE_ANDROID),
+  MOBILE_IOS("MobileIOS", MOBILE),
+  MOBILE_IOS_PHONE("MobileIOSPhone", MOBILE_IOS),
+  MOBILE_IOS_TABLET("MobileIOSTablet", MOBILE_IOS),
+  MOBILE_IOS_SMALL_TABLET("MobileIOSSmallTablet", MOBILE_IOS),
+  WEB("Web", DEFAULT),
+  WEB_DESKTOP("WebDesktop", WEB),
+  WEB_DESKTOP_CHROME("WebDesktopChrome", WEB_DESKTOP),
+  WEB_DESKTOP_EDGE("WebDesktopEdge", WEB_DESKTOP),
+  WEB_DESKTOP_FIREFOX("WebDesktopFirefox", WEB_DESKTOP),
+  WEB_DESKTOP_IE("WebDesktopIE", WEB_DESKTOP),
+  WEB_DESKTOP_SAFARI("WebDesktopSafari", WEB_DESKTOP),
+  WEB_MOBILE("WebMobile", WEB),
+  WEB_MOBILE_PHONE("WebMobilePhone", WEB_MOBILE),
+  WEB_ANDROID_PHONE("WebAndroidPhone", WEB_MOBILE_PHONE),
+  WEB_IOS_PHONE("WebIOSPhone", WEB_MOBILE_PHONE),
+  WEB_MOBILE_TABLET("WebMobileTablet", WEB_MOBILE),
+  WEB_ANDROID_TABLET("WebAndroidTablet", WEB_MOBILE_TABLET),
+  WEB_IOS_TABLET("WebIOSTablet", WEB_MOBILE_TABLET),
+  WEB_MOBILE_SMALL_TABLET("WebMobileSmallTablet", WEB_MOBILE),
+  WEB_ANDROID_SMALL_TABLET("WebAndroidSmallTablet", WEB_MOBILE_SMALL_TABLET),
+  WEB_IOS_SMALL_TABLET("WebIOSSmallTablet", WEB_MOBILE_SMALL_TABLET),
+  OTT("OTT", DEFAULT),
+  OTT_FIRE_TV("OttFireTv", OTT),
+  OTT_FIRE_TV_4K("OttFireTv4k", OTT_FIRE_TV),
+  OTT_APPLE_TV("OttAppleTv", OTT),
+  OTT_APPLE_TV_4K("OttAppleTv4k", OTT_APPLE_TV),
+  OTT_CHROMECAST("OttChromecast", OTT),
+  OTT_ANDROID_TV("OttAndroidTv", OTT);
 
   private static final Logger logger = LogManager.getLogger(Platform.class);
   private final String friendlyName;
+  private final Platform fallback;
 
-  Platform(final String friendlyName) {
+  Platform(final String friendlyName, final Platform fallback) {
     this.friendlyName = friendlyName;
+    this.fallback = fallback;
   }
 
   /**
@@ -102,34 +105,13 @@ public enum Platform {
   }
 
   /**
-   * Gets the fallback configuration for the current Platform.
+   * Check if Platform hierarchy chain is MobileNative, or ever falls back to MobileNative.
    *
-   * @return the fallback Platform for the current Platform
+   * @param p the current Platform
+   * @return if chain falls back to MobileNative (Platform.MOBILE)
    */
-  @SuppressWarnings("PMD.CyclomaticComplexity")
-  public Platform getFallback() {
-    return switch (this) {
-      case MOBILE, WEB, OTT -> DEFAULT;
-      case MOBILE_ANDROID, MOBILE_IOS -> MOBILE;
-      case MOBILE_ANDROID_PHONE, MOBILE_ANDROID_TABLET, MOBILE_ANDROID_SMALL_TABLET ->
-          MOBILE_ANDROID;
-      case MOBILE_IOS_PHONE, MOBILE_IOS_TABLET, MOBILE_IOS_SMALL_TABLET -> MOBILE_IOS;
-      case WEB_DESKTOP, WEB_MOBILE -> WEB;
-      case WEB_DESKTOP_CHROME,
-              WEB_DESKTOP_EDGE,
-              WEB_DESKTOP_FIREFOX,
-              WEB_DESKTOP_IE,
-              WEB_DESKTOP_SAFARI ->
-          WEB_DESKTOP;
-      case WEB_MOBILE_PHONE, WEB_MOBILE_TABLET, WEB_MOBILE_SMALL_TABLET -> WEB_MOBILE;
-      case WEB_ANDROID_PHONE, WEB_IOS_PHONE -> WEB_MOBILE_PHONE;
-      case WEB_ANDROID_TABLET, WEB_IOS_TABLET -> WEB_MOBILE_TABLET;
-      case WEB_ANDROID_SMALL_TABLET, WEB_IOS_SMALL_TABLET -> WEB_MOBILE_SMALL_TABLET;
-      case OTT_FIRE_TV, OTT_APPLE_TV, OTT_CHROMECAST, OTT_ANDROID_TV -> OTT;
-      case OTT_APPLE_TV_4K -> OTT_APPLE_TV;
-      case OTT_FIRE_TV_4K -> OTT_FIRE_TV;
-      default -> null;
-    };
+  public static boolean hasNativeFallback(final @NonNull Platform p) {
+    return p.hasFallback(MOBILE);
   }
 
   /**
@@ -138,18 +120,14 @@ public enum Platform {
    * @param p the current Platform
    * @return if chain falls back to MobileNative (Platform.MOBILE)
    */
-  @SuppressWarnings("PMD.AvoidBranchingStatementAsLastInLoop")
-  public static boolean hasNativeFallback(final Platform p) {
-    if (p == null || p.getFallback() == null) {
-      return false;
-    }
-    if (p == Platform.MOBILE) {
+  @SuppressWarnings({"PMD.AvoidBranchingStatementAsLastInLoop", "PMD.SimplifyBooleanReturns"})
+  public boolean hasFallback(final @NonNull Platform p) {
+    // If the platforms match, then this falls back to the provided platform
+    if (this == p) {
       return true;
     }
-    if (p.getFallback() == Platform.MOBILE) {
-      return true;
-    }
-    return hasNativeFallback(p.getFallback());
+    // If we have a fallback, check if it falls back to the requested platform
+    return this.fallback != null && this.fallback.hasFallback(p);
   }
 
   @Override

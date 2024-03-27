@@ -38,7 +38,7 @@ public enum TestingMethodologyEnum {
   }
 
   public static TestingMethodologyEnum fromValue(final String input) {
-    for (TestingMethodologyEnum b : TestingMethodologyEnum.values()) {
+    for (TestingMethodologyEnum b : values()) {
       if (b.value.equals(input)) {
         return b;
       }

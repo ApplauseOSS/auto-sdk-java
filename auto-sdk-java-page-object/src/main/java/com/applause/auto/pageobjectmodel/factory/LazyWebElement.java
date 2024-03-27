@@ -127,7 +127,7 @@ public class LazyWebElement implements WebElement, UIElement {
     this.underlying = underlying;
     this.parent = parent;
     this.locator = locator;
-    this.formatArgs = formatArgs == null ? null : formatArgs.clone();
+    this.formatArgs = formatArgs == null ? new Object[] {} : formatArgs.clone();
     this.context = context;
   }
 
