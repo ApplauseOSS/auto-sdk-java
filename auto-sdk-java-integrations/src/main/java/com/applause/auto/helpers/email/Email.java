@@ -40,7 +40,7 @@ public class Email {
   private final String body;
   private final List<Attachment> attachments = new ArrayList<>();
 
-  Email(final Message msg) {
+  public Email(final Message msg) {
     this.rawMessage = msg;
     this.body = parseContent();
   }
