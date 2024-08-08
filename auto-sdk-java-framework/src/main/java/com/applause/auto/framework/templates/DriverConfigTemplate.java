@@ -41,7 +41,7 @@ public final class DriverConfigTemplate {
    */
   public DriverConfigTemplate(final Template template) {
     this.template = template;
-    this.reProcess();
+    this.refresh();
   }
 
   /**
@@ -49,17 +49,19 @@ public final class DriverConfigTemplate {
    *
    * @return The refreshed template
    */
-  public DriverConfigTemplate reProcess() {
-    final String out;
-    this.isValid = true;
-    try {
-      out = TemplateManager.process(this.template, ResultPropertyMap.getProperties());
-      this.caps = EnhancedCapabilities.fromJsonString(out);
-    } catch (TemplateProcessException | BadJsonFormatException te) {
-      this.isValid = false;
-      this.validationError = te.getMessage();
+  public DriverConfigTemplate refresh() {
+    synchronized (this) {
+      final String out;
+      this.isValid = true;
+      try {
+        out = TemplateManager.process(this.template, ResultPropertyMap.getProperties());
+        this.caps = EnhancedCapabilities.fromJsonString(out);
+      } catch (TemplateProcessException | BadJsonFormatException te) {
+        this.isValid = false;
+        this.validationError = te.getMessage();
+      }
+      return this;
     }
-    return this;
   }
 
   /**
@@ -68,10 +70,25 @@ public final class DriverConfigTemplate {
    * @return The current capabilities object
    * @throws BadJsonFormatException If the last capabilities resulted in an error
    */
-  public EnhancedCapabilities getCurrentCapabilities() throws BadJsonFormatException {
-    if (!this.isValid) {
-      throw new BadJsonFormatException(validationError);
+  public EnhancedCapabilities getLastEvaluatedCapabilities() throws BadJsonFormatException {
+    synchronized (this) {
+      if (!this.isValid) {
+        throw new BadJsonFormatException(validationError);
+      }
+      return this.caps;
     }
-    return this.caps;
+  }
+
+  /**
+   * Evaluates the template and returns the capabilities
+   *
+   * @return The evaluated capabilities
+   * @throws BadJsonFormatException If the template could not be evaluated
+   */
+  public EnhancedCapabilities evaluate() throws BadJsonFormatException {
+    synchronized (this) {
+      refresh();
+      return getLastEvaluatedCapabilities();
+    }
   }
 }

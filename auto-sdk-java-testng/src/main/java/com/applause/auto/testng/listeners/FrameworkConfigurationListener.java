@@ -147,8 +147,7 @@ public class FrameworkConfigurationListener implements ISuiteListener {
     // For every driver that we are aware of at this time, check to see if we might need an app for
     // any of them
     for (var driver : expectedDrivers) {
-      final var expectedDriverCaps =
-          ContextManager.INSTANCE.lookupDriver(driver).getCurrentCapabilities();
+      final var expectedDriverCaps = ContextManager.INSTANCE.lookupDriver(driver).evaluate();
       if (!expectedDriverCaps.getApplauseOptions().isMobileNative()) {
         continue;
       }

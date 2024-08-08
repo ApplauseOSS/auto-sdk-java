@@ -77,7 +77,7 @@ public class DriverBuilder {
    */
   public static DriverBuilder fromTemplate(final @NonNull DriverConfigTemplate template)
       throws BadJsonFormatException {
-    return new DriverBuilder(template.reProcess().getCurrentCapabilities());
+    return new DriverBuilder(template.evaluate());
   }
 
   /**
