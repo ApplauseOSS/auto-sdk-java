@@ -71,7 +71,7 @@
     <commons-collections.version>4.4</commons-collections.version>
 
     <!-- Testing dependencies-->
-    <org.mockito.version>5.9.0</org.mockito.version>
+    <org.mockito.version>5.13.0</org.mockito.version>
     <org.mockito-inline.version>5.2.0</org.mockito-inline.version>
 
     <!-- COMPILE ONLY DEPENDENCIES -->
