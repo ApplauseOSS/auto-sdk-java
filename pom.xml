@@ -47,7 +47,7 @@
   </distributionManagement>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <org.testng.version>7.9.0</org.testng.version>
+    <org.testng.version>7.10.2</org.testng.version>
     <cucumber-java.version>7.19.0</cucumber-java.version>
     <io.appium.version>9.1.0</io.appium.version>
     <!-- MUST update with Appium above to make sure the versions are compatible-->
