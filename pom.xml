@@ -47,7 +47,7 @@
   </distributionManagement>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <org.testng.version>7.9.0</org.testng.version>
+    <org.testng.version>7.10.2</org.testng.version>
     <cucumber-java.version>7.19.0</cucumber-java.version>
     <io.appium.version>9.1.0</io.appium.version>
     <!-- MUST update with Appium above to make sure the versions are compatible-->
@@ -56,7 +56,7 @@
     <commons.io.version>2.15.1</commons.io.version>
     <org.apache.commons.version>3.17.0</org.apache.commons.version>
     <net.bytebuddy.version>1.15.3</net.bytebuddy.version>
-    <com.squareup.retrofit2.version>2.9.0</com.squareup.retrofit2.version>
+    <com.squareup.retrofit2.version>2.11.0</com.squareup.retrofit2.version>
     <!-- OkHTTP must be version compatible with Retrofit!-->
     <com.squareup.okhttp.version>4.12.0</com.squareup.okhttp.version>
     <com.google.code.gson.version>2.10.1</com.google.code.gson.version>
@@ -524,7 +524,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.3.0</version>
+        <version>1.6.0</version>
         <configuration>
           <updatePomFile>true</updatePomFile>
           <flattenMode>resolveCiFriendliesOnly</flattenMode>
