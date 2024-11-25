@@ -17,6 +17,7 @@
  */
 package com.applause.auto.framework;
 
+import com.applause.auto.config.ConfigUtils;
 import com.applause.auto.config.EnvironmentConfigurationManager;
 import com.applause.auto.data.enums.DriverType;
 import com.applause.auto.framework.selenium.EnhancedCapabilities;
@@ -63,6 +64,9 @@ public class RemoteDriverManager extends AbstractDriverManager {
             .readTimeout(
                 Duration.ofMinutes(
                     EnvironmentConfigurationManager.INSTANCE.get().seleniumReadTimeoutMinutes()))
+            .proxy(
+                ConfigUtils.getHttpProxy(
+                    EnvironmentConfigurationManager.INSTANCE.get().httpProxyUrl()))
             .baseUrl(seleniumGridUrl);
     return switch (type) {
       case "ANDROID" -> new AndroidDriver(AppiumClientConfig.fromClientConfig(config), caps);
