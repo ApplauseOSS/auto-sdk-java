@@ -31,8 +31,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import lombok.extern.log4j.Log4j2;
 
 /** have configuration checks in a common place */
+@Log4j2
 public final class ApplauseConfigHelper {
 
   private ApplauseConfigHelper() {
@@ -62,8 +64,6 @@ public final class ApplauseConfigHelper {
     var errorList =
         Stream.of(
                 validateUrl(applauseConfigBean.autoApiUrl(), true, reqRevDns),
-                // While we are in the process of separating the proxy, allow the seleniumProxyUrl
-                // to be optional We'll take the autoApiUrl value if this isn't set
                 validateUrl(applauseConfigBean.seleniumProxyUrl(), true, reqRevDns),
                 validateUrl(applauseConfigBean.applausePublicApiUrl(), true, reqRevDns),
                 validateUrl(sdkConfigBean.localAppiumUrl(), false, reqRevDns))
@@ -87,6 +87,12 @@ public final class ApplauseConfigHelper {
     }
 
     if (!errorList.isEmpty()) {
+      if (EnvironmentConfigurationManager.INSTANCE.get().bypassConfigurationErrors()) {
+        log.info(
+            "Encountered configuration errors, but continuing on: \n{}",
+            String.join("\n  ", errorList));
+        return;
+      }
       // We had validation errors.
       throw new RuntimeException("\nConfiguration errors: " + String.join("\n  ", errorList));
     }
@@ -121,6 +127,25 @@ public final class ApplauseConfigHelper {
    */
   static Optional<String> validateUrl(
       final String urlAsString, final boolean required, final boolean reqRevDns) {
-    return ConfigUtils.validateUrl(urlAsString, required, reqRevDns);
+
+    try {
+      // First, verify the URL
+      final var urlValidationErrors = ConfigUtils.validateUrl(urlAsString, required);
+
+      // If validation failed, return the error
+      if (urlValidationErrors.isPresent()) {
+        return urlValidationErrors;
+      }
+
+      // Now, if reverse DNS is required, verify the reverse DNS
+      if (reqRevDns) {
+        return ConfigUtils.verifyReverseDns(urlAsString);
+      }
+
+      // If reverse DNS is not required, return empty
+      return Optional.empty();
+    } catch (Exception exception) {
+      return Optional.of("Error validating URL: " + exception.getMessage());
+    }
   }
 }

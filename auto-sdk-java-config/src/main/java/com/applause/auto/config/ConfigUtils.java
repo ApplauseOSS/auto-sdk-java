@@ -55,14 +55,9 @@ public final class ConfigUtils {
    *
    * @param urlAsString The URL to validate represented as a String
    * @param urlRequired If true, the function will return false if the string is null or blank.
-   * @param validateReverseDns If true, the reverse DNS must be possible and not from a pseudo entry
-   *     from an ISP
-   * @return empty if the URL is valid and DNS validations pass (or the field was empty), error
-   *     string otherwise
+   * @return empty if the URL is valid
    */
-  @SuppressWarnings("checkstyle:CyclomaticComplexity")
-  public static Optional<String> validateUrl(
-      final String urlAsString, final boolean urlRequired, final boolean validateReverseDns) {
+  public static Optional<String> validateUrl(final String urlAsString, final boolean urlRequired) {
     final var trimUrlStr =
         Optional.ofNullable(urlAsString).map(String::trim).filter(StringUtils::isNotBlank);
     if (trimUrlStr.isEmpty()) {
@@ -72,17 +67,32 @@ public final class ConfigUtils {
       return Optional.empty();
     }
     // Since it's not null or empty, we insist that it be a valid URL
+    try {
+      new URI(urlAsString).toURL();
+    } catch (MalformedURLException | URISyntaxException e) {
+      return Optional.of("'%s' is not a valid URL: %s".formatted(urlAsString, e.getMessage()));
+    }
+    return Optional.empty();
+  }
+
+  /**
+   * Validate a URL input parameter
+   *
+   * @param urlAsString The URL to validate represented as a String
+   * @return empty if the reverse dns check succeeds
+   */
+  public static Optional<String> verifyReverseDns(final String urlAsString) {
     final URL url;
     try {
       url = new URI(urlAsString).toURL();
     } catch (MalformedURLException | URISyntaxException e) {
-      return Optional.of("'" + urlAsString + "' is not a valid URL: " + e.getMessage());
+      return Optional.of("'%s' is not a valid URL: %s".formatted(urlAsString, e.getMessage()));
     }
     final String hostPart = url.getHost();
     try {
       final var addr = InetAddress.getByName(hostPart);
       final String addrHost = addr.getHostAddress();
-      if (!validateReverseDns || hostPart.equals(addrHost) || isLocalHost(addr)) {
+      if (hostPart.equals(addrHost) || isLocalHost(addr)) {
         // Either the caller doesn't care about reverse DNS or the hostPart was an IP address
         // in which case we won't check the reverse DNS.  In any event.  We have succeeded
         return Optional.empty();
@@ -90,22 +100,13 @@ public final class ConfigUtils {
       if (!checkReverseDnsWithRetry(addr)) {
         // there is no reverse DNS entry for this host.  While not wrong for external partners
         return Optional.of(
-            "No reverse DNS available for '"
-                + hostPart
-                + "/"
-                + addrHost
-                + "' for URL "
-                + urlAsString);
+            "No reverse DNS available for '%s/%s' for URL '%s'"
+                .formatted(hostPart, addrHost, urlAsString));
       }
-
     } catch (UnknownHostException e) {
       return Optional.of(
-          "Unable to resolve host '"
-              + hostPart
-              + "' in URL "
-              + urlAsString
-              + " with error: "
-              + e.getMessage());
+          "Unable to resolve host '%s' in URL '%s' with error: %s"
+              .formatted(hostPart, urlAsString, e.getMessage()));
     }
 
     // Everything validated.  Return no error!
