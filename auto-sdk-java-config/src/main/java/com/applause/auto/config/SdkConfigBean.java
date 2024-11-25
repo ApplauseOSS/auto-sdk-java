@@ -202,4 +202,12 @@ public interface SdkConfigBean extends Config {
    */
   @DefaultValue("false")
   boolean noReverseDnsCheck();
+
+  /**
+   * Toggles bypassing configuration errors
+   *
+   * @return boolean enabled/disabled
+   */
+  @DefaultValue("false")
+  boolean bypassConfigurationErrors();
 }

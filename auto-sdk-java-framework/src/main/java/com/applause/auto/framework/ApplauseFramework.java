@@ -328,17 +328,20 @@ public enum ApplauseFramework {
     if (path.charAt(0) == '/') {
       path = path.substring(1);
     }
-    return this.setDriverManager(
-        new RemoteDriverManager(
-            new HttpUrl.Builder()
-                .scheme(seleniumGridUrl.getProtocol())
-                .addPathSegments(path)
-                .host(seleniumGridUrl.getHost())
-                .port(seleniumGridUrl.getPort())
-                .username(username)
-                .password(password)
-                .build()
-                .url()));
+    final var httpUrlBuilder =
+        new HttpUrl.Builder()
+            .scheme(seleniumGridUrl.getProtocol())
+            .addPathSegments(path)
+            .host(seleniumGridUrl.getHost())
+            .username(username)
+            .password(password);
+
+    // If the port is set, add it to the URL
+    // Otherwise, the default port will be used
+    if (seleniumGridUrl.getPort() != -1) {
+      httpUrlBuilder.port(seleniumGridUrl.getPort());
+    }
+    return this.setDriverManager(new RemoteDriverManager(httpUrlBuilder.build().url()));
   }
 
   /**
