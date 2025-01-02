@@ -19,7 +19,7 @@ package com.applause.auto.helpers.control;
 
 import com.applause.auto.context.IPageObjectContext;
 import com.applause.auto.context.IPageObjectExtension;
-import com.applause.auto.pageobjectmodel.base.BaseElement;
+import com.applause.auto.pageobjectmodel.base.UIElement;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URL;
@@ -74,7 +74,7 @@ public class BrowserControl implements IPageObjectExtension {
    *
    * @param element the element on which the mouse down will be performed
    */
-  private void mouseDown(final BaseElement element) {
+  private void mouseDown(final UIElement element) {
     getExecutor()
         .executeScript(
             getBrowserActionsScript() + "dispatchDownEvent(arguments[0]);",
@@ -88,7 +88,7 @@ public class BrowserControl implements IPageObjectExtension {
    * @param xOffset the x offset
    * @param yOffset the y offset
    */
-  private void mouseUp(final BaseElement element, final int xOffset, final int yOffset) {
+  private void mouseUp(final UIElement element, final int xOffset, final int yOffset) {
     getExecutor()
         .executeScript(
             getBrowserActionsScript()
@@ -104,7 +104,7 @@ public class BrowserControl implements IPageObjectExtension {
    *
    * @param element the element on which the mouse up will be performed
    */
-  private void mouseUp(final BaseElement element) {
+  private void mouseUp(final UIElement element) {
     mouseUp(element, 0, 0);
   }
 
@@ -116,7 +116,7 @@ public class BrowserControl implements IPageObjectExtension {
    * @param xOffset the x offset
    * @param yOffset the y offset
    */
-  private void mouseMove(final BaseElement element, final int xOffset, final int yOffset) {
+  private void mouseMove(final UIElement element, final int xOffset, final int yOffset) {
     getExecutor()
         .executeScript(
             getBrowserActionsScript()
@@ -132,7 +132,7 @@ public class BrowserControl implements IPageObjectExtension {
    *
    * @param element the target element to perform the action on.
    */
-  public void jsClick(final BaseElement element) {
+  public void jsClick(final UIElement element) {
     logger.debug("Performing a native click.");
     getExecutor().executeScript("arguments[0].click();", element.getUnderlyingWebElement());
   }
@@ -142,7 +142,7 @@ public class BrowserControl implements IPageObjectExtension {
    *
    * @param element the target element to perform the action on.
    */
-  public void click(final BaseElement element) {
+  public void click(final UIElement element) {
     mouseDown(element);
     mouseUp(element);
   }
@@ -153,7 +153,7 @@ public class BrowserControl implements IPageObjectExtension {
    * @param element the target element to perform the action on.
    * @param millis the time (in milliseconds) to simulate the hold for.
    */
-  public void clickAndHold(final BaseElement element, final long millis) {
+  public void clickAndHold(final UIElement element, final long millis) {
     mouseDown(element);
     sleep(millis);
     mouseUp(element);
@@ -164,7 +164,7 @@ public class BrowserControl implements IPageObjectExtension {
    *
    * @param element the target element to perform the action on.
    */
-  public void hoverOverElement(final BaseElement element) {
+  public void hoverOverElement(final UIElement element) {
     Dimension size = element.getUnderlyingWebElement().getSize();
     mouseMove(element, size.getWidth() / 2, size.getHeight() / 2);
   }
@@ -176,7 +176,7 @@ public class BrowserControl implements IPageObjectExtension {
    * @param xOffset the x-coordinate offset to move the element to.
    * @param yOffset the y-coordinate offset to move the element to.
    */
-  public void dragAndDrop(final BaseElement element, final int xOffset, final int yOffset) {
+  public void dragAndDrop(final UIElement element, final int xOffset, final int yOffset) {
     mouseDown(element);
     mouseMove(element, xOffset, yOffset);
     mouseUp(element, xOffset, yOffset);

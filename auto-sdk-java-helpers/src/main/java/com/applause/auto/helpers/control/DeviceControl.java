@@ -20,8 +20,8 @@ package com.applause.auto.helpers.control;
 import com.applause.auto.context.IPageObjectContext;
 import com.applause.auto.context.IPageObjectExtension;
 import com.applause.auto.data.enums.SwipeDirection;
-import com.applause.auto.pageobjectmodel.base.BaseElement;
 import com.applause.auto.pageobjectmodel.base.LocatedBy;
+import com.applause.auto.pageobjectmodel.base.UIElement;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
@@ -354,14 +354,14 @@ public class DeviceControl implements IPageObjectExtension {
   /**
    * Tap on an element's position, offset from the top left of the element by pixel coordinates.
    *
-   * @param element the BaseElement to tap on
+   * @param element the UIElement to tap on
    * @param x horizontal pixel offset from the top left corner of the element
    * @param y vertical pixel offset from the top left corner of the element
    * @throws InvalidArgumentException if offset X or Y exceeds the size of the element.
    */
-  public void tapElementCoordinates(final BaseElement element, final int x, final int y) {
-    Point anchor = element.getLocation();
-    Dimension size = element.getDimension();
+  public void tapElementCoordinates(final UIElement element, final int x, final int y) {
+    Point anchor = element.getUnderlyingWebElement().getLocation();
+    Dimension size = element.getUnderlyingWebElement().getSize();
 
     logger.debug(
         String.format(
@@ -385,10 +385,10 @@ public class DeviceControl implements IPageObjectExtension {
   /**
    * Tap in the center of an element's position.
    *
-   * @param element the BaseElement to tap on
+   * @param element the UIElement to tap on
    */
-  public void tapElementCenter(final BaseElement element) {
-    Dimension size = element.getDimension();
+  public void tapElementCenter(final UIElement element) {
+    Dimension size = element.getUnderlyingWebElement().getSize();
     int x = size.width / 2;
     int y = size.height / 2;
     tapElementCoordinates(element, x, y);
@@ -424,16 +424,16 @@ public class DeviceControl implements IPageObjectExtension {
    * Taps on an element's position, offset from the top left of the element by pixel coordinates,
    * and holds it for a specified duration.
    *
-   * @param element the BaseElement to tap on
+   * @param element the UIElement to tap on
    * @param x horizontal pixel offset from the top left corner of the element
    * @param y vertical pixel offset from the top left corner of the element
    * @param millis duration to hold the tap, in milliseconds
    * @throws InvalidArgumentException if offset X or Y exceeds the size of the element.
    */
   public void pressAndHoldElementCoordinates(
-      final BaseElement element, final int x, final int y, final long millis) {
-    Point anchor = element.getLocation();
-    Dimension size = element.getDimension();
+      final UIElement element, final int x, final int y, final long millis) {
+    Point anchor = element.getUnderlyingWebElement().getLocation();
+    Dimension size = element.getUnderlyingWebElement().getSize();
 
     logger.debug(
         String.format(
@@ -457,12 +457,12 @@ public class DeviceControl implements IPageObjectExtension {
   /**
    * Taps in the center of an element and holds it for a specified duration.
    *
-   * @param element the BaseElement to tap on
+   * @param element the UIElement to tap on
    * @param millis duration to hold the tap, in milliseconds
    * @throws InvalidArgumentException if offset X or Y exceeds the size of the element.
    */
-  public void pressAndHoldElementCenter(final BaseElement element, final long millis) {
-    Dimension size = element.getDimension();
+  public void pressAndHoldElementCenter(final UIElement element, final long millis) {
+    Dimension size = element.getUnderlyingWebElement().getSize();
     int x = size.width / 2;
     int y = size.height / 2;
     pressAndHoldElementCoordinates(element, x, y, millis);
@@ -522,14 +522,14 @@ public class DeviceControl implements IPageObjectExtension {
    * @param millis duration over which the swipe is performed, in milliseconds
    */
   public void swipeAcrossElementCoordinates(
-      final BaseElement element,
+      final UIElement element,
       final int startX,
       final int startY,
       final int endX,
       final int endY,
       final long millis) {
-    Point anchor = element.getLocation();
-    Dimension size = element.getDimension();
+    Point anchor = element.getUnderlyingWebElement().getLocation();
+    Dimension size = element.getUnderlyingWebElement().getSize();
 
     logger.debug(
         String.format(
@@ -571,9 +571,9 @@ public class DeviceControl implements IPageObjectExtension {
    * @param direction a SwipeDirection object indicating which direction to swipe.
    */
   public void swipeAcrossElementWithDirection(
-      final BaseElement element, final SwipeDirection direction) {
-    Point anchor = element.getLocation();
-    Dimension size = element.getDimension();
+      final UIElement element, final SwipeDirection direction) {
+    Point anchor = element.getUnderlyingWebElement().getLocation();
+    Dimension size = element.getUnderlyingWebElement().getSize();
 
     logger.debug(
         String.format(
