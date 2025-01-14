@@ -54,11 +54,9 @@ public final class PlatformFilter {
     while (currentPlatform != null) {
       final var setPlatform = currentPlatform;
       final var matches =
-          annotations.stream()
-              .filter(a -> platformLookup.apply(a) == setPlatform)
-              .collect(Collectors.toList());
+          annotations.stream().filter(a -> platformLookup.apply(a) == setPlatform).toList();
       if (!matches.isEmpty()) {
-        return new ResultSet<>(currentPlatform, matches);
+        return new ResultSet<>(setPlatform, matches);
       }
       currentPlatform = currentPlatform.getFallback();
     }

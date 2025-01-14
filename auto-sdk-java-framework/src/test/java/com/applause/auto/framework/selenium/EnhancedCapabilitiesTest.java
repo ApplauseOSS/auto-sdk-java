@@ -18,6 +18,7 @@
 package com.applause.auto.framework.selenium;
 
 import com.applause.auto.data.enums.DriverType;
+import com.applause.auto.data.enums.Platform;
 import com.applause.auto.framework.json.BadJsonFormatException;
 import java.io.File;
 import java.io.IOException;
@@ -141,6 +142,7 @@ public class EnhancedCapabilitiesTest {
     // Check to see that we have NOT converted Longs to Doubles as out-of-the-box Gson done
     Assert.assertEquals("600", appCap.getCapability("commandTimeout").toString());
     Assert.assertEquals(DriverType.MOBILENATIVE, appCap.getApplauseOptions().getDriverType());
+    Assert.assertEquals(Platform.MOBILE_IOS_PHONE, appCap.getApplauseOptions().getFactoryKey());
 
     // We have an array in the class.  Check that
     final Map<String, Object> shouldBeMap =
