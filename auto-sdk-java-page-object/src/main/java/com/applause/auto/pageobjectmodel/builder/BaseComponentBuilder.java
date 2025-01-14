@@ -57,7 +57,7 @@ public class BaseComponentBuilder<T extends BaseComponent> extends UiElementBuil
         TypeToken.of(
             ImplementationHelper.getImplementation(
                 (Class<T>) typeToken.getRawType(), context.getPlatform()));
-    if (Modifier.isAbstract(typeToken.getRawType().getModifiers())) {
+    if (Modifier.isAbstract(this.typeToken.getRawType().getModifiers())) {
       throw new UnsupportedOperationException(
           String.format(
               "BaseComponentBuilder cannot create an instance of an abstract BaseComponent. Class [%s].",
