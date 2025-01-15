@@ -224,7 +224,7 @@ public final class AutoBuildHelper {
    */
   static List<ProductVersionDetailsDto> getAllBuilds() {
     List<ProductVersionDetailsDto> builds = new ArrayList<>();
-    final var firstPage = getBuildPage(1L, 100L, "desc");
+    final var firstPage = getBuildPage(1L, 100L, "createDate,desc");
     builds.addAll(firstPage.content());
     for (long i = 2; i <= firstPage.totalPages(); i++) {
       final var page = getBuildPage(i, 100L, "createDate,desc");
