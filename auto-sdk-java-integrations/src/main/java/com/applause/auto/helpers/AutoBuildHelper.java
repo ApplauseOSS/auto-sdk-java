@@ -40,7 +40,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
@@ -64,7 +66,9 @@ public final class AutoBuildHelper {
           .withMaxRetries(MAX_RETIES)
           .build();
   private static final Proxy httpProxy = ApplauseConfigHelper.getHttpProxy();
-  private static final ApplausePublicApi publicApiClient =
+
+  @Setter(value = AccessLevel.PACKAGE)
+  private static ApplausePublicApi publicApiClient =
       ApplausePublicApiClient.getClient(
           ApplauseEnvironmentConfigurationManager.INSTANCE.get().applausePublicApiUrl(),
           ApplauseEnvironmentConfigurationManager.INSTANCE.get().apiKey(),
@@ -218,12 +222,12 @@ public final class AutoBuildHelper {
    *
    * @return List of BuildDto
    */
-  private static List<ProductVersionDetailsDto> getAllBuilds() {
+  static List<ProductVersionDetailsDto> getAllBuilds() {
     List<ProductVersionDetailsDto> builds = new ArrayList<>();
     final var firstPage = getBuildPage(1L, 100L, "desc");
     builds.addAll(firstPage.content());
-    for (long i = 2; i < firstPage.totalPages(); i++) {
-      final var page = getBuildPage(i, 100L, "desc");
+    for (long i = 2; i <= firstPage.totalPages(); i++) {
+      final var page = getBuildPage(i, 100L, "createDate,desc");
       builds.addAll(page.content());
     }
     return builds;
