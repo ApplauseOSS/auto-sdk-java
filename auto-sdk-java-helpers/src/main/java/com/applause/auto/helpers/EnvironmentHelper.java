@@ -21,7 +21,6 @@ import com.applause.auto.context.IPageObjectContext;
 import com.applause.auto.context.IPageObjectExtension;
 import com.applause.auto.data.enums.DriverType;
 import java.util.Locale;
-import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -31,10 +30,18 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  * driver type, which browser, which version.
  */
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-@AllArgsConstructor
 public class EnvironmentHelper implements IPageObjectExtension {
   private static final Logger logger = LogManager.getLogger(EnvironmentHelper.class);
-  private IPageObjectContext pageObjectContext;
+  private final IPageObjectContext pageObjectContext;
+
+  /**
+   * Constructor for EnvironmentHelper.
+   *
+   * @param pageObjectContext The {@link IPageObjectContext} to use.
+   */
+  public EnvironmentHelper(final IPageObjectContext pageObjectContext) {
+    this.pageObjectContext = pageObjectContext;
+  }
 
   /**
    * determine the cast class type of the created driver object and set the DriverType into the

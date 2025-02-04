@@ -19,15 +19,5 @@ package com.applause.auto.helpers.jira.dto.requestmappers;
 
 import com.applause.auto.helpers.jira.dto.shared.Issuetype;
 import com.applause.auto.helpers.jira.dto.shared.Project;
-import lombok.Data;
 
-@Data
-public class Fields {
-  // summary represents ticket's title.
-  private String summary;
-  // issueTypeId is different per project, and unique per ticket type (defect, task, test plan etc).
-  // Example: Test Plan: 12106, Xray Test: 10402.
-  private Issuetype issuetype;
-  // Project id is the identifier of the project.
-  private Project project;
-}
+public record Fields(String summary, Issuetype issuetype, Project project) {}

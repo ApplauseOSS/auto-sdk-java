@@ -17,8 +17,8 @@
  */
 package com.applause.auto.helpers.jira.constants;
 
-public class XrayEndpoints {
-
+@SuppressWarnings("PMD.DataClass")
+public final class XrayEndpoints {
   public static final String LATEST_API = "/api/latest";
 
   public static final String XRAY_PATH = "/raven/latest/api/";
@@ -46,4 +46,8 @@ public class XrayEndpoints {
 
   public static final String testIssueKeyParam = "testIssueKey=";
   public static final String statusParam = "status=";
+
+  private XrayEndpoints() {
+    // utility class
+  }
 }

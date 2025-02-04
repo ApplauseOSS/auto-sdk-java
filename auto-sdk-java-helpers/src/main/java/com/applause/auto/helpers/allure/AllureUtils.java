@@ -17,36 +17,42 @@
  */
 package com.applause.auto.helpers.allure;
 
-import java.io.File;
 import java.io.IOException;
-import org.apache.commons.io.FileUtils;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class AllureUtils {
+/** Utility class for Allure reporting. */
+public final class AllureUtils {
 
   private static final Logger logger = LogManager.getLogger(AllureUtils.class);
+  private static final String CATEGORIES_JSON = "categories.json";
+
+  private AllureUtils() {}
 
   /**
-   * Copy Allure categorisation .json file to report directory
-   * https://docs.qameta.io/allure/#_categories_2
+   * Copies the Allure defects categorization JSON file to the Allure report directory.
    *
-   * @throws IOException
+   * @param allureReportPath The path to the Allure report directory.
+   * @param allureDefectsCategorisationFilePath The path to the Allure defects categorization JSON
+   *     file.
+   * @throws IOException If an I/O error occurs.
    */
   public static void addAllureDefectsCategoriesConfiguration(
-      String allureReportPath, String allureDefectsCategorisationFilePath) {
-    try {
-      logger.info("Copy defects configs to categories.json file for Allure");
-      File categoriesAllureFile = new File(allureReportPath + "/categories.json");
-      if (!categoriesAllureFile.exists()) {
-        categoriesAllureFile.createNewFile();
-      }
-      categoriesAllureFile.setReadable(true);
-      categoriesAllureFile.setWritable(true);
-      FileUtils.copyFile(new File(allureDefectsCategorisationFilePath), categoriesAllureFile);
+      @NonNull final String allureReportPath,
+      @NonNull final String allureDefectsCategorisationFilePath)
+      throws IOException {
 
-    } catch (Exception e) {
-      logger.error("Error creating allure categories.json file " + e.getMessage());
+    logger.info("Copying defects configs to {} file for Allure", CATEGORIES_JSON);
+
+    final Path categoriesAllureFile = Path.of(allureReportPath, CATEGORIES_JSON);
+
+    if (!Files.exists(categoriesAllureFile)) {
+      Files.createFile(categoriesAllureFile);
     }
+
+    Files.copy(Path.of(allureDefectsCategorisationFilePath), categoriesAllureFile);
   }
 }

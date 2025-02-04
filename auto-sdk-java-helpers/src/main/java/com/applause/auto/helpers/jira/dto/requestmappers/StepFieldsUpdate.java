@@ -17,11 +17,4 @@
  */
 package com.applause.auto.helpers.jira.dto.requestmappers;
 
-import lombok.Data;
-
-@Data
-public class StepFieldsUpdate {
-  private String status;
-  private String comment;
-  private String actualResult;
-}
+public record StepFieldsUpdate(String status, String comment, String actualResult) {}

@@ -18,9 +18,5 @@
 package com.applause.auto.helpers.jira.dto.requestmappers;
 
 import java.util.List;
-import lombok.Data;
 
-@Data
-public class XrayAddTo {
-  private List<String> add;
-}
+public record XrayAddTo(List<String> add) {}

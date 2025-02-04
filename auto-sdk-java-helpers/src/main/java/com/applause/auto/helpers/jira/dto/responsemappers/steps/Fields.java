@@ -18,10 +18,11 @@
 package com.applause.auto.helpers.jira.dto.responsemappers.steps;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
 
-@Data
+/**
+ * Represents the fields of a Jira issue.
+ *
+ * @param action The action associated with the fields.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Fields {
-  public Action Action;
-}
+public record Fields(Action action) {}

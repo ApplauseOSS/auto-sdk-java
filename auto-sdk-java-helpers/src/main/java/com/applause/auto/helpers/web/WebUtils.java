@@ -17,11 +17,16 @@
  */
 package com.applause.auto.helpers.web;
 
+import lombok.NonNull;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
 /** Web common utils */
-public class WebUtils {
+public final class WebUtils {
+
+  private WebUtils() {
+    // utility class
+  }
 
   /**
    * JS scroll down
@@ -29,7 +34,7 @@ public class WebUtils {
    * @param driver - automation driver
    * @param yValue - y value scroll to
    */
-  public static void jsScrollDown(WebDriver driver, final int yValue) {
+  public static void jsScrollDown(@NonNull final WebDriver driver, final int yValue) {
     ((JavascriptExecutor) driver).executeScript("window.scrollBy(0, " + yValue + ");");
   }
 
@@ -39,8 +44,7 @@ public class WebUtils {
    * @param driver - automation driver
    * @return Y page position value
    */
-  public static int getPagePositionY(WebDriver driver) {
-    String javascript = "return window.scrollY;";
+  public static int getPagePositionY(@NonNull final WebDriver driver) {
     return (int)
         Float.parseFloat(
             String.valueOf(((JavascriptExecutor) driver).executeScript("return window.scrollY;")));

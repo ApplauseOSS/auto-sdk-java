@@ -18,13 +18,14 @@
 package com.applause.auto.helpers.jira.dto.responsemappers;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
 
-@Data
+/**
+ * A record representing the available projects in Jira.
+ *
+ * @param self The URL of the project.
+ * @param id The ID of the project.
+ * @param key The key of the project.
+ * @param name The name of the project.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AvailableProjects {
-  private String self;
-  private String id;
-  private String key;
-  private String name;
-}
+public record AvailableProjects(String self, String id, String key, String name) {}

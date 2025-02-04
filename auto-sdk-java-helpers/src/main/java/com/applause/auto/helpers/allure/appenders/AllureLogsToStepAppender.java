@@ -25,78 +25,79 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import org.apache.logging.log4j.core.*;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.config.Node;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
-/** Log4j2 logs to Allure step definition appender */
+/** Appender for logging to Allure steps. */
 @Plugin(
     name = "AllureLogsToStepAppender",
-    category = Core.CATEGORY_NAME,
+    category = Node.CATEGORY,
     elementType = Appender.ELEMENT_TYPE)
-public class AllureLogsToStepAppender extends AbstractAppender {
+public final class AllureLogsToStepAppender extends AbstractAppender {
 
-  /** storage for filtered packages */
-  private static Set<String> filteredPackagesToAppendSet;
+  private static final String COMMA = ",";
+  private static final Set<String> FILTERED_PACKAGES_TO_APPEND_SET = new ConcurrentSkipListSet<>();
 
-  protected AllureLogsToStepAppender(
-      String name, Filter filter, Layout<? extends Serializable> layout, boolean ignoreExceptions) {
+  private AllureLogsToStepAppender(
+      final String name,
+      final Filter filter,
+      final Layout<? extends Serializable> layout,
+      final boolean ignoreExceptions) {
     super(name, filter, layout, ignoreExceptions, null);
   }
 
   /**
-   * Create log4j2 AllureLogsToStepAppender appender method
+   * Creates an AllureLogsToStepAppender.
    *
-   * @param name appender name
-   * @param layout appender layout
-   * @param filter appender filter
-   * @param filteredPackagesToAppend filter packages to append appender, should be provided as comma
-   *     separated list
-   * @return
+   * @param name The name of the appender.
+   * @param layout The layout to use for the appender.
+   * @param filter The filter to use for the appender.
+   * @param filteredPackagesToAppend A comma-separated list of packages to filter.
+   * @return A new AllureLogsToStepAppender instance, or null if the name is null.
    */
   @PluginFactory
   public static AllureLogsToStepAppender createAppender(
-      @PluginAttribute("name") String name,
-      @PluginElement("Layout") Layout<? extends Serializable> layout,
+      @PluginAttribute("name") final String name,
+      @PluginElement("Layout") final Layout<? extends Serializable> layout,
       @PluginElement("Filter") final Filter filter,
-      @PluginAttribute("filteredPackagesToAppend") String filteredPackagesToAppend) {
-    if (Objects.isNull(name)) {
+      @PluginAttribute("filteredPackagesToAppend") final String filteredPackagesToAppend) {
+
+    if (name == null) {
       return null;
     }
-    if (Objects.isNull(layout)) {
-      layout = PatternLayout.createDefaultLayout();
+
+    final var usedLayout = Objects.requireNonNullElse(layout, PatternLayout.createDefaultLayout());
+
+    if (filteredPackagesToAppend != null) {
+      FILTERED_PACKAGES_TO_APPEND_SET.addAll(Arrays.asList(filteredPackagesToAppend.split(COMMA)));
     }
-    if (Objects.nonNull(filteredPackagesToAppend)) {
-      filteredPackagesToAppendSet =
-          new ConcurrentSkipListSet<>(Arrays.asList(filteredPackagesToAppend.split(",")));
-    }
-    return new AllureLogsToStepAppender(name, filter, layout, true);
+
+    return new AllureLogsToStepAppender(name, filter, usedLayout, true);
   }
 
   /**
-   * log4j2 append method for Allure step appender
+   * Appends a log event to Allure step.
    *
-   * @param event logging log4j2 intercepted event
+   * @param event The log event to append.
    */
   @Override
-  public void append(LogEvent event) {
+  public void append(final LogEvent event) {
     if (isSourcePackageValidForAppender(event)) {
       Allure.step(event.getMessage().getFormattedMessage());
     }
   }
 
-  private boolean isSourcePackageValidForAppender(LogEvent event) {
-    if (filteredPackagesToAppendSet.isEmpty()) {
+  private boolean isSourcePackageValidForAppender(final LogEvent event) {
+    if (FILTERED_PACKAGES_TO_APPEND_SET.isEmpty()) {
       return true;
     }
-    String sourceClassName = event.getSource().getClassName();
-    return filteredPackagesToAppendSet.stream()
-        .filter(
-            filteredPackagesToAppendSetItem ->
-                sourceClassName.contains(filteredPackagesToAppendSetItem))
-        .findAny()
-        .isPresent();
+
+    final var sourceClassName = event.getSource().getClassName();
+
+    return FILTERED_PACKAGES_TO_APPEND_SET.stream().anyMatch(sourceClassName::contains);
   }
 }

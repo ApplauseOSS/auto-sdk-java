@@ -22,23 +22,15 @@ import com.applause.auto.helpers.jira.dto.shared.Project;
 
 public class JiraFields {
 
-  private Fields fields = null;
+  private final Fields fields;
 
-  public JiraFields(String issueType, String projectId, String summary) {
-    fields = new Fields();
-
-    Issuetype issuetype = new Issuetype();
-    issuetype.setId(issueType);
-    fields.setIssuetype(issuetype);
-
-    Project project = new Project();
-    project.setId(projectId);
-    fields.setProject(project);
-
-    fields.setSummary(summary);
+  public JiraFields(final String issueType, final String projectId, final String summary) {
+    fields = new Fields(new Issuetype(issueType, null), new Project(projectId), summary);
   }
 
   public Fields getFields() {
     return fields;
   }
+
+  public record Fields(Issuetype issuetype, Project project, String summary) {}
 }

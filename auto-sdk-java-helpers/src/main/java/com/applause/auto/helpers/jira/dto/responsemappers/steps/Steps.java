@@ -18,11 +18,7 @@
 package com.applause.auto.helpers.jira.dto.responsemappers.steps;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.ArrayList;
-import lombok.Data;
+import java.util.List;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Steps {
-  private ArrayList<Step> steps;
-}
+public record Steps(List<Step> steps) {}

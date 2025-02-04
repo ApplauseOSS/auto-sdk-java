@@ -17,30 +17,28 @@
  */
 package com.applause.auto.helpers.mobile.deeplinks;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+/**
+ * Deeplink DTO to keep deeplink data for mobile deeplink navigation.
+ *
+ * @param androidDeepLink The Android deep link information.
+ * @param iOSDeepLink The iOS deep link information.
+ */
+public record NativeMobileAppCommonDeeplink(
+    AndroidDeepLink androidDeepLink, IOSDeepLink iOSDeepLink) {
 
-/** Deeplink DTO to keep deeplink data for mobile deeplink navigation */
-@Builder
-@Data
-public class NativeMobileAppCommonDeeplink {
+  /**
+   * Android deep link record.
+   *
+   * @param deepLinkUrl The deep link URL.
+   * @param deepLinkPackage The deep link package.
+   */
+  public record AndroidDeepLink(String deepLinkUrl, String deepLinkPackage) {}
 
-  private AndroidDeepLink androidDeepLink;
-  private iOSDeepLink iOSDeepLink;
-
-  /** Android deep link class. */
-  @Data
-  @AllArgsConstructor
-  public static class AndroidDeepLink {
-    private String deepLinkUrl;
-    private String deepLinkPackage;
-  }
-
-  /** iOS deep link class. */
-  @Data
-  @AllArgsConstructor
-  public static class iOSDeepLink {
-    private String deepLinkUrl;
-  }
+  /**
+   * iOS deep link record.
+   *
+   * @param deepLinkUrl The deep link URL.
+   */
+  @SuppressWarnings("checkstyle:TypeName")
+  public record IOSDeepLink(String deepLinkUrl) {}
 }

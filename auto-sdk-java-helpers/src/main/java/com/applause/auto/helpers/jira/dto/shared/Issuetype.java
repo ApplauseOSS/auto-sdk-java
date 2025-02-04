@@ -18,11 +18,6 @@
 package com.applause.auto.helpers.jira.dto.shared;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Issuetype {
-  private String id;
-  private String name;
-}
+public record Issuetype(String id, String name) {}

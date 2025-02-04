@@ -19,16 +19,12 @@ package com.applause.auto.helpers.jira.dto.responsemappers.iteration;
 
 import com.applause.auto.helpers.jira.dto.responsemappers.steps.Step;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TestRunIteration {
-  private int id;
-  private String testRunId;
-  private String status;
-  private List<IterationParameters> parameters;
-  private ArrayList<Step> steps;
-}
+public record TestRunIteration(
+    int id,
+    String testRunId,
+    String status,
+    List<IterationParameters> parameters,
+    List<Step> steps) {}

@@ -19,12 +19,6 @@ package com.applause.auto.helpers.jira.dto.responsemappers.iteration;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
-import lombok.Data;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Iteration {
-  private int id;
-  private String status;
-  private List<IterationParameters> parameters;
-}
+public record Iteration(int id, String status, List<IterationParameters> parameters) {}

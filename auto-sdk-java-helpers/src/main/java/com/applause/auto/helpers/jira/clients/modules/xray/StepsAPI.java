@@ -24,174 +24,165 @@ import static com.applause.auto.helpers.jira.restclient.XrayRestAssuredClient.ge
 
 import com.applause.auto.helpers.jira.dto.requestmappers.StepFieldsUpdate;
 import com.applause.auto.helpers.jira.dto.requestmappers.StepIterationAttachment;
+import com.applause.auto.helpers.util.GenericObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import java.io.IOException;
+import lombok.NonNull;
 import org.apache.commons.lang3.Range;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class StepsAPI {
 
   private static final Logger logger = LogManager.getLogger(StepsAPI.class);
-  private ObjectMapper mapper = new ObjectMapper();
 
   /**
    * Modify Test Run Step by using PUT API This method is used to update: status, comment, actual
    * result Should be used when test is NOT parametrised and dataset is NOT present
    *
-   * @param testRunId
-   * @param stepId
+   * @param testRunId the test run ID
+   * @param stepId test step ID
    * @param fields - fields which will be updated
    */
-  public void updateTestRunStep(int testRunId, int stepId, StepFieldsUpdate fields)
+  public void updateTestRunStep(
+      final int testRunId, final int stepId, @NonNull final StepFieldsUpdate fields)
       throws JsonProcessingException {
     Response response = putTestRunStep(testRunId, stepId, fields);
-    checkResponseInRange(response, Range.between(200, 300), "Update Test Run Step");
+    checkResponseInRange(response, Range.of(200, 300), "Update Test Run Step");
   }
 
   /**
    * Modify Test Run Iteration Step by using PUT API This method is used to update: status, comment,
    * actual result Should be used when test is parametrised and dataset is present
    *
-   * @param testRunId
-   * @param iterationId
-   * @param stepId
+   * @param testRunId the test run ID
+   * @param iterationId test run iteration step
+   * @param stepId test step ID
    * @param fields - fields which will be updated
    */
   public void updateTestRunIterationStep(
-      int testRunId, int iterationId, int stepId, StepFieldsUpdate fields)
+      int testRunId, int iterationId, int stepId, @NonNull final StepFieldsUpdate fields)
       throws JsonProcessingException {
     Response response = putTestRunIterationStep(testRunId, iterationId, stepId, fields);
-    checkResponseInRange(response, Range.between(200, 300), "Update Test Run Iteration Step");
+    checkResponseInRange(response, Range.of(200, 300), "Update Test Run Iteration Step");
   }
 
   /**
    * Upload Test Run Step attachment
    *
-   * @param testRunId
-   * @param stepId
+   * @param testRunId test run ID
+   * @param stepId test step ID
    * @param filePath - path to file
    */
-  public void uploadTestRunStepAttachment(int testRunId, int stepId, String filePath)
-      throws IOException {
+  public void uploadTestRunStepAttachment(
+      final int testRunId, final int stepId, @NonNull final String filePath) throws IOException {
     Response response = postTestRunStepAttachment(testRunId, stepId, filePath);
-    checkResponseInRange(response, Range.between(200, 300), "Upload Test Run Step attachment");
+    checkResponseInRange(response, Range.of(200, 300), "Upload Test Run Step attachment");
   }
 
   /**
    * Upload Test Run Iteration Step attachment
    *
-   * @param testRunId
-   * @param iterationId
-   * @param stepId
+   * @param testRunId test run ID
+   * @param iterationId test step iteration ID
+   * @param stepId test step ID
    * @param filePath - path to file
    */
   public void uploadTestRunIterationStepAttachment(
-      int testRunId, int iterationId, int stepId, String filePath) throws IOException {
+      final int testRunId, final int iterationId, final int stepId, @NonNull final String filePath)
+      throws IOException {
     Response response =
         postTestRunIterationStepAttachment(testRunId, iterationId, stepId, filePath);
-    checkResponseInRange(
-        response, Range.between(200, 300), "Upload Test Run Iteration Step attachment");
+    checkResponseInRange(response, Range.of(200, 300), "Upload Test Run Iteration Step attachment");
   }
 
-  private Response postTestRunStepAttachment(int testRunId, int stepId, String filePath)
-      throws IOException {
+  private Response postTestRunStepAttachment(
+      final int testRunId, final int stepId, @NonNull final String filePath) throws IOException {
     logger.info("Attaching {} to X-Ray Test Run {} step {}", filePath, testRunId, stepId);
-    StepIterationAttachment stepIterationAttachment = new StepIterationAttachment();
-    stepIterationAttachment.setData(encodeBase64File(filePath));
-    stepIterationAttachment.setFilename(getFileNameFromPath(filePath));
-    stepIterationAttachment.setContentType(getFileType(filePath));
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint
-        .append(TEST_RUN)
-        .append("/")
-        .append(testRunId)
-        .append("/")
-        .append(STEP)
-        .append("/")
-        .append(stepId)
-        .append("/")
-        .append(ATTACHMENT);
+    StepIterationAttachment stepIterationAttachment =
+        new StepIterationAttachment(
+            encodeBase64File(filePath), getFileNameFromPath(filePath), getFileType(filePath));
+    final var apiEndpoint =
+        XRAY_PATH + TEST_RUN + "/" + testRunId + "/" + STEP + "/" + stepId + "/" + ATTACHMENT;
+
     return getRestClient()
         .given()
         .and()
-        .body(mapper.writeValueAsString(stepIterationAttachment))
+        .body(GenericObjectMapper.getObjectMapper().writeValueAsString(stepIterationAttachment))
         .when()
-        .post(apiEndpoint.toString())
+        .post(apiEndpoint)
         .then()
         .extract()
         .response();
   }
 
   private Response postTestRunIterationStepAttachment(
-      int testRunId, int iterationId, int stepId, String filePath) throws IOException {
+      final int testRunId, final int iterationId, final int stepId, @NonNull final String filePath)
+      throws IOException {
     logger.info(
         "Attaching {} to X-Ray Test Run {} iteration {} step {}",
         filePath,
         testRunId,
         iterationId,
         stepId);
-    StepIterationAttachment stepIterationAttachment = new StepIterationAttachment();
-    stepIterationAttachment.setData(encodeBase64File(filePath));
-    stepIterationAttachment.setFilename(getFileNameFromPath(filePath));
-    stepIterationAttachment.setContentType(getFileType(filePath));
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint
-        .append(TEST_RUN)
-        .append("/")
-        .append(testRunId)
-        .append("/")
-        .append(ITERATION)
-        .append("/")
-        .append(iterationId)
-        .append("/")
-        .append(STEP)
-        .append("/")
-        .append(stepId)
-        .append("/")
-        .append(ATTACHMENT);
+    StepIterationAttachment stepIterationAttachment =
+        new StepIterationAttachment(
+            encodeBase64File(filePath), getFileNameFromPath(filePath), getFileType(filePath));
+    String apiEndpoint =
+        XRAY_PATH
+            + TEST_RUN
+            + "/"
+            + testRunId
+            + "/"
+            + ITERATION
+            + "/"
+            + iterationId
+            + "/"
+            + STEP
+            + "/"
+            + stepId
+            + "/"
+            + ATTACHMENT;
+
     return getRestClient()
         .given()
         .and()
-        .body(mapper.writeValueAsString(stepIterationAttachment))
+        .body(GenericObjectMapper.getObjectMapper().writeValueAsString(stepIterationAttachment))
         .when()
-        .post(apiEndpoint.toString())
+        .post(apiEndpoint)
         .then()
         .extract()
         .response();
   }
 
-  private Response putTestRunStep(int testRunId, int stepId, StepFieldsUpdate stepFieldsUpdate)
+  private Response putTestRunStep(
+      final int testRunId, final int stepId, @NonNull final StepFieldsUpdate stepFieldsUpdate)
       throws JsonProcessingException {
     logger.info(
         "Updating X-Ray Test Run {} step {} with {}",
         testRunId,
         stepId,
         stepFieldsUpdate.toString());
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint
-        .append(TEST_RUN)
-        .append("/")
-        .append(testRunId)
-        .append("/")
-        .append(STEP)
-        .append("/")
-        .append(stepId);
+    String apiEndpoint = XRAY_PATH + TEST_RUN + "/" + testRunId + "/" + STEP + "/" + stepId;
+
     return getRestClient()
         .given()
         .and()
-        .body(mapper.writeValueAsString(stepFieldsUpdate))
+        .body(GenericObjectMapper.getObjectMapper().writeValueAsString(stepFieldsUpdate))
         .when()
-        .put(apiEndpoint.toString())
+        .put(apiEndpoint)
         .then()
         .extract()
         .response();
   }
 
   private Response putTestRunIterationStep(
-      int testRunId, int iterationId, int stepId, StepFieldsUpdate stepFieldsUpdate)
+      final int testRunId,
+      final int iterationId,
+      final int stepId,
+      @NonNull final StepFieldsUpdate stepFieldsUpdate)
       throws JsonProcessingException {
     logger.info(
         "Updating X-Ray Test Run {} iteration {} step {} with {}",
@@ -199,25 +190,26 @@ public class StepsAPI {
         iterationId,
         stepId,
         stepFieldsUpdate.toString());
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint
-        .append(TEST_RUN)
-        .append("/")
-        .append(testRunId)
-        .append("/")
-        .append(ITERATION)
-        .append("/")
-        .append(iterationId)
-        .append("/")
-        .append(STEP)
-        .append("/")
-        .append(stepId);
+    String apiEndpoint =
+        XRAY_PATH
+            + TEST_RUN
+            + "/"
+            + testRunId
+            + "/"
+            + ITERATION
+            + "/"
+            + iterationId
+            + "/"
+            + STEP
+            + "/"
+            + stepId;
+
     return getRestClient()
         .given()
         .and()
-        .body(mapper.writeValueAsString(stepFieldsUpdate))
+        .body(GenericObjectMapper.getObjectMapper().writeValueAsString(stepFieldsUpdate))
         .when()
-        .put(apiEndpoint.toString())
+        .put(apiEndpoint)
         .then()
         .extract()
         .response();

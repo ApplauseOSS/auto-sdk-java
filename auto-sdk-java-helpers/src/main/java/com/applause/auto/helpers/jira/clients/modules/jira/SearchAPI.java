@@ -22,10 +22,11 @@ import static com.applause.auto.helpers.jira.helper.ResponseValidator.checkRespo
 import static com.applause.auto.helpers.jira.restclient.XrayRestAssuredClient.getRestClient;
 
 import com.applause.auto.helpers.jira.dto.jql.JqlFilteredResults;
+import com.applause.auto.helpers.util.GenericObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import java.util.Objects;
+import lombok.NonNull;
 import org.apache.commons.lang3.Range;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,39 +34,45 @@ import org.apache.logging.log4j.Logger;
 public class SearchAPI {
 
   private static final Logger logger = LogManager.getLogger(SearchAPI.class);
-  private ObjectMapper mapper = new ObjectMapper();
 
   /**
-   * @param jqlQuery, represents the JQL query used in Jira
-   * @param maxResults, overrides default limited 50 results. Can be set to null for default.
-   * @example : "labels IN ("xray_automation") AND issuetype=12106 AND summary~"Test Description""
-   * @return JqlFilteredResults object containing number of findings and list of issues
+   * Filters Jira issues based on a provided JQL query.
+   *
+   * @param jqlQuery The JQL query used to filter issues. For example: \"labels IN
+   *     (\"xray_automation\") AND issuetype=12106 AND summary~\"Test Description\""
+   * @param maxResults The maximum number of results to return. If null, the Jira default limit
+   *     (usually 50) is used.
+   * @return A {@link JqlFilteredResults} object containing the total number of issues found and a
+   *     list of the retrieved issues.
+   * @throws JsonProcessingException If an error occurs during JSON processing of the Jira response.
    */
-  public JqlFilteredResults filterIssues(String jqlQuery, Integer maxResults)
+  public JqlFilteredResults filterIssues(@NonNull final String jqlQuery, final Integer maxResults)
       throws JsonProcessingException {
     Response response = getIssuesByJqlFiltering(jqlQuery, maxResults);
-    checkResponseInRange(response, Range.between(200, 300), "Get issue by jql filter");
-    JqlFilteredResults results = mapper.readValue(response.asString(), JqlFilteredResults.class);
-    if (results.getTotal() == 0) {
+    checkResponseInRange(response, Range.of(200, 300), "Get issue by jql filter");
+    JqlFilteredResults results =
+        GenericObjectMapper.getObjectMapper()
+            .readValue(response.asString(), JqlFilteredResults.class);
+    if (results.total() == 0) {
       logger.warn("JQL search returned 0 results");
     }
     return results;
   }
 
-  public Response getIssuesByJqlFiltering(String jqlQuery, Integer maxResults) {
+  public Response getIssuesByJqlFiltering(
+      @NonNull final String jqlQuery, final Integer maxResults) {
     logger.info("Searching issues by JQL query [ {} ] ", jqlQuery);
     StringBuilder apiEndpoint = new StringBuilder();
-    apiEndpoint.append(LATEST_API).append("/").append(SEARCH).append("?jql=").append(jqlQuery);
+    apiEndpoint.append(LATEST_API).append('/').append(SEARCH).append("?jql=").append(jqlQuery);
     if (Objects.nonNull(maxResults)) {
       apiEndpoint.append("&maxResults=").append(maxResults);
     }
     return getRestClient().given().when().get(apiEndpoint.toString()).then().extract().response();
   }
 
-  public Response getIssueResponseObject(String jiraTicketID) {
+  public Response getIssueResponseObject(@NonNull final String jiraTicketID) {
     logger.info("Returning issue response for {}", jiraTicketID);
-    StringBuilder apiEndpoint = new StringBuilder();
-    apiEndpoint.append(ISSUE_PATH).append("/").append(jiraTicketID);
-    return getRestClient().given().when().get(apiEndpoint.toString()).then().extract().response();
+    String apiEndpoint = ISSUE_PATH + "/" + jiraTicketID;
+    return getRestClient().given().when().get(apiEndpoint).then().extract().response();
   }
 }

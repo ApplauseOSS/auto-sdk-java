@@ -19,7 +19,7 @@ package com.applause.auto.helpers.jira.exceptions;
 
 public class UnidentifiedExecutionStatusException extends RuntimeException {
 
-  public UnidentifiedExecutionStatusException(String message) {
+  public UnidentifiedExecutionStatusException(final String message) {
     super(message);
   }
 }

@@ -25,7 +25,11 @@ import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMultipart;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
+import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
@@ -43,18 +47,23 @@ public class GmailHelper extends CommonMailClient {
    *
    * <p>PLEASE NOTE:
    *
-   * <p>To make this work you should use gmail appPassword.
+   * <p>To make this work you should use a Gmail app password.
    *
-   * <p>For more information how to set it, please check
+   * <p>For more information on how to set it, please check
    * https://support.google.com/accounts/answer/185833?hl=en
    *
    * <p>Example: username = some@email.com password = xxxx
+   *
+   * @param username The Gmail username (email address). Must not be null.
+   * @param appPassword The Gmail app password.
    */
-  public GmailHelper(String username, String appPassword) {
+  public GmailHelper(final String username, final String appPassword) throws MessagingException {
     super(username.trim(), appPassword, Protocol.IMAP, "imap.gmail.com");
   }
 
-  public GmailHelper(String username, String appPassword, Protocol protocol, String host) {
+  public GmailHelper(
+      final String username, final String appPassword, final Protocol protocol, final String host)
+      throws MessagingException {
     super(username, appPassword, protocol, host);
   }
 
@@ -76,11 +85,11 @@ public class GmailHelper extends CommonMailClient {
    * @param markEmailAsSeen If true, the email would be marked as seen after checking it.
    * @return A message array that contains all the emails that match the mentioned criteria.
    */
-  public Message[] waitForEmailToArrive(
-      WebDriver driver,
-      SearchCriteria criteria,
-      boolean checkOnlyUnreadEmails,
-      boolean markEmailAsSeen) {
+  public List<Message> waitForEmailToArrive(
+      @NonNull final WebDriver driver,
+      @NonNull final SearchCriteria criteria,
+      final boolean checkOnlyUnreadEmails,
+      final boolean markEmailAsSeen) {
     return waitForEmailToArrive(
         driver, criteria, checkOnlyUnreadEmails, markEmailAsSeen, TEN_MINUTES_TIMEOUT_WAIT_MILLI);
   }
@@ -98,27 +107,25 @@ public class GmailHelper extends CommonMailClient {
    *     find the email.
    * @return A message array that contains all the emails that match the mentioned criteria.
    */
-  public Message[] waitForEmailToArrive(
-      WebDriver driver,
-      SearchCriteria criteria,
-      boolean checkOnlyUnreadEmails,
-      boolean markEmailAsSeen,
-      long timeOutInMillis) {
+  public List<Message> waitForEmailToArrive(
+      @Nullable final WebDriver driver,
+      @NonNull final SearchCriteria criteria,
+      final boolean checkOnlyUnreadEmails,
+      final boolean markEmailAsSeen,
+      final long timeOutInMillis) {
     logger.info("Waiting for email to arrive...");
     int timeElapsed = 0;
-    Message[] foundEmails = null;
+    List<Message> foundEmails = null;
 
     while (timeElapsed < timeOutInMillis) {
       foundEmails = isEmailReceived(criteria, checkOnlyUnreadEmails, markEmailAsSeen);
-      if (foundEmails.length == 0) {
+      if (foundEmails.isEmpty()) {
         logger.info(
-            "Email not received after "
-                + timeElapsed / 1000
-                + " seconds. Retrying after 5 seconds...");
+            "Email not received after {} seconds. Retrying after 5 seconds...", timeElapsed / 1000);
         ThreadHelper.sleep(FIVE_SECOND_WAIT_MILLI);
         timeElapsed += FIVE_SECOND_WAIT_MILLI;
 
-        /**
+        /*
          * Get the session ID to prevent remote Cloud provider from closing the connection for being
          * idle (Usually timeouts after 90 seconds).
          */
@@ -132,7 +139,7 @@ public class GmailHelper extends CommonMailClient {
       }
     }
 
-    /**
+    /*
      * Shutdown hook to make sure the email server connection is terminated correctly before the
      * application terminates.
      */
@@ -155,7 +162,7 @@ public class GmailHelper extends CommonMailClient {
    * @param email The email object to check
    * @return A string representing the content of the concatenated parts of the email object.
    */
-  public String parseEmailParts(Message email) {
+  public String parseEmailParts(@NonNull final Message email) {
     String result = "";
     try {
       if (email.isMimeType("text/plain")) {
@@ -179,40 +186,40 @@ public class GmailHelper extends CommonMailClient {
    * @param email The email object to check
    * @return A string representation to the email's input stream.
    */
-  public String parseEmailFromInputStream(Message email) {
+  public String parseEmailFromInputStream(@NonNull final Message email) {
     try {
-      return new String(email.getInputStream().readAllBytes());
+      return new String(email.getInputStream().readAllBytes(), Charset.defaultCharset());
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error(e);
     }
     return null;
   }
 
   /**
-   * Extracts the text from multipart emails
+   * Extracts the text from multipart emails.
    *
    * @param mimeMultipart The multipart email to get the content from.
-   * @return A string representing the email content
-   * @throws MessagingException
-   * @throws IOException
+   * @return A string representing the email content.
+   * @throws MessagingException If a messaging exception occurs.
+   * @throws IOException If an I/O exception occurs.
    */
-  private String getTextFromMimeMultipart(MimeMultipart mimeMultipart)
+  private String getTextFromMimeMultipart(@NonNull final MimeMultipart mimeMultipart)
       throws MessagingException, IOException {
-    String result = "";
+    StringBuilder result = new StringBuilder();
     int count = mimeMultipart.getCount();
     for (int i = 0; i < count; i++) {
       BodyPart bodyPart = mimeMultipart.getBodyPart(i);
       if (bodyPart.isMimeType("text/plain")) {
-        result += "\n" + bodyPart.getContent();
+        result.append('\n').append(bodyPart.getContent());
         break; // without break same text appears twice in my tests
       } else if (bodyPart.isMimeType("text/html")) {
         String html = (String) bodyPart.getContent();
-        result += "\n" + org.jsoup.Jsoup.parse(html).text();
+        result.append('\n').append(org.jsoup.Jsoup.parse(html).text());
       } else if (bodyPart.getContent() instanceof MimeMultipart) {
-        result += getTextFromMimeMultipart((MimeMultipart) bodyPart.getContent());
+        result.append(getTextFromMimeMultipart((MimeMultipart) bodyPart.getContent()));
       }
     }
-    return result;
+    return result.toString();
   }
 
   /**
@@ -225,9 +232,11 @@ public class GmailHelper extends CommonMailClient {
    * @param markEmailAsSeen If true, the email would be marked as seen after checking it.
    * @return A message array that contains all the emails that match the mentioned criteria.
    */
-  public Message[] isEmailReceived(
-      SearchCriteria criteria, boolean checkOnlyUnreadEmails, boolean markEmailAsSeen) {
-    ArrayList<Message> matchedEmails = new ArrayList<>();
+  public List<Message> isEmailReceived(
+      @NonNull final SearchCriteria criteria,
+      final boolean checkOnlyUnreadEmails,
+      final boolean markEmailAsSeen) {
+    final var matchedEmails = new ArrayList<Message>();
     try {
       Message[] emails;
       if (checkOnlyUnreadEmails) {
@@ -238,7 +247,7 @@ public class GmailHelper extends CommonMailClient {
 
       if (emails.length == 0) {
         logger.info("No emails found, moving on...");
-        return null;
+        return List.of();
       }
 
       logger.info("Found emails: " + emails.length);
@@ -247,7 +256,7 @@ public class GmailHelper extends CommonMailClient {
         logger.info("---------------------------------");
         logger.info("Email Number: [{}]", i + 1);
         logger.info("Subject: [{}]", email.getSubject());
-        logger.info("From: [{}]", email.getFrom());
+        logger.info("From: [{}]", (Object) email.getFrom());
 
         // check if the email matches the criteria
         if (doesEmailMatchCriteria(email, criteria)) {
@@ -258,10 +267,11 @@ public class GmailHelper extends CommonMailClient {
           email.setFlag(Flag.SEEN, true);
         }
       }
+      return matchedEmails;
     } catch (Exception e) {
-      logger.info("An exception was thrown. Message = " + e.getMessage());
+      logger.info("An exception was thrown.", e);
     }
 
-    return matchedEmails.toArray(new Message[matchedEmails.size()]);
+    return List.of(new Message[0]);
   }
 }

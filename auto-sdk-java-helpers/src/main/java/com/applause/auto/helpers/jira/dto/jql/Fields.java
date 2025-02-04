@@ -19,14 +19,7 @@ package com.applause.auto.helpers.jira.dto.jql;
 
 import com.applause.auto.helpers.jira.dto.shared.Issuetype;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Fields {
-  private String summary;
-  private String[] labels;
-  private String created;
-  private Issuetype issuetype;
-  private String environment;
-}
+public record Fields(
+    String summary, String labels, String created, Issuetype issuetype, String environment) {}

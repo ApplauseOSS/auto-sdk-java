@@ -17,15 +17,11 @@
  */
 package com.applause.auto.helpers.email;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-/** Simple POJO that represents the search criteria when searching for emails. */
-@AllArgsConstructor
-@Data
-public class SearchCriteria {
-
-  private String emailSubject;
-  private String sentFrom;
-  private String sentTo;
-}
+/**
+ * Simple record that represents the search criteria when searching for emails.
+ *
+ * @param emailSubject The subject of the email to search for.
+ * @param sentFrom The sender of the email to search for.
+ * @param sentTo The recipient of the email to search for.
+ */
+public record SearchCriteria(String emailSubject, String sentFrom, String sentTo) {}

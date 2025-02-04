@@ -17,9 +17,4 @@
  */
 package com.applause.auto.helpers.jira.dto.shared;
 
-import lombok.Data;
-
-@Data
-public class Project {
-  private String id;
-}
+public record Project(String id) {}

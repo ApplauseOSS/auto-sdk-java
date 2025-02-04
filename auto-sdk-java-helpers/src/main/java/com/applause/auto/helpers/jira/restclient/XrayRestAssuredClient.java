@@ -17,24 +17,28 @@
  */
 package com.applause.auto.helpers.jira.restclient;
 
-import static com.applause.auto.helpers.jira.requestData.XrayRequestHeaders.*;
-
 import com.applause.auto.helpers.http.restassured.RestApiDefaultRestAssuredApiHelper;
 import com.applause.auto.helpers.jira.exceptions.JiraPropertiesFileException;
+import com.applause.auto.helpers.util.XrayRequestHeaders;
 import io.restassured.specification.RequestSpecification;
 import java.io.File;
+import lombok.NonNull;
 import org.aeonbits.owner.ConfigFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class XrayRestAssuredClient {
+public final class XrayRestAssuredClient {
 
   private static final Logger logger = LogManager.getLogger(XrayRestAssuredClient.class);
   private static final String JIRA_PROPERTIES_FILE_PATH = "src/main/resources/jira.properties";
 
   private static String jiraUrl;
   private static String token;
-  private static IJiraAppConfig configApp = ConfigFactory.create(IJiraAppConfig.class);
+  private static final IJiraAppConfig configApp = ConfigFactory.create(IJiraAppConfig.class);
+
+  private XrayRestAssuredClient() {
+    // utility class
+  }
 
   private static void loadProperties() {
     if (!new File(JIRA_PROPERTIES_FILE_PATH).exists()) {
@@ -53,13 +57,13 @@ public class XrayRestAssuredClient {
     return restApiDefaultRestAssuredApiHelper
         .withDefaultRestHttpClientConfigsSpecification()
         .baseUri(jiraUrl)
-        .header(getBearerAuthorizationHeader(token))
-        .header(getAcceptApplicationJsonHeader())
-        .header(getJSONContentTypeHeader());
+        .header(XrayRequestHeaders.getBearerAuthorizationHeader(token))
+        .header(XrayRequestHeaders.getAcceptApplicationJsonHeader())
+        .header(XrayRequestHeaders.getJSONContentTypeHeader());
   }
 
-  private static void checkJiraUrl(String jiraUrl) {
-    if (!jiraUrl.startsWith("https")) {
+  private static void checkJiraUrl(@NonNull final String jiraUrl2) {
+    if (!jiraUrl2.startsWith("https")) {
       logger.warn("API calls might return 415 because provided Jira url is not https!");
     }
   }

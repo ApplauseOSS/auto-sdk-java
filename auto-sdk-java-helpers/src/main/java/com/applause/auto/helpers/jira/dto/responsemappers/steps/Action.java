@@ -18,10 +18,11 @@
 package com.applause.auto.helpers.jira.dto.responsemappers.steps;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
 
-@Data
+/**
+ * Represents an action.
+ *
+ * @param value The value associated with the action.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Action {
-  private Value value;
-}
+public record Action(Value value) {}

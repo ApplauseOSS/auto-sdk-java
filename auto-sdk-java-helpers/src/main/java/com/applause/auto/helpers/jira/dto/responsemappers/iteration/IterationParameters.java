@@ -18,11 +18,6 @@
 package com.applause.auto.helpers.jira.dto.responsemappers.iteration;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class IterationParameters {
-  private String name;
-  private String value;
-}
+public record IterationParameters(String name, String value) {}

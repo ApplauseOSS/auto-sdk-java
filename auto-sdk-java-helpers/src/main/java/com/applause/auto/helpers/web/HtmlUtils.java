@@ -19,6 +19,7 @@ package com.applause.auto.helpers.web;
 
 import com.applause.auto.helpers.util.AwaitilityWaitUtils;
 import java.util.List;
+import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
@@ -27,9 +28,13 @@ import org.openqa.selenium.WebDriver;
 import us.codecraft.xsoup.Xsoup;
 
 /** Common methods for HTML-based content. */
-public class HtmlUtils {
+public final class HtmlUtils {
 
   private static final Logger logger = LogManager.getLogger(HtmlUtils.class);
+
+  private HtmlUtils() {
+    // utility class
+  }
 
   /**
    * Wait for page viewport to be not empty
@@ -40,13 +45,16 @@ public class HtmlUtils {
    * @param pollingInterval - polling interval for wait of viewport
    */
   public static void waitForPageViewPortNotEmpty(
-      WebDriver driver, String xpathRootLocator, int waitInterval, int pollingInterval) {
+      @NonNull final WebDriver driver,
+      @NonNull final String xpathRootLocator,
+      final int waitInterval,
+      final int pollingInterval) {
     AwaitilityWaitUtils.waitForCondition(
         () -> {
           String currentPageSource = driver.getPageSource();
           boolean gsdHtmlInViewportLoaded =
               wasHtmlInViewportLoadedByRootElementXpathLocator(currentPageSource, xpathRootLocator);
-          logger.info("Page viewport was loaded correctly: " + gsdHtmlInViewportLoaded);
+          logger.info("Page viewport was loaded correctly: {}", gsdHtmlInViewportLoaded);
           return gsdHtmlInViewportLoaded;
         },
         waitInterval,
@@ -55,7 +63,7 @@ public class HtmlUtils {
   }
 
   private static boolean wasHtmlInViewportLoadedByRootElementXpathLocator(
-      String currentHtml, String xpathRootLocator) {
+      @NonNull final String currentHtml, @NonNull final String xpathRootLocator) {
     Document doc = Jsoup.parse(currentHtml);
     List<String> list = Xsoup.compile(xpathRootLocator).evaluate(doc).list();
     return !list.isEmpty();

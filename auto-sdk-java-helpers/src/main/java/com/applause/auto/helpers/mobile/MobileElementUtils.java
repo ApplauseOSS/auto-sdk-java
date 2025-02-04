@@ -35,9 +35,13 @@ import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 
 /** Helper for mobile elements on native mobile */
-public class MobileElementUtils {
+public final class MobileElementUtils {
 
   private static final Logger logger = LogManager.getLogger(MobileElementUtils.class);
+
+  private MobileElementUtils() {
+    // utility class
+  }
 
   /**
    * Tap element center
@@ -45,7 +49,8 @@ public class MobileElementUtils {
    * @param driver - automation driver
    * @param element - mobile element for tap on
    */
-  public static void tapElementCenter(AppiumDriver driver, WebElement element) {
+  public static void tapElementCenter(
+      @NonNull final AppiumDriver driver, @NonNull final WebElement element) {
     Point centerOfElement = getCenter(element);
     tapElementByCoordinates(driver, centerOfElement);
   }
@@ -56,7 +61,8 @@ public class MobileElementUtils {
    * @param driver - automation driver
    * @param elementCoordinates - coordinates point for tap
    */
-  public static void tapElementByCoordinates(AppiumDriver driver, Point elementCoordinates) {
+  public static void tapElementByCoordinates(
+      @NonNull final AppiumDriver driver, @NonNull final Point elementCoordinates) {
     PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
     Sequence tap = new Sequence(finger, 1);
     tap.addAction(
@@ -76,7 +82,8 @@ public class MobileElementUtils {
    * @param driver - automation driver
    * @param element - mobile element for long press on
    */
-  public static void longPressOnElementCenter(AppiumDriver driver, WebElement element) {
+  public static void longPressOnElementCenter(
+      @NonNull final AppiumDriver driver, @NonNull final WebElement element) {
     Point centerOfElement = getCenter(element);
 
     PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
@@ -111,7 +118,11 @@ public class MobileElementUtils {
    * @param duration - duration for tap
    */
   public static void clickElementWithExecuteScript(
-      WebDriver driver, WebElement element, int tapCount, int touchCount, int duration) {
+      @NonNull final WebDriver driver,
+      @NonNull final WebElement element,
+      final int tapCount,
+      final int touchCount,
+      final int duration) {
     Point elementCenter = getCenter(element);
     logger.info("Element coords: " + elementCenter);
     Map<String, Double> tap = new HashMap<>();

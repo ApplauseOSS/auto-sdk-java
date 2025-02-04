@@ -18,13 +18,14 @@
 package com.applause.auto.helpers.jira.dto.responsemappers.steps;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
 
-@Data
+/**
+ * A record representing an attachment.
+ *
+ * @param id The ID of the attachment.
+ * @param fileName The name of the file.
+ * @param fileURL The URL of the file.
+ * @param filePath The path to the file.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Attachments {
-  private int id;
-  private String fileName;
-  private String fileURL;
-  private String filePath;
-}
+public record Attachments(int id, String fileName, String fileURL, String filePath) {}

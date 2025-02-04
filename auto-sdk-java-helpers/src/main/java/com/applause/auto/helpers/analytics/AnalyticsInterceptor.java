@@ -21,7 +21,6 @@ import com.applause.auto.helpers.AnalyticsHelper;
 import com.applause.auto.pageobjectmodel.base.ComponentInterceptor;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
-import lombok.AllArgsConstructor;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
@@ -34,10 +33,18 @@ import net.bytebuddy.matcher.ElementMatchers;
  * This interceptor is added to classes in the PageObjectFactory to facilitate running code before
  * and after methods. Currently, the only use case is for the @AnalyticsCall annotation.
  */
-@AllArgsConstructor
 @SuppressWarnings("PMD.SignatureDeclareThrowsException") // since we're intercepting this is okay
 public class AnalyticsInterceptor extends ComponentInterceptor {
-  private AnalyticsHelper analyticsHelper;
+  private final AnalyticsHelper analyticsHelper;
+
+  /**
+   * Constructs a new AnalyticsInterceptor.
+   *
+   * @param analyticsHelper The AnalyticsHelper instance to use for analytics reporting.
+   */
+  public AnalyticsInterceptor(final AnalyticsHelper analyticsHelper) {
+    this.analyticsHelper = analyticsHelper;
+  }
 
   /**
    * Methods in a page object class that meet the criteria in match() are subject to the extra logic

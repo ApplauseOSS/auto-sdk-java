@@ -18,16 +18,23 @@
 package com.applause.auto.helpers.jira.helper;
 
 import io.restassured.response.Response;
+import lombok.NonNull;
 import org.apache.commons.lang3.Range;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ResponseValidator {
+public final class ResponseValidator {
 
   private static final Logger logger = LogManager.getLogger(ResponseValidator.class);
 
+  private ResponseValidator() {
+    // utility class
+  }
+
   public static void checkResponseInRange(
-      Response response, Range<Integer> expectedRange, String action) {
+      @NonNull final Response response,
+      @NonNull final Range<Integer> expectedRange,
+      final String action) {
     int statusCode = response.statusCode();
     if (expectedRange.contains(statusCode)) {
       logger.info("{} was successfully performed", action);

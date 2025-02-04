@@ -28,180 +28,156 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.GeneralSecurityException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Google Sheet parser (from Google Drive) [Requires some configuration management from Google Cloud
- * side] Some common tutorials:
+ * Utility class for parsing Google Sheets. Requires configuration management on the Google Cloud
+ * side.
  */
-public class GoogleSheetParser {
+@SuppressWarnings("PMD.LooseCoupling")
+public final class GoogleSheetParser {
 
   private static final Logger logger = LogManager.getLogger(GoogleSheetParser.class);
+  private static final String KEY_PARAMETER = "key";
 
-  @Getter private String sheetId;
-
-  @Getter private String googleSheetParsingCloudConfiguredApplicationName;
-
-  private Sheets service;
+  @Getter private final String sheetId;
+  @Getter private final String applicationName;
+  private final Sheets service;
 
   /**
-   * Create sheet parser using API key access That will work once Google sheet document is available
-   * for sharing with "Everyone with a link" option
+   * Constructs a GoogleSheetParser using an API key.
    *
-   * @param apiKey
-   * @param sheetId
+   * @param apiKey The API key.
+   * @param sheetId The Google Sheet ID.
+   * @param applicationName The application name.
    */
   public GoogleSheetParser(
-      String apiKey, String sheetId, String googleSheetParsingCloudConfiguredApplicationName) {
+      @NonNull final String apiKey,
+      @NonNull final String sheetId,
+      @NonNull final String applicationName) {
     this.sheetId = sheetId;
-    this.googleSheetParsingCloudConfiguredApplicationName =
-        googleSheetParsingCloudConfiguredApplicationName;
-    NetHttpTransport transport = new NetHttpTransport.Builder().build();
-    HttpRequestInitializer httpRequestInitializer =
-        request -> {
-          request.setInterceptor(intercepted -> intercepted.getUrl().set("key", apiKey));
-        };
+    this.applicationName = applicationName;
+
+    final HttpTransport transport = new NetHttpTransport.Builder().build();
+    final HttpRequestInitializer httpRequestInitializer =
+        request ->
+            request.setInterceptor(intercepted -> intercepted.getUrl().set(KEY_PARAMETER, apiKey));
+
     this.service =
         new Sheets.Builder(transport, GsonFactory.getDefaultInstance(), httpRequestInitializer)
-            .setApplicationName(googleSheetParsingCloudConfiguredApplicationName)
+            .setApplicationName(applicationName)
             .build();
   }
 
   /**
-   * Create parser using service account .json file
+   * Constructs a GoogleSheetParser using a service account JSON file.
    *
-   * @param serviceAccountJsonFileInputStream input stream for .json file with configs
-   * @param sheetId Google sheet id value (unique part of access link)
-   * @throws IOException
-   * @throws GeneralSecurityException
+   * @param serviceAccountJsonFileInputStream The input stream for the service account JSON file.
+   * @param sheetId The Google Sheet ID.
+   * @param applicationName The application name.
    */
+  @SuppressWarnings("deprecation")
   @SneakyThrows
   public GoogleSheetParser(
-      InputStream serviceAccountJsonFileInputStream,
-      String sheetId,
-      String googleSheetParsingCloudConfiguredApplicationName) {
+      @NonNull final InputStream serviceAccountJsonFileInputStream,
+      @NonNull final String sheetId,
+      @NonNull final String applicationName) {
     this.sheetId = sheetId;
-    this.googleSheetParsingCloudConfiguredApplicationName =
-        googleSheetParsingCloudConfiguredApplicationName;
-    HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-    GoogleCredential googleCredentials =
+    this.applicationName = applicationName;
+
+    final HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+    final GoogleCredential credentials =
         GoogleCredential.fromStream(serviceAccountJsonFileInputStream)
             .createScoped(Collections.singletonList(SheetsScopes.SPREADSHEETS));
 
     this.service =
-        new Sheets.Builder(httpTransport, GsonFactory.getDefaultInstance(), googleCredentials)
-            .setApplicationName(googleSheetParsingCloudConfiguredApplicationName)
+        new Sheets.Builder(httpTransport, GsonFactory.getDefaultInstance(), credentials)
+            .setApplicationName(applicationName)
             .build();
   }
 
   /**
-   * Get all sheet cell records
+   * Retrieves all cell records from a sheet.
    *
-   * @param sheetTitle sheet title
-   * @return kind of a matrix values from Google sheet file per sheet title from a document
-   * @throws IOException
+   * @param sheetTitle The title of the sheet.
+   * @return A list of lists representing the cell values.
+   * @throws IOException If an I/O error occurs.
+   * @throws GoogleSheetParserException If the sheet is not found or no values are present.
    */
-  public List<List<Object>> getAllSheetCellRecords(String sheetTitle) throws IOException {
-    SheetProperties sheetProperties = getSheetObjectBySheetTitle(sheetTitle).getProperties();
-    List<DataFilter> dataFilters = new ArrayList<>();
-    DataFilter dataFilterForWholeDocumentCells = getAllSheetCellsDataFilter(sheetProperties);
-    dataFilters.add(dataFilterForWholeDocumentCells);
+  public List<List<Object>> getAllSheetCellRecords(@NonNull final String sheetTitle)
+      throws IOException {
+    final var sheetProperties = getSheetObjectBySheetTitle(sheetTitle).getProperties();
+    final var dataFilter = getAllSheetCellsDataFilter(sheetProperties);
 
-    BatchGetValuesByDataFilterRequest batchGetValuesByDataFilterRequest =
-        getBatchFilterRequest(dataFilters);
-    BatchGetValuesByDataFilterResponse batchGetValuesByDataFilterResponse =
-        service
-            .spreadsheets()
-            .values()
-            .batchGetByDataFilter(sheetId, batchGetValuesByDataFilterRequest)
-            .execute();
-    List<MatchedValueRange> matchedValueRanges =
-        batchGetValuesByDataFilterResponse.getValueRanges();
-    List<List<Object>> values = getCellMatrixFromValueRanges(dataFilters, matchedValueRanges);
-    logger.info("Lines loaded from Sheet: " + values.size());
+    final var request = new BatchGetValuesByDataFilterRequest();
+    request.setDataFilters(List.of(dataFilter));
+
+    final var response =
+        service.spreadsheets().values().batchGetByDataFilter(sheetId, request).execute();
+
+    final var valueRanges = response.getValueRanges();
+    final var values = getCellMatrixFromValueRanges(List.of(dataFilter), valueRanges);
+
+    logger.info("Lines loaded from Sheet: {}", values.size());
     return values;
   }
 
   @SneakyThrows
-  private Sheet getSheetObjectBySheetTitle(String sheetName) {
-    Spreadsheet spreadsheetDocument = service.spreadsheets().get(sheetId).execute();
+  private Sheet getSheetObjectBySheetTitle(@NonNull final String sheetName) {
+    final var spreadsheetDocument = service.spreadsheets().get(sheetId).execute();
     return spreadsheetDocument.getSheets().stream()
         .filter(sheet -> sheet.getProperties().getTitle().equals(sheetName))
         .findFirst()
         .orElseThrow(
-            () ->
-                new GoogleSheetParserException(
-                    "Sheet with title: " + sheetName + " not " + "found"));
+            () -> new GoogleSheetParserException("Sheet with title: " + sheetName + " not found"));
   }
 
-  private DataFilter getAllSheetCellsDataFilter(SheetProperties sheetProperties) {
-    DataFilter dataFilter = new DataFilter();
-    GridRange gridRange = new GridRange();
-    GridProperties gridProperties = sheetProperties.getGridProperties();
+  private DataFilter getAllSheetCellsDataFilter(@NonNull final SheetProperties sheetProperties) {
+    final var dataFilter = new DataFilter();
+    final var gridRange = new GridRange();
+    final var gridProperties = sheetProperties.getGridProperties();
+
     gridRange.setSheetId(sheetProperties.getSheetId());
-    int startIndex = 0;
-    int endRowIndex = gridProperties.getRowCount() - 1;
-    int startColumnIndex = 0;
-    int endColumnIndex = gridProperties.getColumnCount() - 1;
+    gridRange.setStartRowIndex(0);
+    gridRange.setEndRowIndex(gridProperties.getRowCount() - 1);
+    gridRange.setStartColumnIndex(0);
+    gridRange.setEndColumnIndex(gridProperties.getColumnCount() - 1);
+
     logger.info(
-        "Creating data filter for sheet: {} with row range [{} , {}] and column range [{} , {}]",
+        "Creating data filter for sheet: {} with row range [{}, {}] and column range [{}, {}]",
         sheetProperties.getTitle(),
-        startIndex,
-        endRowIndex,
-        startColumnIndex,
-        endColumnIndex);
-    gridRange.setStartRowIndex(startIndex);
-    gridRange.setEndRowIndex(endRowIndex);
-    gridRange.setStartColumnIndex(startColumnIndex);
-    gridRange.setEndColumnIndex(endColumnIndex);
+        gridRange.getStartRowIndex(),
+        gridRange.getEndRowIndex(),
+        gridRange.getStartColumnIndex(),
+        gridRange.getEndColumnIndex());
 
     dataFilter.setGridRange(gridRange);
     return dataFilter;
   }
 
-  private BatchGetValuesByDataFilterRequest getBatchFilterRequest(List<DataFilter> dataFilters) {
-    BatchGetValuesByDataFilterRequest batchGetValuesByDataFilterRequest =
-        new BatchGetValuesByDataFilterRequest();
-    batchGetValuesByDataFilterRequest.setDataFilters(dataFilters);
-    return batchGetValuesByDataFilterRequest;
-  }
-
   private List<List<Object>> getCellMatrixFromValueRanges(
-      List<DataFilter> dataFilters, List<MatchedValueRange> matchedValueRanges) {
-    int dataFiltersCount = dataFilters.size();
-    if (matchedValueRanges.size() != dataFiltersCount) {
-      throw new GoogleSheetParserException(
-          "No value ranges data present for "
-              + dataFilters.stream()
-                  .map(filter -> filter.getGridRange())
-                  .collect(Collectors.toList()));
+      @NonNull final List<DataFilter> dataFilters,
+      @NonNull final List<MatchedValueRange> matchedValueRanges) {
+
+    if (matchedValueRanges.size() != dataFilters.size()) {
+      final String filters = dataFilters.stream().map(DataFilter::getGridRange).toList().toString();
+      throw new GoogleSheetParserException("No value ranges data present for " + filters);
     }
 
-    List<List<Object>> values =
-        (List<List<Object>>)
-            matchedValueRanges
-                // TODO Implement dynamic filtering approach with passing List<DataFilter> as param
-                .get(dataFiltersCount - 1)
-                .getValueRange()
-                .values()
-                .stream()
-                .filter(valueObject -> Collection.class.isAssignableFrom(valueObject.getClass()))
-                .findFirst()
-                .orElseThrow(
-                    () ->
-                        new GoogleSheetParserException(
-                            "No Collection value object found in value range result response"));
-    if (Objects.nonNull(values) && !values.isEmpty()) {
-      return values;
-    } else {
-      logger.error("No data 'matrix' found in range");
-      return List.of(Collections.emptyList());
-    }
+    return Collections.singletonList(
+        matchedValueRanges.getFirst().getValueRange().getValues().stream()
+            .filter(Objects::nonNull)
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new GoogleSheetParserException(
+                        "No Collection value object found in value range result response")));
   }
 }

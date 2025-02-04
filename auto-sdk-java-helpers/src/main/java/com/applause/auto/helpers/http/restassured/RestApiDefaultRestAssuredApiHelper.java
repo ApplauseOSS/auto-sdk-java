@@ -31,7 +31,7 @@ import lombok.Getter;
 @Getter
 public class RestApiDefaultRestAssuredApiHelper {
 
-  private RestAssuredApiClient restAssuredApiClient;
+  private final RestAssuredApiClient restAssuredApiClient;
 
   public RestApiDefaultRestAssuredApiHelper() {
     restAssuredApiClient = new RestApiDefaultRestAssuredApiClient(Duration.ofSeconds(60));
@@ -40,7 +40,7 @@ public class RestApiDefaultRestAssuredApiHelper {
   /**
    * 'with' describing default RestAssuredConfig
    *
-   * @return
+   * @return request specification
    */
   public RequestSpecification withDefaultRestHttpClientConfigsSpecification() {
     return restAssuredApiClient.restAssuredRequestSpecification(new JacksonJSONRestObjectMapping());

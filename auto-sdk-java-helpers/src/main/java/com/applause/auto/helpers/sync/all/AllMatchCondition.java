@@ -24,7 +24,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +38,6 @@ import org.openqa.selenium.support.ui.Wait;
  * @param <E> a type extending UIElement, a List of which serves as both the input and output types
  *     of this Condition
  */
-@RequiredArgsConstructor
 public class AllMatchCondition<E extends UIElement> implements Condition<List<E>, List<E>> {
   private static final Logger logger = LogManager.getLogger();
 
@@ -48,6 +46,20 @@ public class AllMatchCondition<E extends UIElement> implements Condition<List<E>
   private final String description;
   @Setter private Duration timeout;
   @Setter private Duration pollingInterval;
+
+  /**
+   * Constructor for AllMatchCondition.
+   *
+   * @param elements The list of elements to check.
+   * @param function The function to apply to each element.
+   * @param description The description of the condition.
+   */
+  public AllMatchCondition(
+      final List<E> elements, final Function<E, Boolean> function, final String description) {
+    this.elements = elements;
+    this.function = function;
+    this.description = description;
+  }
 
   /**
    * Run the Condition against the whole List.

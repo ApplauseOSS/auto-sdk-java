@@ -19,8 +19,6 @@ package com.applause.auto.helpers.jira.clients.modules.jira;
 
 import static com.applause.auto.helpers.jira.constants.XrayEndpoints.*;
 import static com.applause.auto.helpers.jira.helper.ResponseValidator.checkResponseInRange;
-import static com.applause.auto.helpers.jira.requestData.XrayRequestHeaders.getAtlassianNoCheckHeader;
-import static com.applause.auto.helpers.jira.requestData.XrayRequestHeaders.getContentTypeMultipartFormDataHeader;
 import static com.applause.auto.helpers.jira.restclient.XrayRestAssuredClient.getRestClient;
 
 import com.applause.auto.helpers.jira.dto.requestmappers.JiraCreateTicketRequest;
@@ -29,39 +27,42 @@ import com.applause.auto.helpers.jira.dto.responsemappers.AvailableProjects;
 import com.applause.auto.helpers.jira.dto.responsemappers.JiraCreateTicketResponse;
 import com.applause.auto.helpers.jira.dto.responsemappers.steps.Steps;
 import com.applause.auto.helpers.jira.dto.shared.Issuetype;
+import com.applause.auto.helpers.util.GenericObjectMapper;
+import com.applause.auto.helpers.util.XrayRequestHeaders;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
+import lombok.NonNull;
 import org.apache.commons.lang3.Range;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class JiraProjectAPI {
 
   private static final Logger logger = LogManager.getLogger(JiraProjectAPI.class);
-  private ObjectMapper mapper = new ObjectMapper();
 
   /**
-   * Creates a simple JIRA ticket, additional fields can be created as per project's needs. This
-   * method can be used to create a new test case, test plan, test execution etc.
-   * https://developer.atlassian.com/server/jira/platform/jira-rest-api-examples/
+   * Creates a simple JIRA ticket. Additional fields can be created as per project's needs. This
+   * method can be used to create a new test case, test plan, test execution, etc. <a
+   * href="https://developer.atlassian.com/server/jira/platform/jira-rest-api-examples/">...</a>
    *
-   * @param jiraCreateTicketRequestMapping, Object of JiraCreateTicketRequestMapping ticket's title
-   * @return ticket key extracted from response: {"id":"", "key":"", "self":""}
-   * @throws JsonProcessingException
+   * @param jiraCreateTicketRequest The request object containing the ticket details.
+   * @return The ticket key extracted from the response (e.g., "PROJECT-123").
+   * @throws JsonProcessingException If an error occurs during JSON processing.
    */
-  public String createTicket(JiraCreateTicketRequest jiraCreateTicketRequestMapping)
+  public String createTicket(@NonNull final JiraCreateTicketRequest jiraCreateTicketRequest)
       throws JsonProcessingException {
-    logger.info("Creating Jira ticket: {}", jiraCreateTicketRequestMapping.toString());
-    Response response = postTicket(jiraCreateTicketRequestMapping);
-    checkResponseInRange(response, Range.between(200, 300), "Creating new Jira Ticket");
-    JiraCreateTicketResponse jiraCreateTicketResponseMapping =
-        mapper.readValue(response.asString(), JiraCreateTicketResponse.class);
-    String createdJiraTicketId = jiraCreateTicketResponseMapping.getKey();
+    logger.info("Creating Jira ticket: {}", jiraCreateTicketRequest.toString());
+    Response response = postTicket(jiraCreateTicketRequest);
+    checkResponseInRange(response, Range.of(200, 300), "Creating new Jira Ticket");
+    JiraCreateTicketResponse jiraCreateTicketResponse =
+        GenericObjectMapper.getObjectMapper()
+            .readValue(response.asString(), JiraCreateTicketResponse.class);
+    String createdJiraTicketId = jiraCreateTicketResponse.key();
     logger.info("Created Jira ticket: {}", createdJiraTicketId);
     return createdJiraTicketId;
   }
@@ -69,106 +70,121 @@ public class JiraProjectAPI {
   /**
    * Modify existing Jira Ticket by sending the short or full json data
    *
-   * @param jiraTicketID
-   * @param jsonAsString
-   * @example: { "fields" : { "labels": [ "my_new_label" ] } }
+   * @param jiraTicketID the Jira ticket ID
+   * @param jsonAsString JIRA ticket JSON contents {@code @example:} { "fields" : { "labels": [
+   *     "my_new_label" ] } }
    */
-  public void updateTicket(String jiraTicketID, String jsonAsString) {
+  public void updateTicket(@NonNull final String jiraTicketID, @NonNull final String jsonAsString) {
     logger.info("Updating Jira ticket: {} with [ {} ]", jiraTicketID, jsonAsString);
     Response response = putUpdateTicket(jiraTicketID, jsonAsString);
-    checkResponseInRange(response, Range.between(200, 300), "Updating Jira Ticket");
+    checkResponseInRange(response, Range.of(200, 300), "Updating Jira Ticket");
   }
 
   /**
    * Delete existing Jira Ticket
    *
-   * @param jiraTicketID
+   * @param jiraTicketID JIRA ticket ID
    */
-  public void deleteTicket(String jiraTicketID) {
+  public void deleteTicket(@NonNull final String jiraTicketID) {
     logger.info("Deleting Jira ticket: {}", jiraTicketID);
     Response response = deleteExistingTicket(jiraTicketID);
-    checkResponseInRange(response, Range.between(200, 300), "Deleting Jira Ticket");
+    checkResponseInRange(response, Range.of(200, 300), "Deleting Jira Ticket");
   }
 
   /**
    * Get Test Case steps
    *
-   * @param jiraTicketID
+   * @param jiraTicketID JIRA ticket ID
    * @return Steps object
    */
-  public Steps getTestCaseSteps(String jiraTicketID) throws JsonProcessingException {
+  public Steps getTestCaseSteps(@NonNull final String jiraTicketID) throws JsonProcessingException {
     Response response = getJiraTestCaseSteps(jiraTicketID);
-    Steps steps = mapper.readValue(response.asString(), Steps.class);
-    checkResponseInRange(response, Range.between(200, 300), "Get Test Case Steps");
+    Steps steps = GenericObjectMapper.getObjectMapper().readValue(response.asString(), Steps.class);
+    checkResponseInRange(response, Range.of(200, 300), "Get Test Case Steps");
     return steps;
   }
 
   /**
-   * Upload file to specific jira ticket (issue, testcase, execution, plan etc) Checks performed: 1.
-   * If provided file exists 2. If response contains file name and if status code is in 200 range
+   * Upload file to specific jira ticket (issue, testcase, execution, plan etc). Checks performed:
    *
-   * @param jiraTicketID, represents the jira ticket identifier
-   * @param pathToFile, full path to file with its extension
-   * @return void
+   * <ol>
+   *   <li>If provided file exists
+   *   <li>If response contains file name and if status code is in 200 range
+   * </ol>
+   *
+   * @param jiraTicketID represents the jira ticket identifier.
+   * @param pathToFile full path to file with its extension.
+   * @throws FileNotFoundException If the file specified by {@code pathToFile} does not exist.
    */
-  public void uploadAttachment(String jiraTicketID, String pathToFile)
+  public void uploadAttachment(@NonNull final String jiraTicketID, @NonNull final String pathToFile)
       throws FileNotFoundException {
     Response response = postAttachment(jiraTicketID, pathToFile);
     String fileName = new File(pathToFile).getName();
     if (!response.getBody().asString().contains(fileName)) {
       logger.error("Failed to upload attachment {}", fileName);
     }
-    checkResponseInRange(response, Range.between(200, 300), "Adding attachment");
+    checkResponseInRange(response, Range.of(200, 300), "Adding attachment");
   }
 
   /**
-   * @param projectKey, represents the jira project identifier Example CARQA-1234, where CARQA is
-   *     the project identifier
-   * @return projectId
+   * Retrieves the project ID associated with a given project key.
+   *
+   * @param projectKey The Jira project identifier (e.g., "CARQA-1234", where "CARQA" is the project
+   *     identifier). Must not be null.
+   * @return The project ID as a String.
+   * @throws JsonProcessingException If there is an error processing the JSON response.
+   * @throws NullPointerException If the provided projectKey is null.
    */
-  public String getProjectId(String projectKey) throws JsonProcessingException {
-    StringBuilder apiEndpoint = new StringBuilder();
-    apiEndpoint.append(LATEST_API).append("/").append(PROJECT);
+  public String getProjectId(@NonNull final String projectKey) throws JsonProcessingException {
     Response response = getProjectCode(projectKey);
-    checkResponseInRange(response, Range.between(200, 300), "Determine project Id");
+    checkResponseInRange(response, Range.of(200, 300), "Determine project Id");
     AvailableProjects[] availableProjects =
-        mapper.readValue(response.asString(), AvailableProjects[].class);
+        GenericObjectMapper.getObjectMapper()
+            .readValue(response.asString(), AvailableProjects[].class);
     return Arrays.stream(availableProjects)
-        .filter(project -> project.getKey().equalsIgnoreCase(projectKey))
+        .filter(project -> project.key().equalsIgnoreCase(projectKey))
         .findFirst()
         .get()
-        .getId();
+        .id();
   }
 
   /**
-   * @param projectId, represents the project identifier code
-   * @return list of Issuetype objects
+   * Retrieves a list of available issue types for a given project.
+   *
+   * @param projectId the identifier of the project.
+   * @return a list of Issuetype objects representing the available issue types.
+   * @throws JsonProcessingException if there is an error processing the JSON response.
    */
-  public List<Issuetype> getAvailableIssueTypes(String projectId) throws JsonProcessingException {
+  public List<Issuetype> getAvailableIssueTypes(@NonNull final String projectId)
+      throws JsonProcessingException {
     Response response = getAvailableIssues(projectId);
-    checkResponseInRange(response, Range.between(200, 300), "Get project issue types");
-    return mapper.readValue(response.asString(), AvailableIssueTypes.class).getValues();
+    checkResponseInRange(response, Range.of(200, 300), "Get project issue types");
+    return GenericObjectMapper.getObjectMapper()
+        .readValue(response.asString(), AvailableIssueTypes.class)
+        .values();
   }
 
   /**
    * Attach label to Jira ticket
    *
-   * @param jiraTicketID
-   * @param labelName
+   * @param jiraTicketID JIRA ticket ID
+   * @param labelName Ticket label name
    */
-  public void addLabel(String jiraTicketID, String labelName) {
+  public void addLabel(@NonNull final String jiraTicketID, @NonNull final String labelName) {
     logger.info("Updating Jira ticket: {} with [ {} ] label", jiraTicketID, labelName);
     Response response = putLabelToTicket(jiraTicketID, labelName);
-    checkResponseInRange(response, Range.between(200, 300), "Adding Jira Ticket label");
+    checkResponseInRange(response, Range.of(200, 300), "Adding Jira Ticket label");
   }
 
-  private Response postTicket(JiraCreateTicketRequest jiraCreateTicketRequestMapping)
+  private Response postTicket(@NonNull final JiraCreateTicketRequest jiraCreateTicketRequestMapping)
       throws JsonProcessingException {
     logger.info("Creating Jira ticket: {}", jiraCreateTicketRequestMapping.toString());
     return getRestClient()
         .given()
         .and()
-        .body(mapper.writeValueAsString(jiraCreateTicketRequestMapping))
+        .body(
+            GenericObjectMapper.getObjectMapper()
+                .writeValueAsString(jiraCreateTicketRequestMapping))
         .when()
         .post(ISSUE_PATH)
         .then()
@@ -176,93 +192,75 @@ public class JiraProjectAPI {
         .response();
   }
 
-  private Response putUpdateTicket(String jiraTicketID, String jsonAsString) {
+  private Response putUpdateTicket(
+      @NonNull final String jiraTicketID, @NonNull final String jsonAsString) {
     logger.info("Updating Jira Ticket {} with [ {} ]", jiraTicketID, jsonAsString);
-    StringBuilder apiEndpoint = new StringBuilder(ISSUE_PATH);
-    apiEndpoint.append("/").append(jiraTicketID);
+    final var apiEndpoint = ISSUE_PATH + "/" + jiraTicketID;
     return getRestClient()
         .given()
         .and()
         .body(jsonAsString)
         .when()
-        .put(apiEndpoint.toString())
+        .put(apiEndpoint)
         .then()
         .extract()
         .response();
   }
 
-  private Response getJiraTestCaseSteps(String jiraTicketID) {
+  private Response getJiraTestCaseSteps(@NonNull final String jiraTicketID) {
     logger.info("Getting X-Ray Test Case Steps response for case: {}", jiraTicketID);
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint.append(TEST).append("/").append(jiraTicketID).append("/").append(STEPS);
-    return getRestClient().given().when().get(apiEndpoint.toString()).then().extract().response();
+    String apiEndpoint = XRAY_PATH + TEST + "/" + jiraTicketID + "/" + STEPS;
+    return getRestClient().given().when().get(apiEndpoint).then().extract().response();
   }
 
-  private Response postAttachment(String jiraTicketID, String pathToFile)
+  private Response postAttachment(
+      @NonNull final String jiraTicketID, @NonNull final String pathToFile)
       throws FileNotFoundException {
     logger.info("Uploading attachment {} to Jira Ticket {}", pathToFile, jiraTicketID);
     File attachment = new File(pathToFile);
     if (!attachment.exists()) {
       throw new FileNotFoundException(String.format("Unable to find file %s", pathToFile));
     }
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint.append(ISSUE_PATH).append("/").append(jiraTicketID).append("/").append(ATTACHMENTS);
+    String apiEndpoint = XRAY_PATH + ISSUE_PATH + "/" + jiraTicketID + "/" + ATTACHMENTS;
     return getRestClient()
         .given()
-        .header(getContentTypeMultipartFormDataHeader())
-        .header(getAtlassianNoCheckHeader())
+        .header(XrayRequestHeaders.getContentTypeMultipartFormDataHeader())
+        .header(XrayRequestHeaders.getAtlassianNoCheckHeader())
         .multiPart("file", attachment)
         .and()
         .when()
-        .post(apiEndpoint.toString())
+        .post(apiEndpoint)
         .then()
         .extract()
         .response();
   }
 
-  private Response getProjectCode(String projectKey) {
+  private Response getProjectCode(@NonNull final String projectKey) {
     logger.info("Returning project code for project key {}", projectKey);
-    StringBuilder apiEndpoint = new StringBuilder();
-    apiEndpoint.append(LATEST_API).append("/").append(PROJECT);
-    return getRestClient().given().when().get(apiEndpoint.toString()).then().extract().response();
+    String apiEndpoint = LATEST_API + "/" + PROJECT;
+    return getRestClient().given().when().get(apiEndpoint).then().extract().response();
   }
 
-  private Response getAvailableIssues(String projectId) {
+  private Response getAvailableIssues(@NonNull final String projectId) {
     logger.info("Returning available issues for project {}", projectId);
-    StringBuilder apiEndpoint = new StringBuilder();
-    apiEndpoint
-        .append(ISSUE_PATH)
-        .append("/")
-        .append(CREATEMETA)
-        .append("/")
-        .append(projectId)
-        .append("/")
-        .append(ISSUE_TYPES);
-    return getRestClient().given().when().get(apiEndpoint.toString()).then().extract().response();
+    String apiEndpoint = ISSUE_PATH + "/" + CREATEMETA + "/" + projectId + "/" + ISSUE_TYPES;
+    return getRestClient().given().when().get(apiEndpoint).then().extract().response();
   }
 
-  private Response deleteExistingTicket(String jiraTicketID) {
+  private Response deleteExistingTicket(@NonNull final String jiraTicketID) {
     logger.info("Deleting issue {}", jiraTicketID);
-    StringBuilder apiEndpoint = new StringBuilder(ISSUE_PATH);
-    apiEndpoint.append("/").append(jiraTicketID);
-    return getRestClient()
-        .given()
-        .when()
-        .delete(apiEndpoint.toString())
-        .then()
-        .extract()
-        .response();
+    String apiEndpoint = ISSUE_PATH + "/" + jiraTicketID;
+    return getRestClient().given().when().delete(apiEndpoint).then().extract().response();
   }
 
-  private Response putLabelToTicket(String jiraTicketID, String labelName) {
-    StringBuilder apiEndpoint = new StringBuilder(ISSUE_PATH);
-    apiEndpoint.append("/").append(jiraTicketID);
+  private Response putLabelToTicket(@NonNull final String jiraTicketID, final String labelName) {
+    String apiEndpoint = ISSUE_PATH + "/" + jiraTicketID;
     return getRestClient()
         .given()
         .and()
         .body(String.format("{\"update\":{\"labels\":[{\"add\":\"%s\"}]}}", labelName))
         .when()
-        .put(apiEndpoint.toString())
+        .put(apiEndpoint)
         .then()
         .extract()
         .response();

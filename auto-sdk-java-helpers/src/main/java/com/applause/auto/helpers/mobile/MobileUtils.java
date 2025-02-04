@@ -26,6 +26,7 @@ import io.appium.java_client.ios.IOSDriver;
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.IntStream;
+import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.Dimension;
@@ -35,11 +36,15 @@ import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /** Common mobile native utils */
-public class MobileUtils {
+public final class MobileUtils {
 
   private static final Logger logger = LogManager.getLogger(MobileUtils.class);
 
   private static final String CF_BUNDLE_IDENTIFIER = "CFBundleIdentifier";
+
+  private MobileUtils() {
+    // utility class
+  }
 
   /**
    * Scroll down scroll view X times
@@ -53,13 +58,13 @@ public class MobileUtils {
    * @param scrollTimes - how many times to scroll
    */
   public static void scrollVerticalSeveralTimes(
-      AppiumDriver driver,
-      double pStartXCoef,
-      double pStartYCoef,
-      double pEndYCoef,
-      int waitOption1,
-      int waitOption2,
-      int scrollTimes) {
+      @NonNull final AppiumDriver driver,
+      final double pStartXCoef,
+      final double pStartYCoef,
+      final double pEndYCoef,
+      final int waitOption1,
+      final int waitOption2,
+      final int scrollTimes) {
     IntStream.range(0, scrollTimes)
         .forEach(
             action ->
@@ -78,12 +83,12 @@ public class MobileUtils {
    * @param waitOption2 - wait action after move to
    */
   public static void scrollVertical(
-      AppiumDriver driver,
-      double pStartXCoef,
-      double pStartYCoef,
-      double pEndYCoef,
-      int waitOption1,
-      int waitOption2) {
+      @NonNull final AppiumDriver driver,
+      final double pStartXCoef,
+      final double pStartYCoef,
+      final double pEndYCoef,
+      final int waitOption1,
+      final int waitOption2) {
 
     Dimension size = driver.manage().window().getSize();
 
@@ -129,7 +134,7 @@ public class MobileUtils {
    *
    * @param driver - automation driver
    */
-  public static void hideKeyboard(HidesKeyboard driver) {
+  public static void hideKeyboard(@NonNull final HidesKeyboard driver) {
     try {
       driver.hideKeyboard();
     } catch (Exception e) {
@@ -145,7 +150,8 @@ public class MobileUtils {
    * @param y - y coordinate press
    * @param waitOption - wait action option value in millis
    */
-  public static void pressByCoordinates(AppiumDriver driver, int x, int y, long waitOption) {
+  public static void pressByCoordinates(
+      @NonNull final AppiumDriver driver, final int x, final int y, final long waitOption) {
     logger.info("Pressing natively by coordinates: " + x + " " + y);
 
     PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
@@ -173,7 +179,9 @@ public class MobileUtils {
    * @param waitAfterPageSourceRefresh - wait after page source refresh in millis
    */
   public static void refreshPageSource(
-      WebDriver driver, int waitBeforePageSourceRefresh, int waitAfterPageSourceRefresh) {
+      @NonNull final WebDriver driver,
+      final int waitBeforePageSourceRefresh,
+      final int waitAfterPageSourceRefresh) {
     logger.info("Refresh page source");
     ThreadHelper.sleep(waitBeforePageSourceRefresh);
     getMobileDriver(driver).getPageSource();
@@ -186,7 +194,7 @@ public class MobileUtils {
    * @param driver - automation driver
    * @return casted mobile driver or exception if driver casting to mobile one is not supported
    */
-  public static AppiumDriver getMobileDriver(WebDriver driver) {
+  public static AppiumDriver getMobileDriver(@NonNull final WebDriver driver) {
     if (driver instanceof AppiumDriver) {
       return (AppiumDriver) driver;
     } else {
@@ -197,9 +205,10 @@ public class MobileUtils {
   /**
    * Get App Bundle Identifier for android device
    *
-   * @return String
+   * @param driver The StartsActivity driver instance.
+   * @return The app bundle identifier.
    */
-  public static String getBundleIdentifierAndroid(StartsActivity driver) {
+  public static String getBundleIdentifierAndroid(@NonNull final StartsActivity driver) {
     String bundleId = driver.getCurrentPackage();
     logger.info(String.format("App bundle ID is [%s]", bundleId));
     return bundleId;
@@ -208,28 +217,34 @@ public class MobileUtils {
   /**
    * Get App Bundle Identifier iOS
    *
-   * @return String
+   * @param driver The RemoteWebDriver instance.
+   * @return The app bundle identifier.
    */
-  public static String getBundleIdentifierIos(RemoteWebDriver driver) {
+  public static String getBundleIdentifierIos(@NonNull final RemoteWebDriver driver) {
     String bundleId =
         getMobileDriver(driver).getCapabilities().getCapability(CF_BUNDLE_IDENTIFIER).toString();
-    logger.info(String.format("App bundle ID is [%s]", bundleId));
+    logger.info("App bundle ID is [{}]", bundleId);
     return bundleId;
   }
 
   /**
    * Get App Bundle Identifier
    *
-   * @return String
+   * @param driver The RemoteWebDriver instance.
+   * @return The app bundle identifier.
    */
-  public static String getBundleIdentifier(RemoteWebDriver driver) {
+  public static String getBundleIdentifier(@NonNull final RemoteWebDriver driver) {
     return driver instanceof IOSDriver
         ? getBundleIdentifierIos(driver)
         : getBundleIdentifierAndroid((StartsActivity) driver);
   }
 
-  /** Move App In Background */
-  public static void moveAppToBackground(InteractsWithApps driver) {
+  /**
+   * Move App In Background
+   *
+   * @param driver The InteractsWithApps driver instance.
+   */
+  public static void moveAppToBackground(@NonNull final InteractsWithApps driver) {
     logger.info("Move App To Background");
     driver.runAppInBackground(Duration.ofSeconds(-1));
   }
@@ -237,9 +252,11 @@ public class MobileUtils {
   /**
    * Activate App using bundleId and Return to AUT
    *
-   * @param bundleId Bundle ID
+   * @param driver The InteractsWithApps driver instance.
+   * @param bundleId The Bundle ID of the app to activate.
    */
-  public static void activateApp(InteractsWithApps driver, String bundleId) {
+  public static void activateApp(
+      @NonNull final InteractsWithApps driver, @NonNull final String bundleId) {
     logger.info("Return to AUT.");
     driver.activateApp(bundleId);
   }

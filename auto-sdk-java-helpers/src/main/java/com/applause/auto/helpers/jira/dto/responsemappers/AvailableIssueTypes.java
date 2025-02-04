@@ -20,10 +20,11 @@ package com.applause.auto.helpers.jira.dto.responsemappers;
 import com.applause.auto.helpers.jira.dto.shared.Issuetype;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
-import lombok.Data;
 
-@Data
+/**
+ * Represents a list of available issue types.
+ *
+ * @param values The list of {@link Issuetype} objects.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AvailableIssueTypes {
-  private List<Issuetype> values;
-}
+public record AvailableIssueTypes(List<Issuetype> values) {}

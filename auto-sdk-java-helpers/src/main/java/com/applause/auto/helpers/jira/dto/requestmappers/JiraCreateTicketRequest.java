@@ -17,9 +17,4 @@
  */
 package com.applause.auto.helpers.jira.dto.requestmappers;
 
-import lombok.Data;
-
-@Data
-public class JiraCreateTicketRequest {
-  private Fields fields;
-}
+public record JiraCreateTicketRequest(Fields fields) {}

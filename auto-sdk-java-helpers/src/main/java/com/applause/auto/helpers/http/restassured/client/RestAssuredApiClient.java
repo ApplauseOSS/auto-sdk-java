@@ -24,30 +24,39 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.specification.RequestSpecification;
 import java.time.Duration;
 import lombok.Getter;
+import lombok.NonNull;
 
 /** Rest assured api client */
 @Getter
 public abstract class RestAssuredApiClient {
 
-  private Duration apiRequestWaitTimeoutDuration;
+  private final Duration apiRequestWaitTimeoutDuration;
 
-  public RestAssuredApiClient(Duration apiRequestWaitTimeoutDuration) {
+  /**
+   * Constructs a new RestAssuredApiClient.
+   *
+   * @param apiRequestWaitTimeoutDuration The timeout duration for API requests.
+   */
+  public RestAssuredApiClient(@NonNull final Duration apiRequestWaitTimeoutDuration) {
     this.apiRequestWaitTimeoutDuration = apiRequestWaitTimeoutDuration;
   }
 
   /**
-   * get rest assured request specification object
+   * Gets a Rest Assured request specification object.
    *
-   * @return
+   * @param restObjectMapper The REST object mapper to use.
+   * @return A Rest Assured request specification.
    */
-  public RequestSpecification restAssuredRequestSpecification(IRestObjectMapper restObjectMapper) {
+  public RequestSpecification restAssuredRequestSpecification(
+      final IRestObjectMapper restObjectMapper) {
     return given().when().request().config(restAssuredConfig(restObjectMapper));
   }
 
   /**
-   * abstract rest assured config object
+   * Creates a Rest Assured config object.
    *
-   * @return
+   * @param restObjectMapper The REST object mapper to use.
+   * @return A Rest Assured config object.
    */
   protected abstract RestAssuredConfig restAssuredConfig(IRestObjectMapper restObjectMapper);
 }

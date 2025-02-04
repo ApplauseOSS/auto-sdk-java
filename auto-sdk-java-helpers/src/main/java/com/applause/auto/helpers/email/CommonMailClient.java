@@ -24,27 +24,37 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /** Provides some common methods between most email clients. */
-public abstract class CommonMailClient {
+public class CommonMailClient {
   private String host;
-  private Properties props = new Properties();
-  private Store store;
+  private final Properties props = new Properties();
+  private final Store store;
   private String protocol;
   private String userName;
   private String password;
   private static final Logger logger = LogManager.getLogger(CommonMailClient.class);
 
   /**
-   * Default constructor with params Example: username = some@email.com password = xxxx protocol =
-   * imaps host = imap.gmail.com
+   * Constructs a new CommonMailClient with the specified username, password, protocol, and host.
+   * Example: username = some@email.com, password = xxxx, protocol = imaps, host = imap.gmail.com
+   *
+   * @param userName The username for the mail account.
+   * @param password The password for the mail account.
+   * @param protocol The protocol to use for connecting to the mail server.
+   * @param host The hostname of the mail server.
+   * @throws MessagingException If an error occurs during the setup of mail credentials.
    */
-  public CommonMailClient(String userName, String password, Protocol protocol, String host) {
+  public CommonMailClient(
+      final String userName, final String password, final Protocol protocol, final String host)
+      throws MessagingException {
     this.userName = userName.trim();
     this.password = password;
     this.protocol = protocol.getValue();
@@ -59,17 +69,17 @@ public abstract class CommonMailClient {
    * @param regex The regular expression to use
    * @return The extracted text after applying the regex
    */
-  public String extractWithRegexFromString(String text, String regex) {
+  public String extractWithRegexFromString(final String text, @NonNull final String regex) {
     if (text.isEmpty()) {
       logger.info("Text is empty");
       return null;
     }
-    logger.info("Extracting with regex = [" + regex + "...");
+    logger.info("Extracting with regex = [{}...", regex);
     Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
     Matcher matcher = pattern.matcher(text);
 
     if (matcher.find()) {
-      logger.info("Extracted text is:: " + matcher.group(1).trim());
+      logger.info("Extracted text is:: {}", matcher.group(1).trim());
       return matcher.group(1).trim();
     }
     throw new RuntimeException("No matches were found in the text.");
@@ -82,25 +92,10 @@ public abstract class CommonMailClient {
    *
    * @param resourceFile an InputStream that represents a .properties files that includes all the
    *     above-mentioned properties.
+   * @throws MessagingException If an error occurs during mail session setup.
    */
-  public CommonMailClient(InputStream resourceFile) {
+  public CommonMailClient(@NonNull final InputStream resourceFile) throws MessagingException {
     store = setMailCredentials(resourceFile);
-  }
-
-  /**
-   * Initialize properties for current mailbox example setMailCredentials(new
-   * InputStream("/xxx/xxx/propertyFile"))
-   *
-   * @param resourceStream an InputStream that represents a .properties files that includes all the
-   *     above-mentioned properties.
-   * @return
-   */
-  private Store setMailCredentials(InputStream resourceStream) {
-    if (props.isEmpty()) {
-      setProperties(resourceStream);
-    }
-    Session session = Session.getDefaultInstance(props, null);
-    return getStore(session);
   }
 
   /**
@@ -108,7 +103,7 @@ public abstract class CommonMailClient {
    *
    * @param emailFolder The email folder to use.
    */
-  public void emptyAllReadEmailsFromInbox(Folder emailFolder) {
+  public void emptyAllReadEmailsFromInbox(@NonNull final Folder emailFolder) {
     deleteReadEmails(emailFolder);
   }
 
@@ -141,35 +136,38 @@ public abstract class CommonMailClient {
    * @throws MessagingException Thrown in case an error happens when getting any details from the
    *     email.
    */
-  protected boolean doesEmailMatchCriteria(Message email, SearchCriteria criteria)
+  protected boolean doesEmailMatchCriteria(
+      @NonNull final Message email, @NonNull final SearchCriteria criteria)
       throws MessagingException {
-    if (criteria.getEmailSubject() != null && !criteria.getEmailSubject().isEmpty()) {
+    if (criteria.emailSubject() != null && !criteria.emailSubject().isEmpty()) {
       // check email subject
-      boolean subjectMatch = email.getSubject().matches(criteria.getEmailSubject());
+      boolean subjectMatch = email.getSubject().matches(criteria.emailSubject());
       // return if false, otherwise continue
       if (!subjectMatch) {
         return false;
       }
     }
 
-    if (criteria.getSentFrom() != null && !criteria.getSentFrom().isEmpty()) {
+    if (criteria.sentFrom() != null && !criteria.sentFrom().isEmpty()) {
       // check sentFrom
       boolean sentFromMatch =
           Arrays.stream(email.getFrom())
               .sequential()
-              .anyMatch(from -> from.toString().contains(criteria.getSentFrom().toLowerCase()));
+              .anyMatch(
+                  from ->
+                      from.toString().contains(criteria.sentFrom().toLowerCase(Locale.ENGLISH)));
       // return if false, otherwise continue
       if (!sentFromMatch) {
         return false;
       }
     }
 
-    if (criteria.getSentTo() != null && !criteria.getSentTo().isEmpty()) {
+    if (criteria.sentTo() != null && !criteria.sentTo().isEmpty()) {
       // check sentTo
       // return if false, otherwise continue
       return Arrays.stream(email.getAllRecipients())
           .sequential()
-          .anyMatch(to -> to.toString().contains(criteria.getSentTo().toLowerCase()));
+          .anyMatch(to -> to.toString().contains(criteria.sentTo().toLowerCase(Locale.ENGLISH)));
     }
 
     // email matches the whole criteria
@@ -185,7 +183,7 @@ public abstract class CommonMailClient {
    *     above-mentioned properties.
    * @return mailProperties
    */
-  private Properties setProperties(InputStream resourceStream) {
+  private Properties setProperties(@NonNull final InputStream resourceStream) {
     try {
       props.load(resourceStream);
       this.userName = props.getProperty("username");
@@ -201,51 +199,79 @@ public abstract class CommonMailClient {
   }
 
   /**
-   * @param folderName mail folder name example INBOX
-   * @param accessMode check Folder.to get which mode exists
-   * @return required Folder
+   * Opens a specified mail folder with the given access rights.
+   *
+   * @param folderName The name of the mail folder to open (e.g., "INBOX").
+   * @param accessMode The access mode to use when opening the folder. See {@link
+   *     jakarta.mail.Folder} for available modes.
+   * @return The opened {@link jakarta.mail.Folder} object, or null if an error occurred.
+   * @throws MessagingException If an error occurs while opening the folder.
    */
-  public Folder openSelectedFolderWithRights(String folderName, int accessMode) {
+  public Folder openSelectedFolderWithRights(@NonNull final String folderName, final int accessMode)
+      throws MessagingException {
     Folder inbox = null;
     try {
       inbox = store.getFolder(folderName);
+      inbox.open(accessMode); // Open the folder immediately after retrieving it
+
     } catch (MessagingException e1) {
-      e1.printStackTrace();
-    }
-    try {
-      inbox.open(accessMode);
-    } catch (MessagingException e1) {
-      e1.printStackTrace();
+      logger.error(e1);
+      throw e1; // Re-throw the exception after logging it. This is crucial for proper error
+      // handling.
     }
     return inbox;
   }
 
   /**
    * Initialize properties for current mailbox. Username, password, protocol, and host should be set
-   * in advance
+   * in advance.
+   *
+   * @return The initialized Store object.
    */
-  private Store setMailCredentials() {
+  private Store setMailCredentials() throws MessagingException {
     Session session = Session.getDefaultInstance(getProperties(), null);
     return getStore(session);
   }
 
-  private Store getStore(Session session) {
-    Store store = null;
+  /**
+   * Initialize properties for current mailbox example setMailCredentials(new
+   * InputStream("/xxx/xxx/propertyFile"))
+   *
+   * @param resourceStream an InputStream that represents a .properties files that includes all the
+   *     above-mentioned properties.
+   * @return mail credential store
+   */
+  private Store setMailCredentials(@NonNull final InputStream resourceStream)
+      throws MessagingException {
+    if (props.isEmpty()) {
+      setProperties(resourceStream);
+    }
+    Session session = Session.getDefaultInstance(props, null);
+    return getStore(session);
+  }
+
+  private Store getStore(@NonNull final Session session) throws MessagingException {
+    Store storeLocal = null;
     try {
-      store = session.getStore(protocol);
+      storeLocal = session.getStore(protocol);
     } catch (NoSuchProviderException e1) {
-      e1.printStackTrace();
+      logger.error(e1);
+      throw e1;
     }
     try {
-      store.connect(host, userName, password);
+      storeLocal.connect(host, userName, password);
     } catch (MessagingException e1) {
-      e1.printStackTrace();
+      logger.error(e1);
+      throw e1;
     }
-    return store;
+    return storeLocal;
   }
 
   /**
-   * Creating properties instance Username, password, protocol, and host should be set in advance
+   * Creates a Properties instance with pre-set username, password, protocol, and host. Username,
+   * password, protocol, and host should be set in advance.
+   *
+   * @return A Properties instance containing the username, password, protocol, and host.
    */
   private Properties getProperties() {
     Properties properties = new Properties();
@@ -264,14 +290,14 @@ public abstract class CommonMailClient {
    * @param folder The email folder to check.
    * @return unread emails for selected folder
    */
-  public Message[] getUnreadEmails(Folder folder) {
+  public Message[] getUnreadEmails(@NonNull final Folder folder) {
     Message[] emails = new Message[0];
     try {
       Flags seen = new Flags(Flags.Flag.SEEN);
       FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
       emails = folder.search(unseenFlagTerm);
     } catch (MessagingException e1) {
-      e1.printStackTrace();
+      logger.error(e1);
     }
 
     return emails;
@@ -282,7 +308,7 @@ public abstract class CommonMailClient {
    *
    * @param folder The email folder to check.
    */
-  public void deleteReadEmails(Folder folder) {
+  public void deleteReadEmails(@NonNull final Folder folder) {
     Message[] emails;
     try {
       Flags seen = new Flags(Flags.Flag.SEEN);
@@ -290,7 +316,7 @@ public abstract class CommonMailClient {
       emails = folder.search(seenFlagTerm);
       folder.setFlags(emails, new Flags(Flags.Flag.DELETED), true);
     } catch (MessagingException e1) {
-      e1.printStackTrace();
+      logger.error(e1);
     }
   }
 
@@ -300,7 +326,7 @@ public abstract class CommonMailClient {
       store.close();
     } catch (MessagingException e) {
       logger.error("Error occurred when closing connection.");
-      e.printStackTrace();
+      logger.error(e);
     }
   }
 }

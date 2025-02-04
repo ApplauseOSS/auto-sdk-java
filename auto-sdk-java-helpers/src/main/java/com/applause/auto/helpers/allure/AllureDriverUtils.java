@@ -19,67 +19,69 @@ package com.applause.auto.helpers.allure;
 
 import io.qameta.allure.Allure;
 import java.io.ByteArrayInputStream;
-import java.util.Objects;
+import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 
-/** Some common allure utils (with attachments) */
-public class AllureDriverUtils {
+/** Provides utility methods for attaching information to Allure reports. */
+public final class AllureDriverUtils {
 
-  private static final Logger logger = LogManager.getLogger(AllureDriverUtils.class);
+  private static final Logger LOGGER = LogManager.getLogger(AllureDriverUtils.class);
+  private static final String SCREENSHOT_ATTACHMENT = "Screenshot attachment";
+  private static final String IMAGE_PNG = "image/png";
+  private static final String CURRENT_URL = "Current URL";
+  private static final String TEXT_PLAIN = "text/plain";
+  private static final String CURRENT_PAGE_SOURCE = "Current page source";
+  private static final String LOG_EXTENSION = ".log";
+
+  private AllureDriverUtils() {
+    // Utility class - no public constructor
+  }
 
   /**
-   * Attach driver screenshot
+   * Attaches a screenshot to the Allure report.
    *
-   * @param driver - automation driver
+   * @param driver The WebDriver instance to capture the screenshot from.
    */
-  public static void attachScreenshot(WebDriver driver) {
-    if (Objects.nonNull(driver)) {
-      logger.info("Taking screenshot on test failure");
-      try {
-        Allure.addAttachment(
-            "Screenshot attachment",
-            "image/png",
-            new ByteArrayInputStream(((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES)),
-            "png");
-      } catch (Exception e) {
-        logger.error("Error taking screenshot: " + e.getMessage());
-      }
+  public static void attachScreenshot(@NonNull final WebDriver driver) {
+    LOGGER.info("Taking screenshot on test failure");
+    try {
+      var screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+      Allure.addAttachment(
+          SCREENSHOT_ATTACHMENT, IMAGE_PNG, new ByteArrayInputStream(screenshot), "png");
+    } catch (Exception e) {
+      LOGGER.error("Error taking screenshot: {}", e.getMessage());
     }
   }
 
   /**
-   * Attach driver url
+   * Attaches the current URL to the Allure report.
    *
-   * @param driver - automation driver
+   * @param driver The WebDriver instance to get the current URL from.
    */
-  public static void attachCurrentURL(WebDriver driver) {
-    if (Objects.nonNull(driver)) {
-      logger.info("Taking current URL");
-      try {
-        Allure.addAttachment("Current URL", "text/plain", driver.getCurrentUrl(), ".log");
-      } catch (Exception e) {
-        logger.error("Error taking current URL: " + e.getMessage());
-      }
+  public static void attachCurrentURL(@NonNull final WebDriver driver) {
+    LOGGER.info("Attaching current URL");
+    try {
+      Allure.addAttachment(CURRENT_URL, TEXT_PLAIN, driver.getCurrentUrl(), LOG_EXTENSION);
+    } catch (Exception e) {
+      LOGGER.error("Error taking current URL: {}", e.getMessage());
     }
   }
 
   /**
-   * Attach driver page source
+   * Attaches the current page source to the Allure report.
    *
-   * @param driver - automation driver
+   * @param driver The WebDriver instance to get the page source from.
    */
-  public static void attachCurrentPageSourceOnFailure(WebDriver driver) {
-    if (Objects.nonNull(driver)) {
-      logger.info("Taking page source");
-      try {
-        Allure.addAttachment("Current page source", "text/plain", driver.getPageSource(), ".log");
-      } catch (Exception e) {
-        logger.error("Error taking current page source: " + e.getMessage());
-      }
+  public static void attachCurrentPageSourceOnFailure(@NonNull final WebDriver driver) {
+    LOGGER.info("Attaching page source");
+    try {
+      Allure.addAttachment(CURRENT_PAGE_SOURCE, TEXT_PLAIN, driver.getPageSource(), LOG_EXTENSION);
+    } catch (Exception e) {
+      LOGGER.error("Error taking current page source: {}", e.getMessage());
     }
   }
 }

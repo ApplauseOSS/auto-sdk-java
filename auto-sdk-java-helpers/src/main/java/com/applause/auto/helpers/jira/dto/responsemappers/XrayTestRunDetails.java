@@ -20,28 +20,24 @@ package com.applause.auto.helpers.jira.dto.responsemappers;
 import com.applause.auto.helpers.jira.dto.responsemappers.iteration.Iteration;
 import com.applause.auto.helpers.jira.dto.responsemappers.steps.Step;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class XrayTestRunDetails {
-  private int id;
-  private String status;
-  private String color;
-  private String testKey;
-  private String testExecKey;
-  private String executedBy;
-  private String startedOn;
-  private String finishedOn;
-  private String startedOnIso;
-  private String finishedOnIso;
-  private int duration;
-  private List<Iteration> iterations;
-  private List<Object> defects;
-  private List<Object> evidences;
-  private List<Object> testEnvironments;
-  private List<Object> fixVersions;
-  private ArrayList<Step> steps;
-}
+public record XrayTestRunDetails(
+    int id,
+    String status,
+    String color,
+    String testKey,
+    String testExecKey,
+    String executedBy,
+    String startedOn,
+    String finishedOn,
+    String startedOnIso,
+    String finishedOnIso,
+    int duration,
+    List<Iteration> iterations,
+    List<Object> defects,
+    List<Object> evidences,
+    List<Object> testEnvironments,
+    List<Object> fixVersions,
+    List<Step> steps) {}

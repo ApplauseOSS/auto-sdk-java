@@ -18,10 +18,6 @@
 package com.applause.auto.helpers.jira.dto.responsemappers.steps;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Value {
-  private String raw;
-}
+public record Value(String raw) {}

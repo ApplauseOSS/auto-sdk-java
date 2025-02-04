@@ -21,30 +21,35 @@ import com.applause.auto.helpers.testdata.TestDataProvider;
 import io.github.yamlpath.YamlExpressionParser;
 import io.github.yamlpath.YamlPath;
 import java.io.FileInputStream;
-import java.util.Set;
+import java.util.Collection;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 
-/** Yaml test data reader based on https://github.com/yaml-path/YamlPath */
+/** Yaml test data reader based on <a href="https://github.com/yaml-path/YamlPath">...</a> */
 public class YamlTestDataProvider implements TestDataProvider {
 
   @Getter private final String yamlTestDataFilePath;
 
-  private YamlExpressionParser yamlExpressionParser;
+  private final YamlExpressionParser yamlExpressionParser;
 
   @SneakyThrows
-  public YamlTestDataProvider(String yamlTestDataFilePath) {
+  public YamlTestDataProvider(@NonNull final String yamlTestDataFilePath) {
     this.yamlTestDataFilePath = yamlTestDataFilePath;
-    this.yamlExpressionParser = YamlPath.from(new FileInputStream(yamlTestDataFilePath));
+    try (var file = new FileInputStream(yamlTestDataFilePath)) {
+      this.yamlExpressionParser = YamlPath.from(file);
+    }
   }
 
   @Override
-  public <T> T readSingleValueFromTestDataFile(String yamlPathSyntax) {
+  public <T> T readSingleValueFromTestDataFile(@NonNull final String yamlPathSyntax) {
     return yamlExpressionParser.readSingle(yamlPathSyntax);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public Set readValuesFromTestDataFile(String yamlPathSyntax) {
-    return yamlExpressionParser.read(yamlPathSyntax);
+  public <C extends Collection<?>> C readValuesFromTestDataFile(
+      @NonNull final String dataPathSyntax) {
+    return (C) yamlExpressionParser.read(dataPathSyntax);
   }
 }

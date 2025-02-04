@@ -26,184 +26,180 @@ import com.applause.auto.helpers.jira.dto.requestmappers.StepIterationAttachment
 import com.applause.auto.helpers.jira.dto.responsemappers.JiraCreateTicketResponse;
 import com.applause.auto.helpers.jira.dto.responsemappers.XrayTestRunDetails;
 import com.applause.auto.helpers.jira.dto.responsemappers.iteration.TestRunIteration;
+import com.applause.auto.helpers.util.GenericObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import java.io.IOException;
+import lombok.NonNull;
 import org.apache.commons.lang3.Range;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class TestrunAPI {
 
   private static final Logger logger = LogManager.getLogger(TestrunAPI.class);
-  private ObjectMapper mapper = new ObjectMapper();
 
   /**
-   * Get Test Run ID which can be used in updating Test status in a certain Test Execution
+   * Get Test Run ID which can be used in updating Test status in a certain Test Execution.
    *
-   * @param jiraCreateTicketResponseMapping, to get value of testExecKey,
-   * @param testKey,
-   * @return testRunID,
-   * @throws JsonProcessingException
+   * @param jiraCreateTicketResponseMapping The Jira create ticket response mapping, used to get the
+   *     testExecKey.
+   * @param testKey The test issue key.
+   * @return The testRunID.
+   * @throws JsonProcessingException If the JSON response is invalid.
    */
-  public int getTestRunID(JiraCreateTicketResponse jiraCreateTicketResponseMapping, String testKey)
+  public int getTestRunID(
+      @NonNull final JiraCreateTicketResponse jiraCreateTicketResponseMapping,
+      @NonNull final String testKey)
       throws JsonProcessingException {
     Response response = getTestRunIdOfTestFromExecution(jiraCreateTicketResponseMapping, testKey);
     XrayTestRunDetails xrayTestRunDetailsMapping =
-        mapper.readValue(response.asString(), XrayTestRunDetails.class);
-    checkResponseInRange(response, Range.between(200, 300), "Collecting Test Run ID");
-    return xrayTestRunDetailsMapping.getId();
+        GenericObjectMapper.getObjectMapper()
+            .readValue(response.asString(), XrayTestRunDetails.class);
+    checkResponseInRange(response, Range.of(200, 300), "Collecting Test Run ID");
+    return xrayTestRunDetailsMapping.id();
   }
 
   /**
-   * Updates Test Run status,
+   * Updates Test Run status.
    *
-   * @param testRunId,
-   * @param statusToUpdate: Can be extracted after test execution from ITestResult using its
-   *     getStatus() and then converted into one of the following values accepted by X-Ray as per
-   *     project needs:
-   *     <p>EXECUTING – Test is being executed; this is a non-final status;
-   *     <p>FAIL – Test failed
-   *     <p>ABORTED – Test was aborted
-   *     <p>PASS – Test passed successfully
+   * @param testRunId the test run ID
+   * @param statusToUpdate the status to update. Can be extracted after test execution from
+   *     ITestResult using its getStatus() and then converted into one of the following values
+   *     accepted by X-Ray as per project needs:
+   *     <ul>
+   *       <li>EXECUTING – Test is being executed; this is a non-final status;
+   *       <li>FAIL – Test failed
+   *       <li>ABORTED – Test was aborted
+   *       <li>PASS – Test passed successfully
+   *     </ul>
+   *
+   * @throws NullPointerException if statusToUpdate is null
    */
-  public void updateTestRun(int testRunId, String statusToUpdate) {
+  public void updateTestRun(final int testRunId, @NonNull final String statusToUpdate) {
     Response response = putTestRunStatus(testRunId, statusToUpdate);
-    checkResponseInRange(response, Range.between(200, 300), "Update test run");
+    checkResponseInRange(response, Range.of(200, 300), "Update test run");
   }
 
   /**
    * Get Test Run information
    *
-   * @param testRunId
+   * @param testRunId test run ID
    * @return XrayTestRunDetails object
    */
-  public XrayTestRunDetails getTestRunData(int testRunId) throws JsonProcessingException {
+  public XrayTestRunDetails getTestRunData(final int testRunId) throws JsonProcessingException {
     Response response = getTestRunBasedOnID(testRunId);
     XrayTestRunDetails xrayTestRunDetailsMapping =
-        mapper.readValue(response.asString(), XrayTestRunDetails.class);
-    checkResponseInRange(response, Range.between(200, 300), "Get Test Run Data");
+        GenericObjectMapper.getObjectMapper()
+            .readValue(response.asString(), XrayTestRunDetails.class);
+    checkResponseInRange(response, Range.of(200, 300), "Get Test Run Data");
     return xrayTestRunDetailsMapping;
   }
 
   /**
    * Get Test Run Iteration information
    *
-   * @param testRunId
-   * @param iterationId
+   * @param testRunId test run ID
+   * @param iterationId test run iteration ID
    * @return TestRunIteration object
    */
-  public TestRunIteration getTestRunIterationData(int testRunId, int iterationId)
+  public TestRunIteration getTestRunIterationData(final int testRunId, final int iterationId)
       throws JsonProcessingException {
     Response response = getTestRunIterationBasedOnID(testRunId, iterationId);
     TestRunIteration testRunIteration =
-        mapper.readValue(response.asString(), TestRunIteration.class);
-    checkResponseInRange(response, Range.between(200, 300), "Get Test Run Iteration Data");
+        GenericObjectMapper.getObjectMapper()
+            .readValue(response.asString(), TestRunIteration.class);
+    checkResponseInRange(response, Range.of(200, 300), "Get Test Run Iteration Data");
     return testRunIteration;
   }
 
   /**
    * Upload Test Run attachment
    *
-   * @param testRunId
+   * @param testRunId test run ID
    * @param filePath - path to file
    */
-  public void uploadTestRunAttachment(int testRunId, String filePath) throws IOException {
+  public void uploadTestRunAttachment(final int testRunId, @NonNull final String filePath)
+      throws IOException {
     Response response = postTestRunAttachment(testRunId, filePath);
-    checkResponseInRange(response, Range.between(200, 300), "Upload Test Run attachment");
+    checkResponseInRange(response, Range.of(200, 300), "Upload Test Run attachment");
   }
 
   /**
    * Post comment to Test Run
    *
-   * @param testRunId
-   * @param comment
+   * @param testRunId test run ID
+   * @param comment test run comment
    */
-  public void postTestRunComment(int testRunId, String comment) {
+  public void postTestRunComment(final int testRunId, @NonNull final String comment) {
     Response response = postComment(testRunId, comment);
-    checkResponseInRange(response, Range.between(200, 300), "Posting Test Run comment");
+    checkResponseInRange(response, Range.of(200, 300), "Posting Test Run comment");
   }
 
   private Response getTestRunIdOfTestFromExecution(
-      JiraCreateTicketResponse jiraCreateTicketResponseMapping, String testKey) {
+      @NonNull final JiraCreateTicketResponse jiraCreateTicketResponseMapping,
+      @NonNull final String testKey) {
     logger.info("Getting X-Ray Test Run ID for test: {}", testKey);
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint
-        .append(TEST_RUN)
-        .append("?")
-        .append(testExecIssueKeyParam)
-        .append(jiraCreateTicketResponseMapping.getKey())
-        .append("&")
-        .append(testIssueKeyParam)
-        .append(testKey);
-    return getRestClient().given().when().get(apiEndpoint.toString()).then().extract().response();
+    String apiEndpoint =
+        XRAY_PATH
+            + TEST_RUN
+            + "?"
+            + testExecIssueKeyParam
+            + jiraCreateTicketResponseMapping.key()
+            + "&"
+            + testIssueKeyParam
+            + testKey;
+    return getRestClient().given().when().get(apiEndpoint).then().extract().response();
   }
 
-  private Response putTestRunStatus(int testRunId, String statusToUpdate) {
+  private Response putTestRunStatus(final int testRunId, @NonNull final String statusToUpdate) {
     logger.info("Updating X-Ray Test Run: {} with status: {}", testRunId, statusToUpdate);
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint
-        .append(TEST_RUN + "/")
-        .append(testRunId)
-        .append("/")
-        .append(STATUS)
-        .append("?")
-        .append(statusParam)
-        .append(statusToUpdate);
-    return getRestClient().given().when().put(apiEndpoint.toString()).then().extract().response();
+    String apiEndpoint =
+        XRAY_PATH + TEST_RUN + "/" + testRunId + "/" + STATUS + "?" + statusParam + statusToUpdate;
+    return getRestClient().given().when().put(apiEndpoint).then().extract().response();
   }
 
-  private Response getTestRunBasedOnID(int testRunId) {
+  private Response getTestRunBasedOnID(final int testRunId) {
     logger.info("Getting X-Ray Test Run response for ID: {}", testRunId);
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint.append(TEST_RUN).append("/").append(testRunId);
-    return getRestClient().given().when().get(apiEndpoint.toString()).then().extract().response();
+    String apiEndpoint = XRAY_PATH + TEST_RUN + "/" + testRunId;
+    return getRestClient().given().when().get(apiEndpoint).then().extract().response();
   }
 
-  private Response getTestRunIterationBasedOnID(int testRunId, int iterationId) {
+  private Response getTestRunIterationBasedOnID(final int testRunId, final int iterationId) {
     logger.info("Getting X-Ray Test Run {} iteration response for ID: {}", testRunId, iterationId);
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint
-        .append(TEST_RUN)
-        .append("/")
-        .append(testRunId)
-        .append("/")
-        .append(ITERATION)
-        .append("/")
-        .append(iterationId);
-    return getRestClient().given().when().get(apiEndpoint.toString()).then().extract().response();
+    String apiEndpoint =
+        XRAY_PATH + TEST_RUN + "/" + testRunId + "/" + ITERATION + "/" + iterationId;
+    return getRestClient().given().when().get(apiEndpoint).then().extract().response();
   }
 
-  private Response postTestRunAttachment(int testRunId, String filePath) throws IOException {
+  private Response postTestRunAttachment(final int testRunId, @NonNull final String filePath)
+      throws IOException {
     logger.info("Attaching {} to X-Ray Test Run {}", filePath, testRunId);
-    StepIterationAttachment stepIterationAttachment = new StepIterationAttachment();
-    stepIterationAttachment.setData(encodeBase64File(filePath));
-    stepIterationAttachment.setFilename(getFileNameFromPath(filePath));
-    stepIterationAttachment.setContentType(getFileType(filePath));
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint.append(TEST_RUN).append("/").append(testRunId).append("/").append(ATTACHMENT);
+    StepIterationAttachment stepIterationAttachment =
+        new StepIterationAttachment(
+            encodeBase64File(filePath), getFileNameFromPath(filePath), getFileType(filePath));
+    String apiEndpoint = XRAY_PATH + TEST_RUN + "/" + testRunId + "/" + ATTACHMENT;
     return getRestClient()
         .given()
         .and()
-        .body(mapper.writeValueAsString(stepIterationAttachment))
+        .body(GenericObjectMapper.getObjectMapper().writeValueAsString(stepIterationAttachment))
         .when()
-        .post(apiEndpoint.toString())
+        .post(apiEndpoint)
         .then()
         .extract()
         .response();
   }
 
-  private Response postComment(int testRunId, String comment) {
+  private Response postComment(final int testRunId, @NonNull final String comment) {
     logger.info("Posting comment [{}] to X-Ray Test Run {}", comment, testRunId);
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint.append(TEST_RUN).append("/").append(testRunId).append("/").append(COMMENT);
+    String apiEndpoint = XRAY_PATH + TEST_RUN + "/" + testRunId + "/" + COMMENT;
     return getRestClient()
         .given()
         .and()
         .body(comment)
         .when()
-        .put(apiEndpoint.toString())
+        .put(apiEndpoint)
         .then()
         .extract()
         .response();

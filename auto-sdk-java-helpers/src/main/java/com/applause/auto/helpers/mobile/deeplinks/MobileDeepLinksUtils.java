@@ -25,17 +25,21 @@ import io.appium.java_client.HidesKeyboard;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 
 /** Provides some common mobile deeplinks navigation methods */
-public class MobileDeepLinksUtils {
+public final class MobileDeepLinksUtils {
 
   private static final Logger logger = LogManager.getLogger(MobileDeepLinksUtils.class);
+
+  private MobileDeepLinksUtils() {
+    // utility class
+  }
 
   /**
    * Open deeplink on Android
@@ -44,11 +48,12 @@ public class MobileDeepLinksUtils {
    * @param androidDeepLink - Andrdoid deeplink DTO object
    */
   public static void openDeepLinkOnAndroid(
-      AppiumDriver driver, NativeMobileAppCommonDeeplink.AndroidDeepLink androidDeepLink) {
-    logger.info("Opening a Android deeplink: " + androidDeepLink.getDeepLinkUrl());
+      @NonNull final AppiumDriver driver,
+      @NonNull final NativeMobileAppCommonDeeplink.AndroidDeepLink androidDeepLink) {
+    logger.info("Opening a Android deeplink: " + androidDeepLink.deepLinkUrl());
     Map<String, String> parameters = new HashMap<>();
-    parameters.put("url", androidDeepLink.getDeepLinkUrl());
-    parameters.put("package", androidDeepLink.getDeepLinkPackage());
+    parameters.put("url", androidDeepLink.deepLinkUrl());
+    parameters.put("package", androidDeepLink.deepLinkPackage());
     driver.executeScript("mobile:deepLink", parameters);
     // another possible approach
     // getMobileDriver().get(androidDeepLink.getDeepLinkUrl());
@@ -63,12 +68,13 @@ public class MobileDeepLinksUtils {
    *     deeplink
    * @param waitForSafariURLBarPollingInSec - polling timeout for Safari URL bar to appear during
    *     opening a deeplink
+   * @param <T> the driver
    */
   public static <T extends AppiumDriver & HidesKeyboard> void openDeepLinkOniOS(
-      T driver,
-      NativeMobileAppCommonDeeplink.iOSDeepLink iosDeepLink,
-      int waitForSafariURLBarTimeoutInSec,
-      int waitForSafariURLBarPollingInSec) {
+      @NonNull final T driver,
+      @NonNull final NativeMobileAppCommonDeeplink.IOSDeepLink iosDeepLink,
+      final int waitForSafariURLBarTimeoutInSec,
+      final int waitForSafariURLBarPollingInSec) {
     logger.info("Launch Safari and enter the deep link in the address bar");
     Map<String, String> parameters = new HashMap<>();
     parameters.put("bundleId", "com.apple.mobilesafari");
@@ -80,8 +86,8 @@ public class MobileDeepLinksUtils {
     // Wait for the url button to appear and click on it so the text field will appear
     // iOS 13 now has the keyboard open by default because the URL field has focus when opening
     // the Safari browser
-    Wait wait =
-        new FluentWait(driver)
+    final var wait =
+        new FluentWait<>(driver)
             .withTimeout(Duration.ofSeconds(waitForSafariURLBarTimeoutInSec))
             .pollingEvery(Duration.ofSeconds(waitForSafariURLBarPollingInSec))
             .ignoring(Exception.class);
@@ -96,7 +102,7 @@ public class MobileDeepLinksUtils {
 
     By urlFieldSelector =
         AppiumBy.iOSNsPredicateString("type == 'XCUIElementTypeTextField' && name CONTAINS 'URL'");
-    driver.findElement(urlFieldSelector).sendKeys(iosDeepLink.getDeepLinkUrl());
+    driver.findElement(urlFieldSelector).sendKeys(iosDeepLink.deepLinkUrl());
     By goSelector =
         AppiumBy.iOSNsPredicateString("type == 'XCUIElementTypeButton' && label CONTAINS 'go'");
     try {

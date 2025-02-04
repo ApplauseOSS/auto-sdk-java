@@ -22,48 +22,41 @@ import static com.applause.auto.helpers.jira.helper.ResponseValidator.checkRespo
 import static com.applause.auto.helpers.jira.restclient.XrayRestAssuredClient.getRestClient;
 
 import com.applause.auto.helpers.jira.dto.responsemappers.steps.Step;
+import com.applause.auto.helpers.util.GenericObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.Range;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class IterationsAPI {
 
   private static final Logger logger = LogManager.getLogger(IterationsAPI.class);
-  private ObjectMapper mapper = new ObjectMapper();
 
   /**
-   * Get Test Run Iteration Steps information Returned object will contain also each step ID which
-   * is needed for further step update request
+   * Get Test Run Iteration Steps information. Returned object will contain also each step ID which
+   * is needed for further step update request.
    *
-   * @param testRunId
-   * @param iterationId
-   * @return Step array object
+   * @param testRunId The ID of the test run.
+   * @param iterationId The ID of the iteration.
+   * @return An array of Step objects.
+   * @throws JsonProcessingException If there is an error processing the JSON response.
    */
-  public Step[] getTestRunIterationStepsData(int testRunId, int iterationId)
+  public Step[] getTestRunIterationStepsData(final int testRunId, final int iterationId)
       throws JsonProcessingException {
     Response response = getTestRunIterationSteps(testRunId, iterationId);
-    Step[] steps = mapper.readValue(response.asString(), Step[].class);
-    checkResponseInRange(response, Range.between(200, 300), "Get Test Run Iteration Steps Data");
+    Step[] steps =
+        GenericObjectMapper.getObjectMapper().readValue(response.asString(), Step[].class);
+    checkResponseInRange(response, Range.of(200, 300), "Get Test Run Iteration Steps Data");
     return steps;
   }
 
-  private Response getTestRunIterationSteps(int testRunId, int iterationId) {
+  private Response getTestRunIterationSteps(final int testRunId, final int iterationId) {
     logger.info(
         "Getting X-Ray Test Run {} iteration steps response for ID: {}", testRunId, iterationId);
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint
-        .append(TEST_RUN)
-        .append("/")
-        .append(testRunId)
-        .append("/")
-        .append(ITERATION)
-        .append("/")
-        .append(iterationId)
-        .append("/")
-        .append(STEP);
-    return getRestClient().given().when().get(apiEndpoint.toString()).then().extract().response();
+    String apiEndpoint =
+        XRAY_PATH + TEST_RUN + "/" + testRunId + "/" + ITERATION + "/" + iterationId + "/" + STEP;
+    return getRestClient().given().when().get(apiEndpoint).then().extract().response();
   }
 }

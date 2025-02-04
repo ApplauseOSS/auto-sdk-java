@@ -17,11 +17,4 @@
  */
 package com.applause.auto.helpers.jira.dto.responsemappers;
 
-import lombok.Data;
-
-@Data
-public class JiraCreateTicketResponse {
-  private String id;
-  private String key;
-  private String self;
-}
+public record JiraCreateTicketResponse(String id, String key, String self) {}

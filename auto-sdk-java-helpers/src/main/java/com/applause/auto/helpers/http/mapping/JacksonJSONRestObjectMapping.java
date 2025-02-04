@@ -22,19 +22,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /** Jackson library json REST API typical object mapper instance */
 public class JacksonJSONRestObjectMapping implements IRestObjectMapper {
+  private static final ObjectMapper objectMapper =
+      new ObjectMapper()
+          .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
+          .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+          .configure(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES, false);
 
   /**
    * Object mapper for REST JSON Jackson mapping
    *
-   * @return
+   * @return shared ObjectMapper
    */
   @Override
   public ObjectMapper restJsonObjectMapper() {
-    ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    objectMapper.configure(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES, false);
-
     return objectMapper;
   }
 }

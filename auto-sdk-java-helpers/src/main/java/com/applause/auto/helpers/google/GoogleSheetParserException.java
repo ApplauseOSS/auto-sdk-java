@@ -17,9 +17,11 @@
  */
 package com.applause.auto.helpers.google;
 
+import lombok.NonNull;
+
 public class GoogleSheetParserException extends RuntimeException {
 
-  public GoogleSheetParserException(String message) {
+  public GoogleSheetParserException(@NonNull final String message) {
     super(message);
   }
 }

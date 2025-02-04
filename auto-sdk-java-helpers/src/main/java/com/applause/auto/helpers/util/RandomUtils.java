@@ -18,19 +18,25 @@
 package com.applause.auto.helpers.util;
 
 import com.github.javafaker.Faker;
+import java.util.Locale;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /** Random dat utils */
-public class RandomUtils {
+public final class RandomUtils {
 
   private static final Logger logger = LogManager.getLogger(RandomUtils.class);
+
+  private RandomUtils() {
+    // utility class
+  }
 
   /**
    * Get Faker object for further fake data generation * /
    *
-   * @return Faker - faker object from Faker library https://github.com/DiUS/java-faker
+   * @return Faker - faker object from Faker library <a
+   *     href="https://github.com/DiUS/java-faker">...</a>
    */
   public static Faker getFaker() {
     return new Faker();
@@ -46,20 +52,26 @@ public class RandomUtils {
    * @return generated password
    */
   public static String getRandomValidUserAccountPassword(
-      int upperCaseSymbolsCount,
-      int lowCaseSymbolsCount,
-      int numericSymbolsCount,
-      boolean withSpecialCharacter) {
+      final int upperCaseSymbolsCount,
+      final int lowCaseSymbolsCount,
+      final int numericSymbolsCount,
+      final boolean withSpecialCharacter) {
     StringBuilder randomPasswordStringBuilder =
         new StringBuilder()
-            .append(RandomStringUtils.randomAlphabetic(upperCaseSymbolsCount).toUpperCase())
-            .append(RandomStringUtils.randomAlphabetic(lowCaseSymbolsCount).toLowerCase())
-            .append(RandomStringUtils.randomNumeric(numericSymbolsCount));
+            .append(
+                RandomStringUtils.secure()
+                    .nextAlphabetic(upperCaseSymbolsCount)
+                    .toUpperCase(Locale.ENGLISH))
+            .append(
+                RandomStringUtils.secure()
+                    .nextAlphabetic(lowCaseSymbolsCount)
+                    .toLowerCase(Locale.ENGLISH))
+            .append(RandomStringUtils.secure().nextNumeric(numericSymbolsCount));
     if (withSpecialCharacter) {
-      randomPasswordStringBuilder.append("$");
+      randomPasswordStringBuilder.append('$');
     }
     String randomPassword = randomPasswordStringBuilder.toString();
-    logger.info("Newly generated random password is: " + randomPassword);
+    logger.info("Newly generated random password is: {}", randomPassword);
     return randomPassword;
   }
 }

@@ -18,10 +18,11 @@
 package com.applause.auto.helpers.jira.dto.responsemappers.steps;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
 
-@Data
+/**
+ * A record representing a comment in Jira.
+ *
+ * @param rendered The rendered content of the comment.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Comment {
-  private String rendered;
-}
+public record Comment(String rendered) {}

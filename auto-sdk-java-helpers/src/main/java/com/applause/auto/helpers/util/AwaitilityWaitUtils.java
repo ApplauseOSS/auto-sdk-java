@@ -20,10 +20,15 @@ package com.applause.auto.helpers.util;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import lombok.NonNull;
 import org.awaitility.Awaitility;
 
 /** Awaitility Wait Utils */
-public class AwaitilityWaitUtils {
+public final class AwaitilityWaitUtils {
+
+  private AwaitilityWaitUtils() {
+    // utility class
+  }
 
   /**
    * Wait for callable state with predicate and return it's value
@@ -37,11 +42,11 @@ public class AwaitilityWaitUtils {
    * @return T - object instance that will be returned from callable actions during wait
    */
   public static <T> T waitForCondition(
-      Callable<T> callable,
-      Predicate<T> predicate,
-      int waitInterval,
-      int pollingInterval,
-      String alias) {
+      @NonNull final Callable<T> callable,
+      @NonNull final Predicate<T> predicate,
+      final int waitInterval,
+      final int pollingInterval,
+      final String alias) {
     return Awaitility.with()
         .pollInterval(pollingInterval, TimeUnit.SECONDS)
         .pollInSameThread()
@@ -60,7 +65,10 @@ public class AwaitilityWaitUtils {
    * @param alias - text alias for this wait
    */
   public static void waitForCondition(
-      Callable<Boolean> callable, int waitInterval, int pollingInterval, String alias) {
+      @NonNull final Callable<Boolean> callable,
+      int waitInterval,
+      int pollingInterval,
+      final String alias) {
     Awaitility.with()
         .pollInterval(pollingInterval, TimeUnit.SECONDS)
         .pollInSameThread()

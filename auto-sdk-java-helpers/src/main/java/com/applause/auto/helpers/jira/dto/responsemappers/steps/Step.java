@@ -19,17 +19,14 @@ package com.applause.auto.helpers.jira.dto.responsemappers.steps;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
-import lombok.Data;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Step {
-  private int id;
-  private int index;
-  private String status;
-  private Fields fields;
-  private List<Attachments> attachments;
-  private Comment comment;
-  private List<Attachments> evidences;
-  private Comment actualResult;
-}
+public record Step(
+    int id,
+    int index,
+    String status,
+    Fields fields,
+    List<Attachments> attachments,
+    Comment comment,
+    List<Attachments> evidences,
+    Comment actualResult) {}

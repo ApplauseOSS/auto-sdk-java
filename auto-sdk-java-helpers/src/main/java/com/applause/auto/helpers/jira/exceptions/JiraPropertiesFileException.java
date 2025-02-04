@@ -19,7 +19,7 @@ package com.applause.auto.helpers.jira.exceptions;
 
 public class JiraPropertiesFileException extends RuntimeException {
 
-  public JiraPropertiesFileException(String message) {
+  public JiraPropertiesFileException(final String message) {
     super(message);
   }
 }

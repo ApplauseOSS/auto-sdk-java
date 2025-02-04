@@ -15,11 +15,14 @@
  * limitations under the License.
  *
  */
-package com.applause.auto.helpers.jira.requestData;
+package com.applause.auto.helpers.util;
 
 import io.restassured.http.Header;
 
-public class XrayRequestHeaders {
+public final class XrayRequestHeaders {
+  private XrayRequestHeaders() {
+    // utility class
+  }
 
   public static Header getAcceptApplicationJsonHeader() {
     return new Header("Accept", "application/json");
@@ -29,7 +32,7 @@ public class XrayRequestHeaders {
     return new Header("Content-Type", "multipart/form-data");
   }
 
-  public static Header getBearerAuthorizationHeader(String token) {
+  public static Header getBearerAuthorizationHeader(final String token) {
     return new Header("Authorization", "Bearer " + token);
   }
 

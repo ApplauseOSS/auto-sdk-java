@@ -21,50 +21,34 @@ import com.applause.auto.helpers.jira.annotations.JiraDefect;
 import com.applause.auto.helpers.jira.annotations.JiraID;
 import com.applause.auto.helpers.jira.exceptions.JiraAnnotationException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Objects;
-import org.testng.ITestResult;
+import lombok.NonNull;
 
-public class JiraAnnotationsScanner {
+public final class JiraAnnotationsScanner {
+
+  private JiraAnnotationsScanner() {
+    // utility class
+  }
 
   /**
    * Scan test and get declared JiraId value Annotation is mandatory to be declared, otherwise
    * exception is thrown
    *
-   * @param result
+   * @param result the test result
    * @return JiraId identifier
-   * @throws JiraAnnotationException
+   * @throws JiraAnnotationException JIRA library error
    */
-  public static String getJiraIdentifier(ITestResult result) throws JiraAnnotationException {
-    Method[] methods = result.getTestClass().getRealClass().getMethods();
-    try {
-      return Objects.requireNonNull(
-          Arrays.stream(methods)
-              .filter(method -> method.getName().equals(result.getMethod().getMethodName()))
-              .findFirst()
-              .get()
-              .getAnnotation(JiraID.class)
-              .identifier());
-    } catch (NullPointerException nullPointerException) {
-      throw new JiraAnnotationException(
-          String.format("Missing JiraId annotation for test [%s]", result.getName()));
-    }
+  public static String getJiraIdentifier(@NonNull final Method result)
+      throws JiraAnnotationException {
+    return result.getAnnotation(JiraID.class).identifier();
   }
 
   /**
    * Scan test and get declared JiraDefect value
    *
-   * @param result
+   * @param result test result
    * @return JiraDefect identifier
    */
-  public static String getJiraDefect(ITestResult result) {
-    Method[] methods = result.getTestClass().getRealClass().getMethods();
-    return Objects.requireNonNull(
-            Arrays.stream(methods)
-                .filter(method -> method.getName().equals(result.getMethod().getMethodName()))
-                .findFirst()
-                .orElse(null))
-        .getAnnotation(JiraDefect.class)
-        .identifier();
+  public static String getJiraDefect(@NonNull final Method result) {
+    return result.getAnnotation(JiraDefect.class).identifier();
   }
 }

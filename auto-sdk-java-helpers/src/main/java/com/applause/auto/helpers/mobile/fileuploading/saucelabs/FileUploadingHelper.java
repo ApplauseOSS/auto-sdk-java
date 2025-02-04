@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-package com.applause.auto.helpers.mobile.file_uploading.SauceLabs;
+package com.applause.auto.helpers.mobile.fileuploading.saucelabs;
 
 import com.applause.auto.helpers.mobile.MobileUtils;
 import com.applause.auto.helpers.util.ThreadHelper;
@@ -33,74 +33,100 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.testng.TestException;
 
 /** The type File Uploading Helper. */
-public class FileUploadingHelper {
+public final class FileUploadingHelper {
+
   private static final Logger logger = LogManager.getLogger(FileUploadingHelper.class);
 
   public static final String DEVICE_IMAGES_LOCATION_ANDROID = "sdcard/Download/%s";
 
+  private FileUploadingHelper() {
+    // utility class
+  }
+
   /**
-   * Upload Images to the device
+   * Upload Images to the device.
    *
-   * @param imagesPath
+   * @param driver The AppiumDriver instance.
+   * @param imagesPath the image file path.
+   * @param timeOuts The timeout in milliseconds.
+   * @param <T> The type of AppiumDriver, which must extend both AppiumDriver and InteractsWithApps.
+   * @throws RuntimeException If an exception occurs during file upload.
    */
   public static <T extends AppiumDriver & InteractsWithApps> void uploadImages(
-      T driver, String imagesPath, long timeOuts) {
+      @NonNull final T driver, @NonNull final String imagesPath, final long timeOuts) {
     String bundleIdentifier = MobileUtils.getBundleIdentifier(driver);
     MobileUtils.moveAppToBackground(driver);
-    /**
+    /*
      * we have static wait because there is no way to check if the app was moved to the Background.
      * Sometimes, especially in the cloud, I found that image uploading started too early, and they
      * were uploaded but the app didn't see them
      */
     ThreadHelper.sleep(5000);
-    getFilesFromPaths(imagesPath).forEach(image -> uploadFile(driver, image));
+    getFilesFromPaths(imagesPath)
+        .forEach(
+            image -> {
+              try {
+                uploadFile(driver, image);
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
+            });
     ThreadHelper.sleep(timeOuts);
     MobileUtils.activateApp(driver, bundleIdentifier);
   }
 
   /**
-   * Upload one file
+   * Upload one file.
    *
-   * @param fileName
+   * @param driver the WebDriver instance to use.
+   * @param fileName the file to upload.
+   * @throws RuntimeException if an error occurs during file upload.
    */
-  public static void uploadFile(WebDriver driver, File fileName) {
+  public static void uploadFile(@NonNull final WebDriver driver, @NonNull final File fileName) {
     try {
       logger.info("Uploading [{}] file", fileName);
       ((AndroidDriver) MobileUtils.getMobileDriver(driver))
           .pushFile(String.format(DEVICE_IMAGES_LOCATION_ANDROID, fileName.getName()), fileName);
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error(e);
+      throw new RuntimeException(e); // Re-throw the exception after logging it.
     }
   }
 
   /**
    * Get Files From Path
    *
-   * @param pathToFolder
-   * @return Set<File>
+   * @param pathToFolder the folder path
+   * @return A Set of Files found in the given path. Returns an empty set if an IOException occurs.
    */
-  private static Set<File> getFilesFromPaths(String pathToFolder) {
+  private static Set<File> getFilesFromPaths(@NonNull final String pathToFolder) {
     try (Stream<Path> stringStream =
         Files.walk(Paths.get(pathToFolder)).filter(Files::isRegularFile)) {
-      List<Path> pathList = stringStream.collect(Collectors.toList());
-      Set<File> filesInFolder =
-          pathList.stream().map(path -> new File(path.toString())).collect(Collectors.toSet());
-      return filesInFolder;
+      List<Path> pathList = stringStream.toList();
+      return pathList.stream().map(path -> new File(path.toString())).collect(Collectors.toSet());
     } catch (IOException e) {
-      logger.info(e.getStackTrace().toString());
+      logger.info(e);
     }
     return Collections.emptySet();
   }
 
-  /** Clear Measurement images folder. */
-  public static void clearImagesFolder(WebDriver driver) {
+  /**
+   * Clears the Measurement images folder on the device.
+   *
+   * <p>This method clears the folder located at "sdcard/greendot/hijacking/strip". It uses an ADB
+   * shell command to remove all files and subdirectories within the specified folder.
+   *
+   * @param driver The WebDriver instance used to interact with the device. Must not be null. =
+   */
+  @SuppressWarnings("PMD.DoNotHardCodeSDCard")
+  public static void clearImagesFolder(@NonNull final WebDriver driver) {
     logger.info(
         "Clearing Mocked Measurement images folder on device [sdcard/greendot/hijacking/strip]");
     try {
@@ -122,12 +148,14 @@ public class FileUploadingHelper {
    * <p>Need to use this caps to Enable image-injection on RDC ->
    * desiredCapabilities.setCapability("sauceLabsImageInjectionEnabled", true);
    *
-   * <p>Link - https://docs.saucelabs.com/mobile-apps/features/camera-image-injection/
+   * <p>Link - <a
+   * href="https://docs.saucelabs.com/mobile-apps/features/camera-image-injection/">...</a>
    *
-   * @param driver
-   * @param fileLocation
+   * @param driver the webdriver
+   * @param fileLocation file path
    */
-  public static void injectImageToSauce(WebDriver driver, String fileLocation) {
+  public static void injectImageToSauce(
+      @NonNull final WebDriver driver, @NonNull final String fileLocation) {
     try {
       logger.info("Injecting [{}] file to Sauce device.", fileLocation);
       FileInputStream in = new FileInputStream(fileLocation);
@@ -136,8 +164,8 @@ public class FileUploadingHelper {
       // Provide the transformed image to the device
       ((JavascriptExecutor) driver).executeScript("sauce:inject-image=" + qrCodeImage);
     } catch (Exception e) {
-      e.printStackTrace();
-      throw new TestException("Image injection error.");
+      logger.error(e);
+      throw new RuntimeException("Image injection error.", e);
     }
   }
 }

@@ -19,9 +19,11 @@ package com.applause.auto.helpers.jira.dto.responsemappers.steps;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@lombok.Data
+/**
+ * Represents data with a type and value.
+ *
+ * @param type The type of the data.
+ * @param value The value of the data.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Data {
-  private String type;
-  private Value value;
-}
+public record Data(String type, Value value) {}

@@ -24,19 +24,16 @@ import com.applause.auto.helpers.jira.clients.modules.xray.IterationsAPI;
 import com.applause.auto.helpers.jira.clients.modules.xray.StepsAPI;
 import com.applause.auto.helpers.jira.clients.modules.xray.TestrunAPI;
 import java.util.Objects;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * Class for communicating with JIRA/X-Ray Server + DC instance API end-points.
  *
  * <p>Cannot be used with Cloud instances, use GraphQL instead.
  *
- * <p>X-Ray documentation: https://docs.getxray.app/display/XRAY/REST+API
+ * <p>X-Ray documentation: <a href="https://docs.getxray.app/display/XRAY/REST+API">...</a>
  */
-public class JiraXrayClient {
-
-  private static final Logger logger = LogManager.getLogger(JiraXrayClient.class);
+@SuppressWarnings("PMD.DataClass")
+public final class JiraXrayClient {
 
   private JiraProjectAPI jiraProjectAPI;
   private SearchAPI searchAPI;

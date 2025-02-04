@@ -19,7 +19,8 @@ package com.applause.auto.helpers.jira.exceptions;
 
 public class JiraAnnotationException extends RuntimeException {
 
-  public JiraAnnotationException(String message) {
-    super(message);
+  public JiraAnnotationException(
+      final String message, final NullPointerException nullPointerException) {
+    super(message, nullPointerException);
   }
 }

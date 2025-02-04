@@ -24,18 +24,18 @@ public interface TestDataProvider {
   /**
    * read single value from test data file
    *
-   * @param dataPathSyntax
-   * @param <T>
-   * @return
+   * @param dataPathSyntax file path
+   * @param <T> test data type
+   * @return test data
    */
   <T> T readSingleValueFromTestDataFile(String dataPathSyntax);
 
   /**
    * read collection of values from test data file
    *
-   * @param dataPathSyntax
-   * @param <C>
-   * @return
+   * @param dataPathSyntax file path
+   * @param <C> test data type
+   * @return list of test data
    */
   <C extends Collection<?>> C readValuesFromTestDataFile(String dataPathSyntax);
 }

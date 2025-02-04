@@ -27,21 +27,23 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.specification.RequestSpecification;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import lombok.NonNull;
 
 /** Default rest assured REST API client impl. */
 public class RestApiDefaultRestAssuredApiClient extends RestAssuredApiClient {
 
-  public RestApiDefaultRestAssuredApiClient(Duration apiRequestWaitTimeoutDuration) {
+  public RestApiDefaultRestAssuredApiClient(final Duration apiRequestWaitTimeoutDuration) {
     super(apiRequestWaitTimeoutDuration);
   }
 
   /**
    * get rest assured request specification object for default client
    *
-   * @return
+   * @return request specification
    */
   @Override
-  public RequestSpecification restAssuredRequestSpecification(IRestObjectMapper restObjectMapper) {
+  public RequestSpecification restAssuredRequestSpecification(
+      @NonNull final IRestObjectMapper restObjectMapper) {
     return super.restAssuredRequestSpecification(restObjectMapper)
         .filter(new RequestLoggingFilter(LogDetail.URI))
         .response()
@@ -52,11 +54,11 @@ public class RestApiDefaultRestAssuredApiClient extends RestAssuredApiClient {
   /**
    * rest assured config with object mapper for default client
    *
-   * @param restObjectMapper
-   * @return
+   * @param restObjectMapper the object mapper
+   * @return configured RestAssured client
    */
   @Override
-  protected RestAssuredConfig restAssuredConfig(IRestObjectMapper restObjectMapper) {
+  protected RestAssuredConfig restAssuredConfig(@NonNull final IRestObjectMapper restObjectMapper) {
     RestAssuredConfig restAssuredConfig = new RestAssuredConfig();
     restAssuredConfig =
         restAssuredConfig

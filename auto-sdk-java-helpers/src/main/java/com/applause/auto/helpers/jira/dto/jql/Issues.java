@@ -18,14 +18,6 @@
 package com.applause.auto.helpers.jira.dto.jql;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
-import lombok.Getter;
 
-@Data
-@Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Issues {
-  public String id;
-  public String key;
-  public Fields fields;
-}
+public record Issues(String id, String key, Fields fields) {}

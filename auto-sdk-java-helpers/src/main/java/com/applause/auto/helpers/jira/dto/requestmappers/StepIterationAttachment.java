@@ -17,11 +17,4 @@
  */
 package com.applause.auto.helpers.jira.dto.requestmappers;
 
-import lombok.Data;
-
-@Data
-public class StepIterationAttachment {
-  private String data;
-  private String filename;
-  private String contentType;
-}
+public record StepIterationAttachment(String data, String filename, String contentType) {}

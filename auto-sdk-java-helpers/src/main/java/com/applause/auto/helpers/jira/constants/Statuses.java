@@ -28,5 +28,5 @@ public enum Statuses {
   BLOCKED("BLOCKED"),
   TODO("TODO");
 
-  @Getter private String value;
+  @Getter private final String value;
 }

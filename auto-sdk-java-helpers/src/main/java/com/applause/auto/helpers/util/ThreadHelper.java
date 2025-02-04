@@ -17,8 +17,12 @@
  */
 package com.applause.auto.helpers.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /** Utility helper class that provides common actions needed to control the current Thread. */
-public class ThreadHelper {
+public final class ThreadHelper {
+  private static final Logger logger = LogManager.getLogger(ThreadHelper.class);
 
   private ThreadHelper() {}
 
@@ -31,7 +35,7 @@ public class ThreadHelper {
     try {
       Thread.sleep(milliseconds);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      logger.error(e);
     }
   }
 }

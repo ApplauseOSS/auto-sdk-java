@@ -22,18 +22,23 @@ import static com.applause.auto.helpers.util.AwaitilityWaitUtils.waitForConditio
 import io.appium.java_client.remote.SupportsContextSwitching;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import lombok.NonNull;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /** Helper class to work with mobile web and native contexts */
-public class MobileContextsUtils {
+public final class MobileContextsUtils {
 
   private static final Logger logger = LogManager.getLogger(MobileContextsUtils.class);
 
   private static final String WEB_CONTEXT_PART_NAME = "web";
   private static final String NATIVE_CONTEXT_PART_NAME = "native";
+
+  private MobileContextsUtils() {
+    // utility class
+  }
 
   /**
    * Perform actions in a web context, return result and switch back to native context
@@ -47,10 +52,10 @@ public class MobileContextsUtils {
    */
   @SneakyThrows
   public static <A> A performActionsInWebView(
-      SupportsContextSwitching driver,
-      Callable<A> actions,
-      int waitForContextTimeout,
-      int waitPollingInterval) {
+      @NonNull final SupportsContextSwitching driver,
+      @NonNull final Callable<A> actions,
+      final int waitForContextTimeout,
+      final int waitPollingInterval) {
     switchToFirstAvailableWebContext(driver, waitForContextTimeout, waitPollingInterval);
     try {
       return actions.call();
@@ -67,7 +72,9 @@ public class MobileContextsUtils {
    * @param waitPollingInterval - polling interval timeout for wait for context to appear
    */
   public static void switchToFirstAvailableWebContext(
-      SupportsContextSwitching driver, int waitForContextTimeout, int waitPollingInterval) {
+      @NonNull final SupportsContextSwitching driver,
+      final int waitForContextTimeout,
+      final int waitPollingInterval) {
     waitForContextAndSwitchToIt(
         driver, WEB_CONTEXT_PART_NAME, waitForContextTimeout, waitPollingInterval);
   }
@@ -80,7 +87,9 @@ public class MobileContextsUtils {
    * @param waitPollingInterval - polling interval timeout for wait for context to appear
    */
   public static void switchToFirstAvailableNativeContext(
-      SupportsContextSwitching driver, int waitForContextTimeout, int waitPollingInterval) {
+      @NonNull final SupportsContextSwitching driver,
+      final int waitForContextTimeout,
+      final int waitPollingInterval) {
     waitForContextAndSwitchToIt(
         driver, NATIVE_CONTEXT_PART_NAME, waitForContextTimeout, waitPollingInterval);
   }
@@ -94,10 +103,10 @@ public class MobileContextsUtils {
    * @param waitPollingInterval - polling interval timeout for wait for context to appear
    */
   public static void waitForContextAndSwitchToIt(
-      SupportsContextSwitching driver,
-      String contextStringPart,
-      int waitForContextTimeout,
-      int waitPollingInterval) {
+      @NonNull final SupportsContextSwitching driver,
+      @NonNull final String contextStringPart,
+      final int waitForContextTimeout,
+      final int waitPollingInterval) {
     logger.info("Looking for context containing: " + contextStringPart);
     waitForCondition(
         () -> {

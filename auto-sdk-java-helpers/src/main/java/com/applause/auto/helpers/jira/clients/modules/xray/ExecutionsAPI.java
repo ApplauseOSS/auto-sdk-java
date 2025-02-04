@@ -23,90 +23,90 @@ import static com.applause.auto.helpers.jira.restclient.XrayRestAssuredClient.ge
 
 import com.applause.auto.helpers.jira.dto.requestmappers.XrayAddTo;
 import com.applause.auto.helpers.jira.dto.responsemappers.JiraCreateTicketResponse;
+import com.applause.auto.helpers.util.GenericObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
+import lombok.NonNull;
 import org.apache.commons.lang3.Range;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class ExecutionsAPI {
 
   private static final Logger logger = LogManager.getLogger(ExecutionsAPI.class);
-  private ObjectMapper mapper = new ObjectMapper();
 
   /**
-   * Adds Test Execution to existing Test Plan, request example: "{"add":["testExecKey"]}",
-   * Response: 200 OK, if Test Execution was added successfully
+   * Adds Test Execution to existing Test Plan.
    *
-   * @param xrayAddToMapping, Test Execution you want to associate to a specific Test Plan
-   * @return statusCode
-   * @throws JsonProcessingException
+   * <p>Request example: `{"add":["testExecKey"]}`
+   *
+   * <p>Response: 200 OK, if Test Execution was added successfully
+   *
+   * @param xrayAddToMapping The Test Execution to associate with the specified Test Plan.
+   * @param testPlanKey The key of the Test Plan to which the Test Execution should be added.
+   * @throws JsonProcessingException If an error occurs during JSON processing.
    */
-  public void addExecutionToTestPlan(XrayAddTo xrayAddToMapping, String testPlanKey)
+  public void addExecutionToTestPlan(
+      @NonNull final XrayAddTo xrayAddToMapping, @NonNull final String testPlanKey)
       throws JsonProcessingException {
     Response response = postTestExecutionToTestPlan(xrayAddToMapping, testPlanKey);
-    checkResponseInRange(response, Range.between(200, 300), "Add test execution to test plan");
+    checkResponseInRange(response, Range.of(200, 300), "Add test execution to test plan");
   }
 
   /**
-   * Adds Test to an existing Test Execution, request example: "{"add":["testKey"]}". Response: 200
-   * OK, if test was added successfully
+   * Adds Test to an existing Test Execution. Request example: "{"add":["testKey"]}". Response: 200
+   * OK, if test was added successfully.
    *
-   * @param jiraCreateTicketResponseMapping, to get Test Execution key from
-   * @param xrayAddToMapping, Test key/s you want to associate to a specific Test Execution
-   * @return statusCode
-   * @throws JsonProcessingException
+   * @param jiraCreateTicketResponseMapping The response containing the Test Execution key.
+   * @param xrayAddToMapping The Test key(s) to associate with the Test Execution.
+   * @throws JsonProcessingException If a JSON processing error occurs.
    */
   public void addTestToTestExecution(
-      JiraCreateTicketResponse jiraCreateTicketResponseMapping, XrayAddTo xrayAddToMapping)
+      @NonNull final JiraCreateTicketResponse jiraCreateTicketResponseMapping,
+      @NonNull final XrayAddTo xrayAddToMapping)
       throws JsonProcessingException {
     Response response = postTestToTestExecution(jiraCreateTicketResponseMapping, xrayAddToMapping);
-    checkResponseInRange(response, Range.between(200, 300), "Add test to test execution");
+    checkResponseInRange(response, Range.of(200, 300), "Add test to test execution");
   }
 
-  private Response postTestExecutionToTestPlan(XrayAddTo xrayAddToMapping, String testPlanKey)
+  private Response postTestExecutionToTestPlan(
+      @NonNull final XrayAddTo xrayAddToMapping, @NonNull final String testPlanKey)
       throws JsonProcessingException {
     logger.info(
         "Adding X-Ray Test Execution {} to X-Ray Test Plan {}", xrayAddToMapping, testPlanKey);
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint
-        .append(TEST_PLAN)
-        .append("/")
-        .append(testPlanKey)
-        .append("/")
-        .append(TEST_EXECUTION);
+
+    String apiEndpoint = XRAY_PATH + TEST_PLAN + "/" + testPlanKey + "/" + TEST_EXECUTION;
+
     return getRestClient()
         .given()
         .and()
-        .body(mapper.writeValueAsString(xrayAddToMapping))
+        .body(GenericObjectMapper.getObjectMapper().writeValueAsString(xrayAddToMapping))
         .when()
-        .post(apiEndpoint.toString())
+        .post(apiEndpoint)
         .then()
         .extract()
         .response();
   }
 
   private Response postTestToTestExecution(
-      JiraCreateTicketResponse jiraCreateTicketResponseMapping, XrayAddTo xrayAddToMapping)
+      @NonNull final JiraCreateTicketResponse jiraCreateTicketResponseMapping,
+      @NonNull final XrayAddTo xrayAddToMapping)
       throws JsonProcessingException {
     logger.info(
         "Adding X-Ray Test(s) [ {} ] to X-Ray Test Execution [ {} ]",
         xrayAddToMapping.toString(),
-        jiraCreateTicketResponseMapping.getKey());
-    StringBuilder apiEndpoint = new StringBuilder(XRAY_PATH);
-    apiEndpoint
-        .append(TEST_EXEC)
-        .append("/")
-        .append(jiraCreateTicketResponseMapping.getKey())
-        .append("/")
-        .append(TEST);
+        jiraCreateTicketResponseMapping.key());
+
+    String apiEndpoint =
+        XRAY_PATH + TEST_EXEC + "/" + jiraCreateTicketResponseMapping.key() + "/" + TEST;
+
     return getRestClient()
         .given()
         .and()
-        .body(mapper.writeValueAsString(xrayAddToMapping))
+        .body(GenericObjectMapper.getObjectMapper().writeValueAsString(xrayAddToMapping))
         .when()
-        .post(apiEndpoint.toString())
+        .post(apiEndpoint)
         .then()
         .extract()
         .response();
