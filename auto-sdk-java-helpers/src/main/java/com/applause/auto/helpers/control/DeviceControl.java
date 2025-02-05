@@ -32,7 +32,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,10 +52,18 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
   "checkstyle:MultipleStringLiterals",
   "checkstyle:LocalVariableName"
 })
-@AllArgsConstructor
 public class DeviceControl implements IPageObjectExtension {
   private static final Logger logger = LogManager.getLogger();
   private final IPageObjectContext context;
+
+  /**
+   * Constructor for DeviceControl.
+   *
+   * @param context The {@link IPageObjectContext} to use.
+   */
+  public DeviceControl(final IPageObjectContext context) {
+    this.context = context;
+  }
 
   /**
    * Checks if the current driver is an Android driver.

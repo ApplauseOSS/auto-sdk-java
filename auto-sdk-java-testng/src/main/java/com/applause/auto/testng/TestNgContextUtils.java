@@ -80,7 +80,7 @@ public final class TestNgContextUtils {
    * @param testResult The TestNG result
    * @return A Tuple containing the Class and Method used for the result.
    */
-  private static Pair<Class<?>, Method> getUnderlyingClassAndMethod(
+  public static Pair<Class<?>, Method> getUnderlyingClassAndMethod(
       final @NonNull ITestResult testResult) {
     final ITestNGMethod testMethod = testResult.getMethod();
     final String methodName = testMethod.getMethodName();

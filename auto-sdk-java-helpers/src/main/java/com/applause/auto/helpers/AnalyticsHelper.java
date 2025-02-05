@@ -781,6 +781,11 @@ public class AnalyticsHelper implements IPageObjectExtension {
     return filtered;
   }
 
+  /**
+   * Returns a new instance of {@link AnalyticsInterceptor} associated with this object.
+   *
+   * @return A new {@link AnalyticsInterceptor} instance.
+   */
   public AnalyticsInterceptor getInterceptor() {
     return new AnalyticsInterceptor(this);
   }
