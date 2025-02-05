@@ -24,7 +24,6 @@ import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.Dimension;
@@ -35,10 +34,18 @@ import org.openqa.selenium.JavascriptExecutor;
  * mouse-downs.
  */
 @SuppressWarnings({"checkstyle:ParameterName", "checkstyle:AbbreviationAsWordInName"})
-@AllArgsConstructor
 public class BrowserControl implements IPageObjectExtension {
   private static final Logger logger = LogManager.getLogger();
   private final IPageObjectContext context;
+
+  /**
+   * Constructor for BrowserControl.
+   *
+   * @param context The {@link IPageObjectContext} to use.
+   */
+  public BrowserControl(final IPageObjectContext context) {
+    this.context = context;
+  }
 
   /**
    * Gets the current driver as a JavascriptExecutor.

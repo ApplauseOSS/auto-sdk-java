@@ -22,7 +22,6 @@ import com.applause.auto.helpers.sync.UiConditions;
 import com.applause.auto.pageobjectmodel.base.UIElement;
 import java.util.List;
 import java.util.function.Function;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
 /**
@@ -32,10 +31,18 @@ import lombok.NonNull;
  * @param <E> a type extending UIElement, a List of which serves as both the input and output types
  *     of this Condition
  */
-@AllArgsConstructor
 public class AllMatchConditionBuilder<E extends UIElement>
     implements ConditionBuilder<List<E>, List<E>> {
   private final List<E> elements;
+
+  /**
+   * Constructor for AllMatchConditionBuilder.
+   *
+   * @param elements The list of UI elements to evaluate.
+   */
+  public AllMatchConditionBuilder(final List<E> elements) {
+    this.elements = elements;
+  }
 
   /**
    * Check if the List items meet a custom condition.

@@ -36,11 +36,23 @@ import org.openqa.selenium.logging.LogEntry;
 public class AnalyticsEntry extends LogEntry {
   private final JsonObject parsedMessage;
 
+  /**
+   * Constructor for AnalyticsEntry.
+   *
+   * @param level The log level.
+   * @param timestamp The timestamp of the log entry.
+   * @param message The log message.
+   */
   public AnalyticsEntry(final Level level, final long timestamp, final String message) {
     super(level, timestamp, message);
     this.parsedMessage = new Gson().fromJson(message, JsonObject.class);
   }
 
+  /**
+   * Gets the webview GUID.
+   *
+   * @return The webview GUID, or null if not found.
+   */
   public String getWebView() {
     return Optional.ofNullable(parsedMessage)
         .map(body -> body.get("webview"))
@@ -48,6 +60,11 @@ public class AnalyticsEntry extends LogEntry {
         .orElse(null);
   }
 
+  /**
+   * Gets the method of the analytics call.
+   *
+   * @return The method, or null if not found.
+   */
   public String getMethod() {
     return Optional.ofNullable(parsedMessage)
         .map(body -> body.getAsJsonObject("message"))
@@ -56,6 +73,11 @@ public class AnalyticsEntry extends LogEntry {
         .orElse(null);
   }
 
+  /**
+   * Gets the parameters of the analytics call.
+   *
+   * @return The parameters as a JsonObject, or null if not found.
+   */
   public JsonObject getParams() {
     return Optional.ofNullable(parsedMessage)
         .map(body -> body.getAsJsonObject("message"))
