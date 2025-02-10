@@ -10,6 +10,36 @@ import re
 def replace_imports(contents):
     imports = [
       ("com.applause.auto.pageobjectmodel.elements.BaseElement", "com.applause.auto.pageobjectmodel.base.BaseElement"),
+      ("com.applause.allure.appenders", "com.applause.auto.helpers.allure.appenders"),
+      ("com.applause.allure", "com.applause.auto.helpers.allure"),
+      ("com.applause.email", "com.applause.auto.helpers.email"),
+      ("com.applause.google", "com.applause.auto.helpers.google"),
+      ("com.applause.http.mapping", "com.applause.auto.helpers.http.mapping"),
+      ("com.applause.http.restassured.client", "com.applause.auto.helpers.http.restassured.client"),
+      ("com.applause.http.restassured", "com.applause.auto.helpers.http.restassured"),
+      ("com.applause.jira.annotations.scanner", "com.applause.auto.helpers.jira.annotations.scanner"),
+      ("com.applause.jira.annotations", "com.applause.auto.helpers.jira.annotations"),
+      ("com.applause.jira.clients.modules.jira", "com.applause.auto.helpers.jira.clients.modules.jira"),
+      ("com.applause.jira.clients.modules.xray", "com.applause.auto.helpers.jira.clients.modules.xray"),
+      ("com.applause.jira.clients", "com.applause.auto.helpers.jira.clients"),
+      ("com.applause.jira.constants", "com.applause.auto.helpers.jira.constants"),
+      ("com.applause.jira.dto.jql", "com.applause.auto.helpers.jira.dto.jql"),
+      ("com.applause.jira.dto.requestmappers", "com.applause.auto.helpers.jira.dto.requestmappers"),
+      ("com.applause.jira.dto.responsemappers.iteration", "com.applause.auto.helpers.jira.dto.responsemappers.iteration"),
+      ("com.applause.jira.dto.responsemappers.steps", "com.applause.auto.helpers.jira.dto.responsemappers.steps"),
+      ("com.applause.jira.dto.responsemappers", "com.applause.auto.helpers.jira.dto.responsemappers"),
+      ("com.applause.jira.dto.shared", "com.applause.auto.helpers.jira.dto.shared"),
+      ("com.applause.jira.exceptions", "com.applause.auto.helpers.jira.exceptions"),
+      ("com.applause.jira.helper", "com.applause.auto.helpers.jira.helper"),
+      ("com.applause.jira.listeners", "com.applause.auto.testng.listeners"),  # Corrected path here
+      ("com.applause.jira.restclient", "com.applause.auto.helpers.jira.restclient"),
+      ("com.applause.mobile.deeplinks", "com.applause.auto.helpers.mobile.deeplinks"),
+      ("com.applause.mobile.file_uploading.SauceLabs", "com.applause.auto.helpers.mobile.fileuploading.saucelabs"),
+      ("com.applause.mobile", "com.applause.auto.helpers.mobile"),
+      ("com.applause.testdata.yaml", "com.applause.auto.helpers.testdata.yaml"),
+      ("com.applause.testdata", "com.applause.auto.helpers.testdata"),
+      ("com.applause.util", "com.applause.auto.helpers.util"),
+      ("com.applause.web", "com.applause.auto.helpers.web"),
     ]
 
     for old_import, new_import in imports:
@@ -93,7 +123,7 @@ def check_for_config_usage(contents):
     return re.sub("EnvironmentConfigurationManager.get()", "EnvironmentConfigurationManager.INSTANCE.get()", contents)
 
 def remove_sdk_helper_create(contents):
-    
+
     result = re.search("SdkHelper.create\(.+.class\);", contents)
     while result is not None:
         className = result.group().split('(')[1].split('.class')[0]
@@ -141,11 +171,18 @@ def convert_pom(filepath):
                 <groupId>com.applause</groupId>
                 <artifactId>auto-sdk-java-testng</artifactId>
                 <version>${com.applause.sdk.java.version}</version>
-            </dependency>""")
+            </dependency>"""),
+        (r"\s*<repository>\s*<id>github</id>\s*<name>GitHub OWNER Apache Maven Packages</name>\s*<url>https://maven.pkg.github.com/ApplauseAuto/helper-sdk.auto</url>\s*<releases>\s*<enabled>true</enabled>\s*<updatePolicy>always</updatePolicy>\s*</releases>\s*<snapshots>\s*<enabled>true</enabled>\s*</snapshots>\s*</repository>\s*", ""), # Remove helper repo
+        (r"\s*<dependency>\s*<artifactId>helper-sdk</artifactId>\s*<groupId>com.applause</groupId>\s*<version>\${helper.sdk.version}</version>\s*</dependency>\s*", ""), # Remove helper dependency
+        (r"(</dependencies>)", r"""<dependency>
+                    <groupId>com.applause</groupId>
+                    <artifactId>auto-sdk-java-helpers</artifactId>
+                    <version>${com.applause.sdk.java.version}</version>
+                </dependency>\n\1""") # Add auto-sdk-java-helpers if not present
     ]
 
     for old_line, new_line in pom_substitutions:
-        new_pom = re.sub(old_line, new_line, new_pom)
+        new_pom = re.sub(old_line, new_line, new_pom, flags=re.DOTALL | re.MULTILINE)
 
     with open(filepath, 'w') as outfile:
         outfile.write(new_pom)
