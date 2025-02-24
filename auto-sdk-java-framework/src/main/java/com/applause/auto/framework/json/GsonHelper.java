@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.NonNull;
-import okhttp3.MediaType;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -197,15 +196,6 @@ public final class GsonHelper {
     ResponseBody body = okHttpRsp.body();
     if (body == null) {
       throw new RuntimeException("Unable to parse response - null body");
-    }
-    // IF the context type is not passed back correctly, then default it to application json
-    MediaType contentAndMetaData =
-        Optional.ofNullable(body.contentType()).orElse(MediaType.get("application/json"));
-    if (!"json".equalsIgnoreCase(contentAndMetaData.subtype())) {
-      throw new RuntimeException(
-          String.format(
-              "Non JSON content: type=%s, subtype=%s",
-              contentAndMetaData.type(), contentAndMetaData.subtype()));
     }
     final String rawBody;
     try {

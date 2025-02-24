@@ -22,12 +22,18 @@ import com.applause.auto.framework.json.GsonHelper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.util.Optional;
 import lombok.NonNull;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /** An Application Push implementation for SauceLabs */
@@ -43,9 +49,22 @@ public class SauceLabsPusher extends BaseAppPusher {
   @Override
   public RequestBody getRequestBody() {
     File fileToPush = getFileToPush();
+
+    // If we don't have a file to push, we will need to fetch the app from the provided url as
+    // SauceLabs does not support pushing
+    // URLs directly.  This is a workaround for the fact that SauceLabs does not support pushing
+    // URLs directly.
     if (fileToPush == null) {
-      throw new RuntimeException(
-          "SauceLabs does not support pushing remote urls to app storage. Use the 'app' capability to supply remote urls");
+      try {
+        URL url = new URI(getUrlToPush()).toURL();
+        final var pathTokens = url.getPath().split("/");
+        final var fileName = pathTokens[pathTokens.length - 1];
+        fileToPush = Files.createTempFile(null, fileName).toFile();
+        FileUtils.copyURLToFile(url, fileToPush);
+      } catch (IOException | URISyntaxException e) {
+        throw new RuntimeException(
+            "Unable to download app file for SauceLabs upload. Please check your permissions.", e);
+      }
     }
     return new MultipartBody.Builder()
         .setType(MultipartBody.FORM)

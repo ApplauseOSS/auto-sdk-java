@@ -152,8 +152,8 @@ public class FrameworkConfigurationListener implements ISuiteListener {
         continue;
       }
       if (!expectedDriverCaps.getCapabilityNames().contains("app")) {
-        ApplauseAppPushHelper.performApplicationPushIfNecessary();
         ApplauseAppPushHelper.autoDetectBuildIfNecessary();
+        ApplauseAppPushHelper.performApplicationPushIfNecessary();
         break;
       }
     }
