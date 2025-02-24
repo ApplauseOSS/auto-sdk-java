@@ -36,6 +36,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import javax.ws.rs.HttpMethod;
@@ -304,10 +305,10 @@ public final class AppPushHelper {
    */
   public static String pushProviderToPushAppClass(@NonNull final String pushProvider) {
     // Eventually we should externalize this
-    if ("BROWSERSTACK".equalsIgnoreCase(pushProvider)) {
+    if (pushProvider.toUpperCase(Locale.getDefault()).contains("BROWSERSTACK")) {
       return BrowserstackPusher.class.getCanonicalName();
     }
-    if ("SAUCELABS".equalsIgnoreCase(pushProvider)) {
+    if (pushProvider.toUpperCase(Locale.getDefault()).contains("SAUCELABS")) {
       return SauceLabsPusher.class.getCanonicalName();
     }
     throw new RuntimeException("Unable to map " + pushProvider + " to a concrete class");

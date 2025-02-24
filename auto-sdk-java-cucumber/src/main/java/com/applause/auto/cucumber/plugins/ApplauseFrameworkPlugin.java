@@ -155,8 +155,8 @@ public class ApplauseFrameworkPlugin implements ConcurrentEventListener {
         continue;
       }
       if (!expectedDriverCaps.getCapabilityNames().contains("app")) {
-        ApplauseAppPushHelper.performApplicationPushIfNecessary();
         ApplauseAppPushHelper.autoDetectBuildIfNecessary();
+        ApplauseAppPushHelper.performApplicationPushIfNecessary();
       }
     }
   }
