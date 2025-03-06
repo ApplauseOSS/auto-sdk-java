@@ -172,7 +172,7 @@ public class BrowserControl implements IPageObjectExtension {
    * @param element the target element to perform the action on.
    */
   public void hoverOverElement(final UIElement element) {
-    Dimension size = element.getUnderlyingWebElement().getSize();
+    Dimension size = element.getLazyWebElement().getSize();
     mouseMove(element, size.getWidth() / 2, size.getHeight() / 2);
   }
 

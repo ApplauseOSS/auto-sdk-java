@@ -146,6 +146,11 @@ public abstract class BaseElement implements UIElement {
   }
 
   @Override
+  public LazyWebElement getLazyWebElement() {
+    return this.underlying;
+  }
+
+  @Override
   public WebElement getUnderlyingWebElement() {
     return this.underlying.getUnderlyingWebElement();
   }

@@ -118,13 +118,7 @@ public class LocatorChain {
     // If we have a parent
     var parent = this.chain.isEmpty() ? null : this.chain.getLast();
     if (parent != null) {
-      if (!parent.isInitialized()) {
-        parent.initialize();
-      }
-      var searchContext =
-          parent.getLocator().isShadowRoot()
-              ? parent.getShadowRoot()
-              : parent.getUnderlyingWebElement();
+      var searchContext = parent.getLocator().isShadowRoot() ? parent.getShadowRoot() : parent;
       return this.findElementInContext(
           searchContext, this.underlying.getLocator(), this.underlying.getFormatArgs());
     }
@@ -143,13 +137,7 @@ public class LocatorChain {
     // If we have a parent
     var parent = this.chain.isEmpty() ? null : this.chain.getLast();
     if (parent != null) {
-      if (!parent.isInitialized()) {
-        parent.initialize();
-      }
-      var searchContext =
-          parent.getLocator().isShadowRoot()
-              ? parent.getShadowRoot()
-              : parent.getUnderlyingWebElement();
+      var searchContext = parent.getLocator().isShadowRoot() ? parent.getShadowRoot() : parent;
       return this.findElementsInContext(
           searchContext, this.underlying.getLocator(), this.underlying.getFormatArgs());
     }

@@ -213,6 +213,11 @@ public class LazyWebElement implements WebElement, UIElement {
   }
 
   @Override
+  public LazyWebElement getLazyWebElement() {
+    return this;
+  }
+
+  @Override
   public WebElement getUnderlyingWebElement() {
     return runLazily(() -> underlying);
   }
