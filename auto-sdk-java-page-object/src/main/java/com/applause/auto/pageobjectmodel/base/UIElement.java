@@ -19,6 +19,7 @@ package com.applause.auto.pageobjectmodel.base;
 
 import com.applause.auto.data.enums.SwipeDirection;
 import com.applause.auto.pageobjectmodel.elements.ContainerElement;
+import com.applause.auto.pageobjectmodel.factory.LazyWebElement;
 import com.applause.auto.pageobjectmodel.factory.Locator;
 import java.util.List;
 import org.openqa.selenium.By;
@@ -32,6 +33,7 @@ import org.openqa.selenium.WebElement;
  */
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public interface UIElement extends Locatable {
+
   /**
    * Gets a child UIElement of this UIElement. This can be either a subclass of BaseElement or
    * BaseComponent.
@@ -208,7 +210,17 @@ public interface UIElement extends Locatable {
   String getAttribute(String attribute);
 
   /**
-   * Gets the underlying web element
+   * Gets the underlying LazyWebElement
+   *
+   * @return The underlying LazyWebElement
+   */
+  LazyWebElement getLazyWebElement();
+
+  /**
+   * Gets the underlying web element. This is the actual selenium WebElement object that is being
+   * wrapped by the Applause Library. This is useful for when you need to interact with the
+   * WebElement directly. In most cases, you should consider using the getLazyWebElement() method
+   * instead, as the LazyWebElement can handle lazy loading and StaleElementRefereceExceptions.
    *
    * @return The underlying WebElement
    */

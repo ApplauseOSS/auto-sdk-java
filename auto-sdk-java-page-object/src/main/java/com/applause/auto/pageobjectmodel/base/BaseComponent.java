@@ -207,6 +207,16 @@ public abstract class BaseComponent implements UIElement {
   }
 
   @Override
+  public LazyWebElement getLazyWebElement() {
+    if (this.underlying == null) {
+      throw new UnsupportedOperationException(
+          "Cannot get underlying element for component [%s] with no underlying element"
+              .formatted(this.getClass().getSimpleName()));
+    }
+    return this.underlying;
+  }
+
+  @Override
   public WebElement getUnderlyingWebElement() {
     if (this.underlying == null) {
       throw new UnsupportedOperationException(

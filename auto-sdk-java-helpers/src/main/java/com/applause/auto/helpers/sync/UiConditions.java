@@ -197,7 +197,7 @@ public final class UiConditions {
         withNoWait(
             uiElement,
             element -> {
-              String textValue = element.getUnderlyingWebElement().getText();
+              String textValue = element.getLazyWebElement().getText();
               return textValue != null && textValue.equals(text);
             });
   }
@@ -215,7 +215,7 @@ public final class UiConditions {
         withNoWait(
             uiElement,
             element -> {
-              String textValue = element.getUnderlyingWebElement().getText();
+              String textValue = element.getLazyWebElement().getText();
               return textValue != null && textValue.contains(substring);
             });
   }
