@@ -150,6 +150,18 @@ public class LocatedByTest {
   }
 
   @Test
+  public void testPartialLinkText() {
+    logger.info("STEP 1: Create a new By with partial link text selector \"est\".");
+    By by = LocatedBy.partialLinkText("est");
+
+    logger.info("STEP 2: Assert that we got a ByPartialLinkText.");
+    assertTrue(by instanceof By.ByPartialLinkText);
+
+    logger.info("STEP 3: Assert that it has selector \"est\".");
+    assertEquals(by.toString(), "By.partialLinkText: est");
+  }
+
+  @Test
   public void testAccessibilityId() {
     logger.info("STEP 1: Create a new By with accessibility ID selector \"test\".");
     By by = LocatedBy.accessibilityId("test");

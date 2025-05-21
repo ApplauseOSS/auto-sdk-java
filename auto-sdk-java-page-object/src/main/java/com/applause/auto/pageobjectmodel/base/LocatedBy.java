@@ -140,6 +140,16 @@ public enum LocatedBy {
   }
 
   /**
+   * Returns a By locator for a partial link text.
+   *
+   * @param selector the name, corresponding to the value of one or several elements' link text
+   * @return the By locator corresponding to that selector
+   */
+  public static By partialLinkText(final String selector) {
+    return By.partialLinkText(selector);
+  }
+
+  /**
    * Returns a By locator for specified accessibility ID. Mobile-only.
    *
    * @param selector the accessibility ID for the element or elements in the DOM. Implementation
