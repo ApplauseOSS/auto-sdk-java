@@ -44,6 +44,8 @@ public enum Strategy {
   TAGNAME("By.tagName", LocatedBy::tagName),
   /** Locate by Link Text */
   LINKTEXT("By.linkText", LocatedBy::linkText),
+  /** Locate by Parial Link Text */
+  PARTIAL_LINKTEXT("By.partialLinkText", LocatedBy::partialLinkText),
   /** Locate by Accessibility ID */
   ACCESSIBILITYID("By.AccessibilityId", LocatedBy::accessibilityId),
   /** Locate using Android UI Automator */
