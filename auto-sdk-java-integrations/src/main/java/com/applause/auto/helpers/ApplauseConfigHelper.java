@@ -75,6 +75,9 @@ public final class ApplauseConfigHelper {
     // must be a valid URL
     if (sdkConfigBean.useSeleniumGrid()) {
       validateUrl(sdkConfigBean.seleniumGridLocation(), true, reqRevDns).ifPresent(errorList::add);
+    } else if (!sdkConfigBean.useLocalDrivers() && applauseConfigBean.apiKey() == null) {
+      errorList.add(
+          "You have not configured an API key for the Applause API. Please set the apiKey property in your system.properties file or as a command line variable.");
     }
 
     Set<String> recursiveValueNames =
@@ -138,7 +141,7 @@ public final class ApplauseConfigHelper {
       }
 
       // Now, if reverse DNS is required, verify the reverse DNS
-      if (reqRevDns) {
+      if (reqRevDns && urlAsString != null && !urlAsString.isBlank()) {
         return ConfigUtils.verifyReverseDns(urlAsString);
       }
 
