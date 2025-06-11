@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 
 /** have configuration checks in a common place */
@@ -63,10 +64,15 @@ public final class ApplauseConfigHelper {
     boolean reqRevDns = !sdkConfigBean.noReverseDnsCheck();
     var errorList =
         Stream.of(
-                validateUrl(applauseConfigBean.autoApiUrl(), true, reqRevDns),
-                validateUrl(applauseConfigBean.seleniumProxyUrl(), true, reqRevDns),
-                validateUrl(applauseConfigBean.applausePublicApiUrl(), true, reqRevDns),
-                validateUrl(sdkConfigBean.localAppiumUrl(), false, reqRevDns))
+                validateUrl("autoApiUrl", applauseConfigBean.autoApiUrl(), true, reqRevDns),
+                validateUrl(
+                    "seleniumProxyUrl", applauseConfigBean.seleniumProxyUrl(), true, reqRevDns),
+                validateUrl(
+                    "applausePublicApiUrl",
+                    applauseConfigBean.applausePublicApiUrl(),
+                    true,
+                    reqRevDns),
+                validateUrl("localAppiumUrl", sdkConfigBean.localAppiumUrl(), false, reqRevDns))
             // filter out empty optionals and make list of remaining strings
             .filter(Optional::isPresent)
             .map(Optional::get)
@@ -74,7 +80,8 @@ public final class ApplauseConfigHelper {
     // If we have useSeleniumGrid set, then we must have seleniumGridLocation and this
     // must be a valid URL
     if (sdkConfigBean.useSeleniumGrid()) {
-      validateUrl(sdkConfigBean.seleniumGridLocation(), true, reqRevDns).ifPresent(errorList::add);
+      validateUrl("seleniumGridLocation", sdkConfigBean.seleniumGridLocation(), true, reqRevDns)
+          .ifPresent(errorList::add);
     } else if (!sdkConfigBean.useLocalDrivers() && applauseConfigBean.apiKey() == null) {
       errorList.add(
           "You have not configured an API key for the Applause API. Please set the apiKey property in your system.properties file or as a command line variable.");
@@ -123,32 +130,42 @@ public final class ApplauseConfigHelper {
   /**
    * returns error string if we got one, empty otherwise
    *
-   * @param urlAsString the string URL
+   * @param urlName the property name to validate
+   * @param urlValue the string URL
    * @param required whether the URL is required
    * @param reqRevDns whether reverse DNS is required
    * @return error message if validation failed
    */
   static Optional<String> validateUrl(
-      final String urlAsString, final boolean required, final boolean reqRevDns) {
+      final @NonNull String urlName,
+      final String urlValue,
+      final boolean required,
+      final boolean reqRevDns) {
 
     try {
       // First, verify the URL
-      final var urlValidationErrors = ConfigUtils.validateUrl(urlAsString, required);
+      final var urlValidationErrors = ConfigUtils.validateUrl(urlValue, required);
 
       // If validation failed, return the error
       if (urlValidationErrors.isPresent()) {
-        return urlValidationErrors;
+        return urlValidationErrors.map(
+            error -> "URL validation failed for '%s' with error: %s".formatted(urlName, error));
       }
 
       // Now, if reverse DNS is required, verify the reverse DNS
-      if (reqRevDns && urlAsString != null && !urlAsString.isBlank()) {
-        return ConfigUtils.verifyReverseDns(urlAsString);
+      if (reqRevDns && urlValue != null && !urlValue.isBlank()) {
+        return ConfigUtils.verifyReverseDns(urlValue)
+            .map(
+                error ->
+                    "Reverse DNS validation failed for '%s' with error: %s"
+                        .formatted(urlName, error));
       }
 
       // If reverse DNS is not required, return empty
       return Optional.empty();
     } catch (Exception exception) {
-      return Optional.of("Error validating URL: " + exception.getMessage());
+      return Optional.of(
+          "Error validating URL %s (%s): %s".formatted(urlName, urlValue, exception.getMessage()));
     }
   }
 }
