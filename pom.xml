@@ -86,7 +86,7 @@
     <org.mockito-inline.version>5.2.0</org.mockito-inline.version>
 
     <!-- COMPILE ONLY DEPENDENCIES -->
-    <pmdVersion>7.0.0</pmdVersion>
+    <pmdVersion>7.10.0</pmdVersion>
     <com.github.spotbugs.annotations.version>4.7.3</com.github.spotbugs.annotations.version>
     <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
   </properties>
