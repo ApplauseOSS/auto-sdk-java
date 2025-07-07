@@ -35,39 +35,73 @@ import org.apache.logging.log4j.Logger;
  */
 @Getter
 public enum Platform {
+  /** Default platform, used as a fallback when no specific platform is matched. */
   DEFAULT("Default", null),
+  /** Represents all mobile platforms. */
   MOBILE("Mobile", DEFAULT),
+  /** Represents all Android mobile devices. */
   MOBILE_ANDROID("MobileAndroid", MOBILE),
+  /** Represents Android mobile phones. */
   MOBILE_ANDROID_PHONE("MobileAndroidPhone", MOBILE_ANDROID),
+  /** Represents Android tablets. */
   MOBILE_ANDROID_TABLET("MobileAndroidTablet", MOBILE_ANDROID),
+  /** Represents small Android tablets. */
   MOBILE_ANDROID_SMALL_TABLET("MobileAndroidSmallTablet", MOBILE_ANDROID),
+  /** Represents all iOS mobile devices. */
   MOBILE_IOS("MobileIOS", MOBILE),
+  /** Represents iOS mobile phones. */
   MOBILE_IOS_PHONE("MobileIOSPhone", MOBILE_IOS),
+  /** Represents iOS tablets. */
   MOBILE_IOS_TABLET("MobileIOSTablet", MOBILE_IOS),
+  /** Represents small iOS tablets. */
   MOBILE_IOS_SMALL_TABLET("MobileIOSSmallTablet", MOBILE_IOS),
+  /** Represents all web platforms. */
   WEB("Web", DEFAULT),
+  /** Represents desktop web platforms. */
   WEB_DESKTOP("WebDesktop", WEB),
+  /** Represents Chrome browser on desktop. */
   WEB_DESKTOP_CHROME("WebDesktopChrome", WEB_DESKTOP),
+  /** Represents Edge browser on desktop. */
   WEB_DESKTOP_EDGE("WebDesktopEdge", WEB_DESKTOP),
+  /** Represents Firefox browser on desktop. */
   WEB_DESKTOP_FIREFOX("WebDesktopFirefox", WEB_DESKTOP),
+  /** Represents Internet Explorer browser on desktop. */
   WEB_DESKTOP_IE("WebDesktopIE", WEB_DESKTOP),
+  /** Represents Safari browser on desktop. */
   WEB_DESKTOP_SAFARI("WebDesktopSafari", WEB_DESKTOP),
+  /** Represents all web mobile platforms. */
   WEB_MOBILE("WebMobile", WEB),
+  /** Represents web mobile phones. */
   WEB_MOBILE_PHONE("WebMobilePhone", WEB_MOBILE),
+  /** Represents Android web mobile phones. */
   WEB_ANDROID_PHONE("WebAndroidPhone", WEB_MOBILE_PHONE),
+  /** Represents iOS web mobile phones. */
   WEB_IOS_PHONE("WebIOSPhone", WEB_MOBILE_PHONE),
+  /** Represents web mobile tablets. */
   WEB_MOBILE_TABLET("WebMobileTablet", WEB_MOBILE),
+  /** Represents Android web mobile tablets. */
   WEB_ANDROID_TABLET("WebAndroidTablet", WEB_MOBILE_TABLET),
+  /** Represents iOS web mobile tablets. */
   WEB_IOS_TABLET("WebIOSTablet", WEB_MOBILE_TABLET),
+  /** Represents web mobile small tablets. */
   WEB_MOBILE_SMALL_TABLET("WebMobileSmallTablet", WEB_MOBILE),
+  /** Represents Android web mobile small tablets. */
   WEB_ANDROID_SMALL_TABLET("WebAndroidSmallTablet", WEB_MOBILE_SMALL_TABLET),
+  /** Represents iOS web mobile small tablets. */
   WEB_IOS_SMALL_TABLET("WebIOSSmallTablet", WEB_MOBILE_SMALL_TABLET),
+  /** Represents all OTT (over-the-top) platforms. */
   OTT("OTT", DEFAULT),
+  /** Represents Amazon Fire TV OTT platform. */
   OTT_FIRE_TV("OttFireTv", OTT),
+  /** Represents Amazon Fire TV 4K OTT platform. */
   OTT_FIRE_TV_4K("OttFireTv4k", OTT_FIRE_TV),
+  /** Represents Apple TV OTT platform. */
   OTT_APPLE_TV("OttAppleTv", OTT),
+  /** Represents Apple TV 4K OTT platform. */
   OTT_APPLE_TV_4K("OttAppleTv4k", OTT_APPLE_TV),
+  /** Represents Google Chromecast OTT platform. */
   OTT_CHROMECAST("OttChromecast", OTT),
+  /** Represents Android TV OTT platform. */
   OTT_ANDROID_TV("OttAndroidTv", OTT);
 
   private static final Logger logger = LogManager.getLogger(Platform.class);
@@ -120,14 +154,15 @@ public enum Platform {
    * @param p the current Platform
    * @return if chain falls back to MobileNative (Platform.MOBILE)
    */
-  @SuppressWarnings({"PMD.AvoidBranchingStatementAsLastInLoop", "PMD.SimplifyBooleanReturns"})
   public boolean hasFallback(final @NonNull Platform p) {
+    boolean result = false;
     // If the platforms match, then this falls back to the provided platform
     if (this == p) {
-      return true;
+      result = true;
+    } else if (this.fallback != null) {
+      result = this.fallback.hasFallback(p);
     }
-    // If we have a fallback, check if it falls back to the requested platform
-    return this.fallback != null && this.fallback.hasFallback(p);
+    return result;
   }
 
   @Override

@@ -23,7 +23,6 @@ import org.apache.logging.log4j.Logger;
 
 /** A Helper for registering a shutdown hook on the JVM */
 @SuppressWarnings({
-  "PMD.AvoidUsingVolatile",
   "PMD.AvoidSynchronizedAtMethodLevel",
   "PMD.AvoidCatchingThrowable",
   "PMD.DataClass"
@@ -33,7 +32,7 @@ public final class ShutdownHandler extends Thread {
   private static volatile ShutdownHandler instance;
   private Long testRunId;
   private AutoApi client;
-  private boolean normalExit;
+  private volatile boolean normalExit;
 
   /**
    * This is a singleton pattern. get the instance and ensure it is registered with the runtime

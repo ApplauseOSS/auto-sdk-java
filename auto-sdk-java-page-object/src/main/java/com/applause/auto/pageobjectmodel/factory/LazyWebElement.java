@@ -87,7 +87,6 @@ public class LazyWebElement implements WebElement, UIElement {
    * @param locator a Locator pointing at an element in the DOM
    * @param context the underlying context to use
    */
-  @SuppressWarnings("PMD.NullAssignment")
   public LazyWebElement(final Locator locator, final IPageObjectContext context) {
     this.locator = locator;
     this.context = context;
@@ -324,12 +323,16 @@ public class LazyWebElement implements WebElement, UIElement {
 
   /** Proxy to the underlying WebElement.click() with lazy-loading and stale element protection. */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public void click() {
     runLazily(() -> underlying.click());
   }
 
   /** Proxy to the underlying WebElement.submit() with lazy-loading and stale element protection. */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public void submit() {
     runLazily(() -> underlying.submit());
   }
@@ -344,6 +347,8 @@ public class LazyWebElement implements WebElement, UIElement {
 
   /** Proxy to the underlying WebElement.clear() with lazy-loading and stale element protection. */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public void clear() {
     runLazily(() -> underlying.clear());
   }
@@ -352,6 +357,8 @@ public class LazyWebElement implements WebElement, UIElement {
    * Proxy to the underlying WebElement.getTagName() with lazy-loading and stale element protection.
    */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public String getTagName() {
     return runLazily(() -> underlying.getTagName());
   }
@@ -379,6 +386,8 @@ public class LazyWebElement implements WebElement, UIElement {
    * Proxy to the underlying WebElement.isSelected() with lazy-loading and stale element protection.
    */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public boolean isSelected() {
     return runLazily(() -> underlying.isSelected());
   }
@@ -387,6 +396,8 @@ public class LazyWebElement implements WebElement, UIElement {
    * Proxy to the underlying WebElement.isEnabled() with lazy-loading and stale element protection.
    */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public boolean isEnabled() {
     return runLazily(() -> underlying.isEnabled());
   }
@@ -395,6 +406,8 @@ public class LazyWebElement implements WebElement, UIElement {
    * Proxy to the underlying WebElement.getText() with lazy-loading and stale element protection.
    */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public String getText() {
     return runLazily(() -> underlying.getText());
   }
@@ -422,6 +435,8 @@ public class LazyWebElement implements WebElement, UIElement {
    * protection.
    */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public boolean isDisplayed() {
     return runLazily(() -> underlying.isDisplayed());
   }
@@ -431,6 +446,8 @@ public class LazyWebElement implements WebElement, UIElement {
    * protection.
    */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public Point getLocation() {
     return runLazily(() -> underlying.getLocation());
   }
@@ -439,6 +456,8 @@ public class LazyWebElement implements WebElement, UIElement {
    * Proxy to the underlying WebElement.getSize() with lazy-loading and stale element protection.
    */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public Dimension getSize() {
     return runLazily(() -> underlying.getSize());
   }
@@ -447,6 +466,8 @@ public class LazyWebElement implements WebElement, UIElement {
    * Proxy to the underlying WebElement.getRect() with lazy-loading and stale element protection.
    */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public Rectangle getRect() {
     return runLazily(() -> underlying.getRect());
   }
@@ -470,6 +491,8 @@ public class LazyWebElement implements WebElement, UIElement {
   }
 
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public SearchContext getShadowRoot() {
     return runLazily(() -> underlying.getShadowRoot());
   }
@@ -534,6 +557,8 @@ public class LazyWebElement implements WebElement, UIElement {
   }
 
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public boolean exists() {
     return runLazily(() -> this.underlying.isEnabled());
   }

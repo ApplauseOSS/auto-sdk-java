@@ -25,7 +25,6 @@ import lombok.NonNull;
 
 /** Convenience class that maps the TestRail config interface into a class */
 @Getter
-@SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation")
 public final class TestRailConfigBeanMapper {
 
   private TestRailConfigBeanMapper() {

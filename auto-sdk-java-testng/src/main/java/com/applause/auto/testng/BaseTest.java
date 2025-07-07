@@ -40,7 +40,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Listeners;
 
 /** Base TestNG Class to ensure all needed items are wired up properly for test execution. */
-@SuppressWarnings("PMD.LoggerIsNotStaticFinal")
 // Listeners are run in reverse order - we want the SDK Testrail work to be done last, so we can
 // fetch
 // appropriate data from the session close

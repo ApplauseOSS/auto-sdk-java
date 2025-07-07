@@ -45,7 +45,6 @@ public class Checkbox extends BaseElement {
    *
    * @return true if Checkbox is checked, otherwise, false
    */
-  @SuppressWarnings({"PMD.AvoidDeeplyNestedIfStmts"})
   public boolean isChecked() {
     if (Platform.hasNativeFallback(this.context.getPlatform())) {
       if (this.context.getDriver() instanceof IOSDriver) {

@@ -18,7 +18,7 @@
 package com.applause.auto.testng.dataprovider;
 
 /** Interface describing a TestRail case id override for a data provider iteration */
-@SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation")
+@FunctionalInterface
 public interface ITestRailCaseIdOverride {
 
   /**

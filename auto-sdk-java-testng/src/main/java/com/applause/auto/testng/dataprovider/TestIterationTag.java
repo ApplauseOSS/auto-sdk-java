@@ -22,7 +22,6 @@ package com.applause.auto.testng.dataprovider;
  *
  * @param testIterationTag A "tag" for the Data Provider iteration
  */
-@SuppressWarnings("PMD.AvoidFieldNameMatchingTypeName")
 public record TestIterationTag(String testIterationTag) implements ITestIterationTag {
   @Override
   public String toString() {

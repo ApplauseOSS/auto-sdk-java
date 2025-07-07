@@ -60,9 +60,6 @@ public enum SwipeDirection {
             start = new Point((int) (width * 0.15), height / 2);
             yield new Point((int) (width * 0.85), height / 2);
           }
-          default ->
-              throw new IllegalArgumentException(
-                  "Invalid SwipeDirection value specified, somehow.");
         };
     return Pair.of(start, end);
   }

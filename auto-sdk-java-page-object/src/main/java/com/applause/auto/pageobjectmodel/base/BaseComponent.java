@@ -52,8 +52,6 @@ import org.openqa.selenium.WebElement;
  * @see com.applause.auto.pageobjectmodel.annotation.Implementation
  * @see PageObjectBuilder
  */
-@SuppressWarnings("PMD.LoggerIsNotStaticFinal") // code gen interferes with logger naming
-@SuppressFBWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public abstract class BaseComponent implements UIElement {
   /** A Logger that looks up the classname with any ByteBuddy naming removed */
   protected final Logger logger =
@@ -67,7 +65,12 @@ public abstract class BaseComponent implements UIElement {
   /** -- GETTER -- Gets the underlying element of this component. */
   @Getter @Setter private @Nullable LazyWebElement underlying;
 
-  @Getter @Setter private @NonNull IPageObjectContext context;
+  @Getter
+  @Setter
+  @SuppressFBWarnings(
+      value = "NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR",
+      justification = "Field is set by PageObjectBuilder after construction.")
+  private @NonNull IPageObjectContext context;
 
   /**
    * Post-creation lifecycle method for the BaseComponent. afterInit() is called by

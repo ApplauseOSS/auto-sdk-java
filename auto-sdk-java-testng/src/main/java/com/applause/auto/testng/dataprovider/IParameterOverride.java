@@ -18,6 +18,7 @@
 package com.applause.auto.testng.dataprovider;
 
 /** Interface describing a parameter string override for Data Provider iterations */
+@FunctionalInterface
 public interface IParameterOverride {
   /**
    * Return the parameter list as a serialized string

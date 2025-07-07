@@ -20,7 +20,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.applause</groupId>
   <artifactId>auto-sdk-java</artifactId>
-  <version>6.0.5-SNAPSHOT</version>
+  <version>6.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>${project.artifactId}</name>
   <modules>
@@ -47,57 +47,50 @@
   </distributionManagement>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <org.testng.version>7.10.2</org.testng.version>
-    <cucumber-java.version>7.19.0</cucumber-java.version>
-    <io.appium.version>9.1.0</io.appium.version>
+    <org.testng.version>7.11.0</org.testng.version>
+    <cucumber-java.version>7.23.0</cucumber-java.version>
+    <io.appium.version>9.5.0</io.appium.version>
     <!-- MUST update with Appium above to make sure the versions are compatible-->
-    <org.seleniumhq.selenium.version>4.18.1</org.seleniumhq.selenium.version>
-    <log4j.version>2.22.1</log4j.version>
-    <commons.io.version>2.15.1</commons.io.version>
+    <org.seleniumhq.selenium.version>4.34.0</org.seleniumhq.selenium.version>
+    <log4j.version>2.24.3</log4j.version>
+    <commons.io.version>2.19.0</commons.io.version>
     <org.apache.commons.version>3.17.0</org.apache.commons.version>
-    <net.bytebuddy.version>1.15.3</net.bytebuddy.version>
-    <com.squareup.retrofit2.version>2.11.0</com.squareup.retrofit2.version>
+    <net.bytebuddy.version>1.17.6</net.bytebuddy.version>
+    <com.squareup.retrofit2.version>3.0.0</com.squareup.retrofit2.version>
     <!-- OkHTTP must be version compatible with Retrofit!-->
     <com.squareup.okhttp.version>4.12.0</com.squareup.okhttp.version>
-    <com.google.code.gson.version>2.10.1</com.google.code.gson.version>
-    <com.google.guava.version>33.0.0-jre</com.google.guava.version>
-    <com.fasterxml.jackson.core.version>2.17.2</com.fasterxml.jackson.core.version>
+    <com.google.code.gson.version>2.13.1</com.google.code.gson.version>
+    <com.google.guava.version>33.4.8-jre</com.google.guava.version>
+    <com.fasterxml.jackson.core.version>2.19.1</com.fasterxml.jackson.core.version>
     <dev.failsafe.version>3.3.2</dev.failsafe.version>
     <org.aeonbits.owner.version>1.0.12</org.aeonbits.owner.version>
-    <org.projectlombok.version>1.18.34</org.projectlombok.version>
+    <org.projectlombok.version>1.18.38</org.projectlombok.version>
     <jakarta.mail-api.version>2.1.3</jakarta.mail-api.version>
     <jakarta.angus.mail.version>2.0.3</jakarta.angus.mail.version>
-    <freemarker.version>2.3.31</freemarker.version>
+    <freemarker.version>2.3.34</freemarker.version>
     <com.applause.testrail.client.version>6.0.0</com.applause.testrail.client.version>
-    <commons-collections.version>4.4</commons-collections.version>
+    <commons-collections.version>4.5.0</commons-collections.version>
 
-    <rest-assured.version>5.5.0</rest-assured.version>
-    <awaitility.version>4.2.2</awaitility.version>
-    <jsoup.version>1.18.3</jsoup.version>
+    <rest-assured.version>5.5.5</rest-assured.version>
+    <awaitility.version>4.3.0</awaitility.version>
+    <jsoup.version>1.21.1</jsoup.version>
     <xsoup.version>0.3.7</xsoup.version>
     <faker.version>1.0.2</faker.version>
     <allure.version>2.29.1</allure.version>
-    <json.version>20250107</json.version>
+    <json.version>20250517</json.version>
     <yaml-path.version>0.0.12</yaml-path.version>
-    <google-api-client.version>2.7.2</google-api-client.version>
+    <google-api-client.version>2.8.0</google-api-client.version>
     <google-api-services-sheets.version>v4-rev612-1.25.0</google-api-services-sheets.version>
     <!-- Testing dependencies-->
-    <org.mockito.version>5.13.0</org.mockito.version>
-    <org.mockito-inline.version>5.2.0</org.mockito-inline.version>
+    <org.mockito.version>5.18.0</org.mockito.version>
 
     <!-- COMPILE ONLY DEPENDENCIES -->
-    <pmdVersion>7.0.0</pmdVersion>
-    <com.github.spotbugs.annotations.version>4.7.3</com.github.spotbugs.annotations.version>
-    <javax.ws.rs-api.version>2.1.1</javax.ws.rs-api.version>
+    <pmdVersion>7.15.0</pmdVersion>
+    <com.github.spotbugs.annotations.version>4.9.3</com.github.spotbugs.annotations.version>
+    <jakarta.ws.rs-api.version>4.0.0</jakarta.ws.rs-api.version>
   </properties>
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-inline</artifactId>
-        <version>${org.mockito-inline.version}</version>
-        <scope>test</scope>
-      </dependency>
       <dependency>
         <groupId>com.squareup.retrofit2</groupId>
         <artifactId>retrofit</artifactId>
@@ -234,9 +227,9 @@
         <version>${org.apache.commons.version}</version>
       </dependency>
       <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>javax.ws.rs-api</artifactId>
-        <version>${javax.ws.rs-api.version}</version>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>${jakarta.ws.rs-api.version}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.mail</groupId>
@@ -322,10 +315,6 @@
       <artifactId>mockito-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-inline</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
@@ -371,8 +360,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.ws.rs</groupId>
-      <artifactId>javax.ws.rs-api</artifactId>
+      <groupId>jakarta.ws.rs</groupId>
+      <artifactId>jakarta.ws.rs-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -391,46 +380,46 @@
       <plugins>
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.1.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.11.0</version>
+          <version>3.14.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
-          <version>2.17.1</version>
+          <version>2.18.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-scm-plugin</artifactId>
-          <version>1.13.0</version>
+          <version>2.1.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>3.5.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.3</version>
+          <version>3.1.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.3.0</version>
+          <version>3.4.2</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.5.0</version>
+          <version>3.5.3</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.5.0</version>
+          <version>3.11.2</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -438,7 +427,7 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.43.0</version>
+        <version>2.44.2</version>
         <configuration>
           <upToDateChecking>
             <enabled>true</enabled>
@@ -449,7 +438,7 @@
           <java>
             <!-- apply a specific flavor of google-java-format -->
             <googleJavaFormat>
-              <version>1.19.2</version>
+              <version>1.27.0</version>
             </googleJavaFormat>
             <!-- make sure every file has the following copyright header.
                         optionally, Spotless can set copyright years by digging
@@ -523,7 +512,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>3.21.2</version>
+        <version>3.27.0</version>
         <configuration>
           <failOnViolation>true</failOnViolation>
           <excludeRoots>
@@ -538,12 +527,6 @@
           <analysisCacheLocation>${project.build.directory}/pmd/pmd.cache</analysisCacheLocation>
         </configuration>
         <dependencies>
-          <!-- Adds support for PMD 7 - must be first in the list-->
-          <dependency>
-            <groupId>net.sourceforge.pmd</groupId>
-            <artifactId>pmd-compat6</artifactId>
-            <version>${pmdVersion}</version>
-          </dependency>
           <dependency>
             <groupId>net.sourceforge.pmd</groupId>
             <artifactId>pmd-core</artifactId>
@@ -590,7 +573,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.6.0</version>
+        <version>1.7.1</version>
         <configuration>
           <updatePomFile>true</updatePomFile>
           <flattenMode>resolveCiFriendliesOnly</flattenMode>
@@ -615,7 +598,7 @@
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
-        <version>4.8.6.4</version>
+        <version>4.9.3.2</version>
         <configuration>
           <effort></effort>
           <failOnError>true</failOnError>
@@ -625,7 +608,7 @@
           <dependency>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs</artifactId>
-            <version>4.8.3</version>
+            <version>4.9.3</version>
           </dependency>
         </dependencies>
         <executions>
@@ -640,7 +623,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.3.1</version>
+        <version>3.6.0</version>
         <configuration>
           <configLocation>build-tools/checkstyle.xml</configLocation>
           <suppressionsLocation>build-tools/checkstyle_suppression.xml</suppressionsLocation>

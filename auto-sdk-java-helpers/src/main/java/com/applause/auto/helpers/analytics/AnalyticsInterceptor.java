@@ -33,7 +33,6 @@ import net.bytebuddy.matcher.ElementMatchers;
  * This interceptor is added to classes in the PageObjectFactory to facilitate running code before
  * and after methods. Currently, the only use case is for the @AnalyticsCall annotation.
  */
-@SuppressWarnings("PMD.SignatureDeclareThrowsException") // since we're intercepting this is okay
 public class AnalyticsInterceptor extends ComponentInterceptor {
   private final AnalyticsHelper analyticsHelper;
 

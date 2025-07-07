@@ -31,7 +31,6 @@ import org.aeonbits.owner.Config.Sources;
  */
 @LoadPolicy(LoadType.MERGE)
 @Sources({"classpath:props/system.properties"})
-@SuppressWarnings("PMD.ExcessivePublicCount")
 public interface SdkConfigBean extends Config {
 
   /**

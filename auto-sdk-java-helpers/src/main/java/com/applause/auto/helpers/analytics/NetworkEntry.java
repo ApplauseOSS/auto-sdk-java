@@ -29,11 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /** extends regular analytics entry with network info */
-@SuppressWarnings({
-  "PMD.GodClass",
-  "checkstyle:CyclomaticComplexity",
-  "checkstyle:MultipleStringLiterals"
-})
+@SuppressWarnings({"checkstyle:CyclomaticComplexity", "checkstyle:MultipleStringLiterals"})
 public class NetworkEntry extends AnalyticsEntry {
   private static final Logger logger = LogManager.getLogger(NetworkEntry.class);
 

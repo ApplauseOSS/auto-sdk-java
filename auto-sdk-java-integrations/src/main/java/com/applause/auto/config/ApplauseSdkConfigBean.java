@@ -31,7 +31,6 @@ import org.aeonbits.owner.Config.Sources;
 // system.properties comes from the user of the SDK.
 // applause_environment.properties is in this project and contains the defaults
 @Sources({"classpath:props/system.properties", "classpath:applause_environment.properties"})
-@SuppressWarnings("PMD.ExcessivePublicCount")
 public interface ApplauseSdkConfigBean extends Config {
   /**
    * Gets Applause API Key

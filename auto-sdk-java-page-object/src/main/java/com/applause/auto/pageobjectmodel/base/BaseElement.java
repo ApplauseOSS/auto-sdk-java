@@ -23,7 +23,6 @@ import com.applause.auto.pageobjectmodel.builder.PageObjectBuilder;
 import com.applause.auto.pageobjectmodel.elements.ContainerElement;
 import com.applause.auto.pageobjectmodel.factory.LazyWebElement;
 import com.applause.auto.pageobjectmodel.factory.Locator;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.time.Duration;
 import java.util.List;
 import lombok.Getter;
@@ -39,8 +38,6 @@ import org.openqa.selenium.*;
  *
  * @see LazyWebElement
  */
-@SuppressWarnings({"PMD.LoggerIsNotStaticFinal", "PMD.GodClass"})
-@SuppressFBWarnings({"EI_EXPOSE_REP", "EI_EXPOSE_REP2"})
 public abstract class BaseElement implements UIElement {
   /** The Logger */
   protected final Logger logger = LogManager.getLogger(this.getClass().getSimpleName());

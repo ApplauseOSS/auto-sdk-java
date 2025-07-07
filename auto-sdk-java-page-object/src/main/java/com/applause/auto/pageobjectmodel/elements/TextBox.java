@@ -59,7 +59,6 @@ public class TextBox extends BaseElement {
    *
    * @return current text as a string
    */
-  @SuppressWarnings("PMD.AvoidCatchingNPE")
   @SuppressFBWarnings("DCN_NULLPOINTER_EXCEPTION")
   public String getCurrentText() {
     String response;
