@@ -20,6 +20,7 @@ package com.applause.auto.helpers.http.mapping;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /** Functional Interface that is representing object mapper method for REST API */
+@FunctionalInterface
 public interface IRestObjectMapper {
   ObjectMapper restJsonObjectMapper();
 }

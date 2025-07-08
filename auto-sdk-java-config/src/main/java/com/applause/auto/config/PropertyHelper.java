@@ -201,7 +201,6 @@ public class PropertyHelper {
     return sb.toString();
   }
 
-  @SuppressWarnings("PMD.CognitiveComplexity")
   static <T extends Config> String callForValueAsString(
       final @NonNull Method method, final @NonNull T configBean) {
     String defaultReturnValue = NO_VALUE;

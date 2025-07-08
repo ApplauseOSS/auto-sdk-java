@@ -22,6 +22,7 @@ import java.util.Collection;
 /**
  * Interface describing an Override for the Applause TestCase ID when using a TestNG DataProvider
  */
+@FunctionalInterface
 public interface IApplauseTestCaseIdOverride {
   /**
    * Get the Applause Test Case IDs

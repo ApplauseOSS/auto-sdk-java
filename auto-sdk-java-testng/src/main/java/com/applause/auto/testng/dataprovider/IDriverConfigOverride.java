@@ -18,6 +18,7 @@
 package com.applause.auto.testng.dataprovider;
 
 /** Interface defining a driver config override for a TestNG Data Provider */
+@FunctionalInterface
 public interface IDriverConfigOverride {
   /**
    * Gets the Driver Config to use for the Data Provider Iteration

@@ -19,7 +19,6 @@ package com.applause.auto.pageobjectmodel.base;
 
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.appium.java_client.AppiumBy;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,13 +56,6 @@ import org.openqa.selenium.support.ui.FluentWait;
  */
 // ignore caps on a few method names, so they match the Selenium
 // call (convenience)
-@SuppressFBWarnings("NM_METHOD_NAMING_CONVENTION")
-@SuppressWarnings({
-  "PMD.MethodNamingConventions",
-  "checkstyle:AbbreviationAsWordInName",
-  "checkstyle:MethodName",
-  "PMD.ShortMethodName"
-})
 public enum LocatedBy {
   ;
   static final Logger logger = LogManager.getLogger();
@@ -176,6 +168,7 @@ public enum LocatedBy {
    * @param selector the class chain selector pointing at an element or elements in the DOM
    * @return the By locator corresponding to that selector
    */
+  @SuppressWarnings("checkstyle:MethodName")
   public static By iOSClassChain(final String selector) {
     return AppiumBy.iOSClassChain(selector);
   }
@@ -186,6 +179,7 @@ public enum LocatedBy {
    * @param selector the NsPredicate selector pointing at an element or elements in the DOM
    * @return the By locator corresponding to that selector
    */
+  @SuppressWarnings("checkstyle:MethodName")
   public static By iOSNsPredicate(final String selector) {
     return AppiumBy.iOSNsPredicateString(selector);
   }
@@ -207,6 +201,7 @@ public enum LocatedBy {
    * @return a By which locates elements selected by that Sizzle Public API call
    * @throws IllegalArgumentException if sizzle selector is null
    */
+  @SuppressWarnings("checkstyle:MethodName")
   public static By jQuery(final String selector) {
     if (selector == null) {
       throw new IllegalArgumentException("Cannot find elements with a null Sizzle selector.");

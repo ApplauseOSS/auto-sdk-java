@@ -17,8 +17,8 @@
  */
 package com.applause.auto.logging;
 
-import com.google.common.base.Charsets;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -79,6 +79,6 @@ public final class ServerSideRemoteLogAppender extends AbstractAppender {
   @Override
   public void append(final LogEvent logEvent) {
     // code inspired by Log4J source to behave like their other appender
-    LogOutputSingleton.put(new String(layout.toByteArray(logEvent), Charsets.UTF_8));
+    LogOutputSingleton.put(new String(layout.toByteArray(logEvent), StandardCharsets.UTF_8));
   }
 }

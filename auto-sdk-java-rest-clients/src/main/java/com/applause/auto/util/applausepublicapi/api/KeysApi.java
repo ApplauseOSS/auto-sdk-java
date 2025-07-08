@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import retrofit2.Response;
 import retrofit2.http.*;
 
+@SuppressWarnings("PMD.ImplicitFunctionalInterface")
 public interface KeysApi {
   /**
    * Returns info for current API key

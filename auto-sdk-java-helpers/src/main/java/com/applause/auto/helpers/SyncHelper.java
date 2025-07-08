@@ -33,7 +33,6 @@ import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /** Utility class to handle waiting for elements and locating elements. */
-@SuppressWarnings({"PMD.ExcessivePublicCount", "PMD.GodClass"})
 @AllArgsConstructor
 public class SyncHelper implements IPageObjectExtension {
   private static final Logger logger = LogManager.getLogger(SyncHelper.class);

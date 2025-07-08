@@ -20,6 +20,7 @@ package com.applause.auto.context;
 import com.applause.auto.logging.ResultPropertyMap;
 import com.applause.auto.templates.TemplateManager;
 import com.google.common.base.Suppliers;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import freemarker.template.Template;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -36,6 +37,9 @@ import org.openqa.selenium.WebDriver;
 @AllArgsConstructor
 @Data
 @RequiredArgsConstructor
+@SuppressFBWarnings(
+    value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE",
+    justification = "Lombok @Data generates equals/hashCode; null checks are redundant.")
 public class FrameworkContext {
   @Setter(value = AccessLevel.NONE)
   private final String contextId = UUID.randomUUID().toString();

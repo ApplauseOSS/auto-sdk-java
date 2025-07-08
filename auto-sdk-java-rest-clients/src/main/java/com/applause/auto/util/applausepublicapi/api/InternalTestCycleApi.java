@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import retrofit2.Response;
 import retrofit2.http.*;
 
+@SuppressWarnings("PMD.ImplicitFunctionalInterface")
 public interface InternalTestCycleApi {
   /**
    * Creates test cycle by cloning an existing one. Optionally, some fields in the new cycle can be

@@ -20,21 +20,26 @@ package com.applause.auto.context;
 import java.time.Duration;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 
 /** Additional options used by the PageObjectContext that change how the PageObjectModel behaves */
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class PageObjectOptions {
   /** Default timeout for locating elements */
-  private @NonNull @Builder.Default Duration timeout = Duration.ofSeconds(10);
+  @Builder.Default private Duration timeout = Duration.ofSeconds(10);
 
   /** Default polling interval for locating elements */
-  private @NonNull @Builder.Default Duration pollingInterval = Duration.ofSeconds(1);
+  @Builder.Default private Duration pollingInterval = Duration.ofSeconds(1);
 
   /**
    * For lazy list implementations, this flag determines if we throw an exception when no elements

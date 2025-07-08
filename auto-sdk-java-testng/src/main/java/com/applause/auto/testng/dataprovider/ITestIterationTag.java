@@ -18,7 +18,7 @@
 package com.applause.auto.testng.dataprovider;
 
 /** Interface describing an Tag for a given Data Provider iteration */
-@SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation")
+@FunctionalInterface
 public interface ITestIterationTag {
 
   /**

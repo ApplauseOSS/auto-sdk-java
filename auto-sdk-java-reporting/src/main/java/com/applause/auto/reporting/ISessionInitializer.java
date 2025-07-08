@@ -20,6 +20,7 @@ package com.applause.auto.reporting;
 import com.applause.auto.reporting.params.ApplauseRunCreation;
 
 /** Interface describing a TestRun session initializer */
+@FunctionalInterface
 public interface ISessionInitializer {
 
   /**

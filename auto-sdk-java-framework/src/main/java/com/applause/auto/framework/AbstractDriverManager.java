@@ -41,7 +41,7 @@ import org.openqa.selenium.WebDriverException;
 @RequiredArgsConstructor
 @Log4j2
 public abstract class AbstractDriverManager {
-  protected static final Gson gsonLenient = new GsonBuilder().setLenient().create();
+  protected static final Gson gsonLenient = new GsonBuilder().create();
   private final RetryPolicyBuilder<Object> policyBuilder =
       RetryPolicy.builder()
           .handle(WebDriverException.class)

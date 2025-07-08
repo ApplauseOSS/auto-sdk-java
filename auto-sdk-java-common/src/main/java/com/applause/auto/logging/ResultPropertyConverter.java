@@ -57,10 +57,6 @@ public final class ResultPropertyConverter extends LogEventPatternConverter {
    *
    * @param properties options, may be null.
    */
-  @SuppressWarnings({
-    "PMD.UnusedFormalParameter",
-    "PMD.UseVarargs",
-  })
   private ResultPropertyConverter(final String... properties) {
     super("ResultProperty", "resultProperty");
     this.properties = new ArrayList<>();
@@ -94,10 +90,6 @@ public final class ResultPropertyConverter extends LogEventPatternConverter {
    * @param properties options, may be null.
    * @return instance of pattern converter.
    */
-  @SuppressWarnings({
-    "PMD.UnusedFormalParameter",
-    "PMD.UseVarargs",
-  })
   public static ResultPropertyConverter newInstance(final String... properties) {
     return new ResultPropertyConverter(properties);
   }

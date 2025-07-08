@@ -120,7 +120,6 @@ public class LazyList<T extends UIElement> implements List<T>, Locatable {
   }
 
   @Override
-  @SuppressWarnings("PMD.CognitiveComplexity")
   public void initialize() {
     if (locator == null || locator.getBy(formatArgs) == null) {
       throw new IllegalArgumentException(
@@ -229,12 +228,18 @@ public class LazyList<T extends UIElement> implements List<T>, Locatable {
 
   /** Proxy to the underlying List.size() with lazy-loading. */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Method reference would make the call ambiguous due to
+  // runLazily overloads
   public int size() {
     return runLazily(() -> underlying.size());
   }
 
   /** Proxy to the underlying List.isEmpty() with lazy-loading. */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Method reference would make the call ambiguous due to
+  // runLazily overloads
   public boolean isEmpty() {
     return runLazily(() -> underlying.isEmpty());
   }
@@ -247,12 +252,18 @@ public class LazyList<T extends UIElement> implements List<T>, Locatable {
 
   /** Proxy to the underlying List.iterator() with lazy-loading. */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Method reference would make the call ambiguous due to
+  // runLazily overloads
   public @NonNull Iterator<T> iterator() {
     return runLazily(() -> underlying.iterator());
   }
 
   /** Proxy to the underlying List.toArray() with lazy-loading. */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Method reference would make the call ambiguous due to
+  // runLazily overloads
   public Object @NonNull [] toArray() {
     return runLazily(() -> underlying.toArray());
   }
@@ -277,8 +288,11 @@ public class LazyList<T extends UIElement> implements List<T>, Locatable {
 
   /** Proxy to the underlying List.clear() with lazy-loading. */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Method reference would make the call ambiguous due to
+  // runLazily overloads
   public void clear() {
-    runLazily(() -> underlying.clear());
+    runLazily((Runnable) () -> underlying.clear());
   }
 
   /** Proxy to the underlying List.get() with lazy-loading. */
@@ -296,13 +310,13 @@ public class LazyList<T extends UIElement> implements List<T>, Locatable {
   /** Proxy to the underlying List.add() with lazy-loading. */
   @Override
   public void add(int index, final T element) {
-    runLazily(() -> underlying.add(index, element));
+    runLazily((Runnable) () -> underlying.add(index, element));
   }
 
   /** Proxy to the underlying List.add() with lazy-loading. */
   @Override
   public boolean add(final T o) {
-    runLazily(() -> underlying.add(o));
+    runLazily((Runnable) () -> underlying.add(o));
     return true;
   }
 
@@ -332,6 +346,9 @@ public class LazyList<T extends UIElement> implements List<T>, Locatable {
 
   /** Proxy to the underlying List.listIterator() with lazy-loading. */
   @Override
+  @SuppressWarnings(
+      "PMD.LambdaCanBeMethodReference") // Method reference would make the call ambiguous due to
+  // runLazily overloads
   public @Nonnull ListIterator<T> listIterator() {
     return runLazily(() -> underlying.listIterator());
   }

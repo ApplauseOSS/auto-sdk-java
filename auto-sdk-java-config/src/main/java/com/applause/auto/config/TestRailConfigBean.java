@@ -29,7 +29,6 @@ import org.aeonbits.owner.Config.Sources;
 @LoadPolicy(LoadType.MERGE)
 // testrail.properties comes from the user of the SDK.
 @Sources({"classpath:props/testrail.properties", "classpath:cfg/testrail_default.properties"})
-@SuppressWarnings({"PMD.JUnit4TestShouldUseTestAnnotation"})
 public interface TestRailConfigBean extends Config {
 
   /**

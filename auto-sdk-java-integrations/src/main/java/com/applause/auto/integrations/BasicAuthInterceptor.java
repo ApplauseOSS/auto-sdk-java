@@ -29,7 +29,6 @@ class BasicAuthInterceptor implements Interceptor {
 
   private final String credentials;
 
-  @SuppressWarnings("PMD.NullAssignment")
   BasicAuthInterceptor(final String user, final String password) {
     if (null != user && null != password) {
       this.credentials = Credentials.basic(user, password);
