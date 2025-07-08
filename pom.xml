@@ -49,9 +49,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <org.testng.version>7.11.0</org.testng.version>
     <cucumber-java.version>7.23.0</cucumber-java.version>
-    <io.appium.version>9.5.0</io.appium.version>
+    <io.appium.version>9.2.2</io.appium.version>
     <!-- MUST update with Appium above to make sure the versions are compatible-->
-    <org.seleniumhq.selenium.version>4.34.0</org.seleniumhq.selenium.version>
+    <org.seleniumhq.selenium.version>4.19.0</org.seleniumhq.selenium.version>
     <log4j.version>2.24.3</log4j.version>
     <commons.io.version>2.19.0</commons.io.version>
     <org.apache.commons.version>3.17.0</org.apache.commons.version>
