@@ -197,7 +197,11 @@ def update_appium_capabilities(filepath):
         "webviewDevtoolsPort",
         "xcodeConfigFile",
         "xcodeOrgId",
-        "xcodeSigningId"
+        "xcodeSigningId",
+        "commandTimeout", 
+        "deviceOrientation", 
+        "idleTimeout",
+        
     ]
 
     for capability in capabilities:
