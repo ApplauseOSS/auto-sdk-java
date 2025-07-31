@@ -140,6 +140,13 @@ public class EnhancedCapabilities implements Capabilities {
                 AbstractMap.SimpleImmutableEntry::getValue));
   }
 
+  public String getApp() {
+    return Optional.ofNullable(resolvedCaps)
+        .map(caps -> caps.getCapability("appium:app"))
+        .map(Object::toString)
+        .orElse(null);
+  }
+
   @Override
   public Object getCapability(final @NonNull String capabilityName) {
     return resolvedCaps.getCapability(capabilityName);

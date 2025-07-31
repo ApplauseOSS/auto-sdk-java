@@ -40,6 +40,7 @@ import com.applause.auto.integrations.TestCycleCloneUtil;
 import com.applause.auto.logging.LogOutputSingleton;
 import com.applause.auto.logging.ResultPropertyMap;
 import com.applause.auto.templates.TemplateManager;
+import com.google.api.client.util.Strings;
 import com.google.common.collect.Sets;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.EventPublisher;
@@ -147,14 +148,20 @@ public class ApplauseFrameworkPlugin implements ConcurrentEventListener {
       return;
     }
 
-    // For every driver that we are aware of at this time, check to see if we might need an app for
+    // For every driver that we are aware of at this time, check to see if we might
+    // need an app for
     // any of them
     for (var driver : expectedDrivers) {
       final var expectedDriverCaps = ContextManager.INSTANCE.lookupDriver(driver).evaluate();
       if (!expectedDriverCaps.getApplauseOptions().isMobileNative()) {
         continue;
       }
-      if (!expectedDriverCaps.getCapabilityNames().contains("app")) {
+
+      // If the app is not specified in the capabilities or in the environment
+      // configuration,
+      // we need to auto-detect the build and perform the app push if necessary
+      if (Strings.isNullOrEmpty(expectedDriverCaps.getApp())
+          && Strings.isNullOrEmpty(EnvironmentConfigurationManager.INSTANCE.get().app())) {
         ApplauseAppPushHelper.autoDetectBuildIfNecessary();
         ApplauseAppPushHelper.performApplicationPushIfNecessary();
       }

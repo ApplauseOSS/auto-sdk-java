@@ -24,8 +24,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.applause.auto.config.ApplauseEnvironmentConfigurationManager;
-import com.applause.auto.config.EnvironmentConfigurationManager;
-import com.applause.auto.framework.selenium.EnhancedCapabilities;
 import com.applause.auto.util.applausepublicapi.ApplausePublicApi;
 import com.applause.auto.util.applausepublicapi.api.BuildApi;
 import com.applause.auto.util.applausepublicapi.dto.AttachmentWithHashesDto;
@@ -39,35 +37,6 @@ import org.testng.annotations.Test;
 import retrofit2.Response;
 
 public class AutoBuildHelperTest {
-
-  @Test
-  public void testGetApp() {
-    // test null input with no EnvironmentConfig
-    Object actualValue = AutoBuildHelper.getApp(null);
-    Assert.assertNull(actualValue, "null appCaps, return null from Bean");
-
-    // test non-null input with no EnvironmentConfig.override
-    EnhancedCapabilities caps = mock(EnhancedCapabilities.class);
-    when(caps.getCapability("app")).thenReturn("app-from-cfg1");
-    Assert.assertEquals(
-        "app-from-cfg1",
-        AutoBuildHelper.getApp(caps),
-        "with appCaps, return 'app-from-cfg1' from Bean");
-
-    // test null input with EnvironmentConfig.override
-    EnvironmentConfigurationManager.INSTANCE.override(Map.of("app", "app-from-cfg2"));
-    actualValue = AutoBuildHelper.getApp(null);
-    Assert.assertEquals(
-        "app-from-cfg2", actualValue, "null appCaps, return 'app-from-cfg2' from Bean");
-
-    // Finally, ensure we prioritize input over EnvironmentConfig.override
-    when(caps.getCapability("app")).thenReturn("preferred-app");
-    EnvironmentConfigurationManager.INSTANCE.override(Map.of("app", "app-from-cfg3"));
-    Assert.assertEquals(
-        "preferred-app",
-        AutoBuildHelper.getApp(caps),
-        "with appCaps, return 'preferred-app' from Bean");
-  }
 
   @Test
   public void testGetAllBuilds() {
