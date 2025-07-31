@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.Setter;
@@ -118,8 +117,13 @@ public final class AutoBuildHelper {
    * @param appCaps : The Applause Capabilities
    */
   public static void autoDetectAppBuilds(final @NonNull EnhancedCapabilities appCaps) {
-    final String definedApp = getApp(appCaps);
-    // if app already specified, do nothing
+    // First, attempt to pull the app from the capabilities
+    // If it is not defined there, we can check the EnvironmentConfiguration
+    final String definedApp =
+        Optional.ofNullable(appCaps.getApp())
+            .orElseGet(EnvironmentConfigurationManager.INSTANCE.get()::app);
+
+    // if app already specified, we do not need to auto-detect the app
     if (!Strings.isNullOrEmpty(definedApp)) {
       return;
     }
@@ -320,24 +324,6 @@ public final class AutoBuildHelper {
           o2.attachments().stream().max(buildComparator).orElseThrow();
       return buildComparator.compare(o1MaxAttachment, o2MaxAttachment);
     }
-  }
-
-  // Separating this out - it will likely need to change later
-
-  /**
-   * Identify the best value for the "app" parameter from an (optional) capabilities file and a
-   * configuration
-   *
-   * @param appCaps A possible capabilities file (could be null)
-   * @return The best app file we can find. Null if a value can't be determined
-   */
-  public static String getApp(final @Nullable EnhancedCapabilities appCaps) {
-    // if using the ExtendedCapabilities, get app from there or else retrieve using the config
-    // property
-    return Optional.ofNullable(appCaps)
-        .map(caps -> caps.getCapability("app"))
-        .map(Object::toString)
-        .orElseGet(EnvironmentConfigurationManager.INSTANCE.get()::app);
   }
 
   static class TimelineComparator implements Comparator<TimelineDto>, Serializable {

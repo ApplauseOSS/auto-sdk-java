@@ -30,6 +30,7 @@ import com.applause.auto.logging.LogOutputSingleton;
 import com.applause.auto.logging.ResultPropertyMap;
 import com.applause.auto.templates.TemplateManager;
 import com.applause.auto.testng.TestNgContextUtils;
+import com.google.api.client.util.Strings;
 import com.google.common.collect.Sets;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -151,7 +152,11 @@ public class FrameworkConfigurationListener implements ISuiteListener {
       if (!expectedDriverCaps.getApplauseOptions().isMobileNative()) {
         continue;
       }
-      if (!expectedDriverCaps.getCapabilityNames().contains("app")) {
+
+      // If the app is not specified in the capabilities or in the environment configuration,
+      // we need to auto-detect the build and perform the app push if necessary
+      if (Strings.isNullOrEmpty(expectedDriverCaps.getApp())
+          && Strings.isNullOrEmpty(EnvironmentConfigurationManager.INSTANCE.get().app())) {
         ApplauseAppPushHelper.autoDetectBuildIfNecessary();
         ApplauseAppPushHelper.performApplicationPushIfNecessary();
         break;
