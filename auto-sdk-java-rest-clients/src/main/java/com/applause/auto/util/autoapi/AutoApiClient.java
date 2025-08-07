@@ -49,6 +49,7 @@ public enum AutoApiClient {
         // sometimes asset uploads take... forever
         // ...and sometimes setting up a real device takes even longer.
         new Builder().readTimeout(20, TimeUnit.MINUTES).writeTimeout(20, TimeUnit.MINUTES);
+    httpClient.addInterceptor(CommonOkhttpInterceptor::userAgentChain);
     httpClient.addInterceptor(chain -> CommonOkhttpInterceptor.apiKeyAuthChain(chain, apiKey));
     httpClient
         .addInterceptor(chain -> CommonOkhttpInterceptor.errorHandlerChain(chain, "auto-api"))

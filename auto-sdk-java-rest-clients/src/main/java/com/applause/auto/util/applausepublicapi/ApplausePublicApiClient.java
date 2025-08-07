@@ -50,6 +50,7 @@ public enum ApplausePublicApiClient {
       final String url, final String apiKey, @Nullable final Proxy httpProxy) {
     OkHttpClient client =
         new Builder()
+            .addInterceptor(CommonOkhttpInterceptor::userAgentChain)
             .addInterceptor(chain -> CommonOkhttpInterceptor.apiKeyAuthChain(chain, apiKey))
             .proxy(httpProxy)
             .connectTimeout(Duration.ofSeconds(60)) // default 10s

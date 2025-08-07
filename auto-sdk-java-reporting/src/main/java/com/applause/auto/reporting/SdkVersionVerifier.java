@@ -18,48 +18,53 @@
 package com.applause.auto.reporting;
 
 import com.applause.auto.util.autoapi.AutoApi;
+import com.applause.auto.versioning.SdkVersionReader;
 import com.google.common.base.Suppliers;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.function.Supplier;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import retrofit2.Response;
 
-/** Util class to read the SDK version from the VERSION.txt file that we package inside the pom */
+/** A utility class to verify the SDK version against the Applause backend */
 @AllArgsConstructor
-public final class SdkVersionReader {
+public final class SdkVersionVerifier {
 
-  // util class
-  private static final String SDK_VERSION_FILE_NAME = "VERSION.txt";
-  private static final Logger logger = LogManager.getLogger(SdkVersionReader.class);
+  private static final Logger logger = LogManager.getLogger(SdkVersionVerifier.class);
   private final @NonNull AutoApi autoApi;
-  private final Supplier<String> loadedVersion = Suppliers.memoize(this::verifySdkVersion);
+
+  /** Supplies the verified SDK Version, performing a network check. */
+  private final Supplier<String> verifiedVersionSupplier =
+      Suppliers.memoize(this::performVerification);
 
   /**
-   * Gets the loaded SDK Version
+   * Gets the SDK Version and verifies it against the Applause backend. Throws a RuntimeException if
+   * the version is deprecated or invalid.
    *
-   * @return The SDK Version String
+   * @return The verified SDK Version String
    */
-  public String getSdkVersion() {
-    return loadedVersion.get();
+  public String getVerifiedSdkVersion() {
+    return verifiedVersionSupplier.get();
   }
 
   /**
-   * checks the SDK version using the VERSION.txt file that gets stashed in the JAR by build task
+   * Performs the network validation of the SDK version.
    *
    * @return the sdk version
    */
-  private String verifySdkVersion() {
-    final var version = loadSdkVersion();
+  private String performVerification() {
+    final var version = SdkVersionReader.getSdkVersion();
+    if (version == null) {
+      throw new RuntimeException("SDK Version could not be read, so it cannot be verified.");
+    }
+
     Response<Void> resp = autoApi.checkDeprecated(version).join();
     if (resp.isSuccessful()) {
       return version;
     }
+
     String errString;
     try (var errBody = resp.errorBody()) {
       errString = errBody != null ? errBody.string() : "null";
@@ -75,21 +80,6 @@ public final class SdkVersionReader {
               + resp.code()
               + " Error content: "
               + errString);
-    }
-  }
-
-  private String loadSdkVersion() {
-    try (InputStream fileUrl =
-        Thread.currentThread().getContextClassLoader().getResourceAsStream(SDK_VERSION_FILE_NAME)) {
-      if (fileUrl == null) {
-        throw new RuntimeException(
-            "Could not read current Applause Automation SDK version from classpath. Version file not found");
-      }
-      return IOUtils.toString(fileUrl, (Charset) null);
-    } catch (IOException e) {
-      logger.fatal("Could not read current Applause Automation SDK version from classpath", e);
-      throw new RuntimeException(
-          "Could not read current Applause Automation SDK version from classpath", e);
     }
   }
 }
