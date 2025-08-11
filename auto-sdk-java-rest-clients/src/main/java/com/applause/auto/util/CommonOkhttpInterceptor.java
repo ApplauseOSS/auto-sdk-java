@@ -17,6 +17,7 @@
  */
 package com.applause.auto.util;
 
+import com.applause.auto.versioning.SdkVersionReader;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -32,6 +33,27 @@ public final class CommonOkhttpInterceptor {
   private static final Logger logger = LogManager.getLogger();
 
   private CommonOkhttpInterceptor() {}
+
+  /**
+   * Adds a custom User-Agent header to the request
+   *
+   * @param chain The interceptor chain to process
+   * @return The User-Agent interceptor.
+   */
+  public static Response userAgentChain(final Interceptor.Chain chain) throws IOException {
+    Request originalRequest = chain.request();
+    final String sdkVersion = SdkVersionReader.getSdkVersion();
+
+    if (Strings.isNullOrEmpty(sdkVersion)) {
+      // Version not found, proceed without custom user agent
+      logger.warn("Could not read SDK version; Applause User-Agent header will not be set.");
+      return chain.proceed(originalRequest);
+    }
+
+    final String userAgent = "Applause Auto-SDK Java/" + sdkVersion;
+    Request newRequest = originalRequest.newBuilder().header("User-Agent", userAgent).build();
+    return chain.proceed(newRequest);
+  }
 
   /**
    * Performs apiKey pre-validation

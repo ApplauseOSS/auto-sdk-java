@@ -47,7 +47,7 @@ public class SessionInitializer implements ISessionInitializer {
   public IApplauseReporter startTestRun(final @NonNull ApplauseRunCreation params) {
     AutoApi autoApi =
         AutoApiClient.getClient(config.getAutoApiUrl(), config.getApiKey(), config.getProxy());
-    final var sdkVersion = new SdkVersionReader(autoApi).getSdkVersion();
+    final var sdkVersion = new SdkVersionVerifier(autoApi).getVerifiedSdkVersion();
     TestRunConfigurationParamDto testRunConfigurationParamDto =
         new TestRunConfigurationParamDto()
             .setSdkVersion(sdkVersion)

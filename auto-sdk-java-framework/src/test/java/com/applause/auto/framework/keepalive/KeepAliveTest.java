@@ -15,22 +15,29 @@
  * limitations under the License.
  *
  */
-package com.applause.auto.framework;
+package com.applause.auto.framework.keepalive;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.applause.auto.framework.keepalive.KeepAlive;
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import org.mockito.ArgumentCaptor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class KeepAliveHelperTest {
+public class KeepAliveTest {
 
   public WebDriver setupDriver() {
     final var mockDriver = mock(FirefoxDriver.class);
@@ -43,19 +50,32 @@ public class KeepAliveHelperTest {
   @Test
   public void testKeepAlive() throws InterruptedException, ExecutionException {
     final WebDriver mockDriver = setupDriver();
+    final var mockExecutor = mock(ScheduledExecutorService.class);
+    final var runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+
+    // Use the new public API to inject the mock executor
     new KeepAlive()
         .forDrivers(mockDriver)
         .pollingEvery(Duration.ofSeconds(1))
-        .executeWhile(
-            () -> {
-              try {
-                Thread.sleep(5000);
-              } catch (InterruptedException ignored) {
-              }
-              mockDriver.getTitle();
-            });
+        .withExecutor(mockExecutor)
+        .executeWhile(mockDriver::getTitle);
+
+    // Verify that the keep-alive task was scheduled
+    verify(mockExecutor)
+        .scheduleAtFixedRate(
+            runnableCaptor.capture(), eq(0L), eq(1000L), eq(TimeUnit.MILLISECONDS));
+
+    // Manually run the captured keep-alive task to simulate execution over time
+    final Runnable keepAliveTask = runnableCaptor.getValue();
+    for (int i = 0; i < 6; i++) {
+      keepAliveTask.run();
+    }
+
+    // Verify the results
     verify(mockDriver, times(6)).getCurrentUrl();
     verify(mockDriver, times(1)).getTitle();
+    // Verify the injected executor was NOT shut down
+    verify(mockExecutor, never()).shutdown();
     mockDriver.quit();
   }
 
@@ -64,9 +84,11 @@ public class KeepAliveHelperTest {
       expectedExceptionsMessageRegExp = "This Should Propagate as a Runtime Exception")
   public void testKeepAliveErrorPropagation() throws InterruptedException, ExecutionException {
     final WebDriver mockDriver = setupDriver();
+    final var mockExecutor = mock(ScheduledExecutorService.class);
     new KeepAlive()
         .forDrivers(mockDriver)
         .pollingEvery(Duration.ofSeconds(1))
+        .withExecutor(mockExecutor)
         .executeWhile(
             () -> {
               throw new RuntimeException("This Should Propagate as a Runtime Exception");
@@ -78,9 +100,11 @@ public class KeepAliveHelperTest {
   public void testKeepAliveAssertionFailurePropagation()
       throws InterruptedException, ExecutionException {
     final WebDriver mockDriver = setupDriver();
+    final var mockExecutor = mock(ScheduledExecutorService.class);
     new KeepAlive()
         .forDrivers(mockDriver)
         .pollingEvery(Duration.ofSeconds(1))
+        .withExecutor(mockExecutor)
         .executeWhile(() -> Assert.fail("This Should Propagate to the main thread"));
   }
 
@@ -88,52 +112,86 @@ public class KeepAliveHelperTest {
   public void testMultiDriverKeepAlive() throws InterruptedException, ExecutionException {
     final WebDriver mockDriver = setupDriver();
     final WebDriver mockDriver2 = setupDriver();
+    final var mockExecutor = mock(ScheduledExecutorService.class);
+    final var runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+
     new KeepAlive()
         .forDrivers(mockDriver, mockDriver2)
         .pollingEvery(Duration.ofSeconds(1))
-        .executeWhile(
-            () -> {
-              try {
-                Thread.sleep(5100);
-                mockDriver.getTitle();
-              } catch (InterruptedException ignored) {
-              }
-            });
+        .withExecutor(mockExecutor)
+        .executeWhile(mockDriver::getTitle);
+
+    // Verify that keep-alive tasks were scheduled for both drivers
+    verify(mockExecutor, times(2))
+        .scheduleAtFixedRate(
+            runnableCaptor.capture(), eq(0L), eq(1000L), eq(TimeUnit.MILLISECONDS));
+
+    // Manually run the captured tasks
+    final List<Runnable> keepAliveTasks = runnableCaptor.getAllValues();
+    for (final Runnable task : keepAliveTasks) {
+      for (int i = 0; i < 6; i++) {
+        task.run();
+      }
+    }
+
+    // Verify results for both drivers
     verify(mockDriver, times(6)).getCurrentUrl();
     verify(mockDriver2, times(6)).getCurrentUrl();
     verify(mockDriver, times(1)).getTitle();
+    // Verify the injected executor was NOT shut down
+    verify(mockExecutor, never()).shutdown();
     mockDriver.quit();
   }
 
   @Test
   public void testCustomKeepAlive() throws InterruptedException, ExecutionException {
     final WebDriver mockDriver = setupDriver();
+    final var mockExecutor = mock(ScheduledExecutorService.class);
+    final var runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+
     new KeepAlive()
         .forDrivers(mockDriver)
         .pollingEvery(Duration.ofSeconds(1))
         .usingKeepAlive(WebDriver::getTitle)
-        .executeWhile(
-            () -> {
-              try {
-                Thread.sleep(5100);
-              } catch (InterruptedException ignored) {
-              }
-            });
+        .withExecutor(mockExecutor)
+        .executeWhile(() -> {}); // Empty runnable
+
+    // Verify that the custom keep-alive task was scheduled
+    verify(mockExecutor)
+        .scheduleAtFixedRate(
+            runnableCaptor.capture(), eq(0L), eq(1000L), eq(TimeUnit.MILLISECONDS));
+
+    // Manually run the captured keep-alive task
+    final Runnable keepAliveTask = runnableCaptor.getValue();
+    for (int i = 0; i < 6; i++) {
+      keepAliveTask.run();
+    }
+
+    // Verify the results
     verify(mockDriver, times(0)).getCurrentUrl();
     verify(mockDriver, times(6)).getTitle();
+    // Verify the injected executor was NOT shut down
+    verify(mockExecutor, never()).shutdown();
     mockDriver.quit();
   }
 
   @Test
   public void testKeepAliveSupplier() throws InterruptedException, ExecutionException {
     final WebDriver mockDriver = setupDriver();
+    final var mockExecutor = mock(ScheduledExecutorService.class);
     final String result =
         new KeepAlive()
             .forDrivers(mockDriver)
             .pollingEvery(Duration.ofSeconds(1))
             .usingKeepAlive(WebDriver::getTitle)
+            .withExecutor(mockExecutor)
             .executeWhile(() -> "Done!");
+
     Assert.assertEquals(result, "Done!");
+    // Verify a keep-alive task was scheduled
+    verify(mockExecutor).scheduleAtFixedRate(any(Runnable.class), anyLong(), anyLong(), any());
+    // Verify the injected executor was NOT shut down
+    verify(mockExecutor, never()).shutdown();
     mockDriver.quit();
   }
 }

@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
@@ -45,6 +46,7 @@ public class KeepAlive {
   private Consumer<WebDriver> using = WebDriver::getCurrentUrl;
   private Duration every = Duration.ofSeconds(5);
   private Duration maxWait = Duration.ofMinutes(20);
+  @Nullable private ScheduledExecutorService executor;
 
   /**
    * Sets the drivers. Accepts a maximum of 10 drivers
@@ -96,6 +98,18 @@ public class KeepAlive {
   }
 
   /**
+   * Provides an external ScheduledExecutorService. If provided, the KeepAlive class will not manage
+   * the lifecycle (i.e., it will not shut down the executor).
+   *
+   * @param providedExecutor The executor to use.
+   * @return The keep alive
+   */
+  public KeepAlive withExecutor(final ScheduledExecutorService providedExecutor) {
+    this.executor = providedExecutor;
+    return this;
+  }
+
+  /**
    * Polls the keep alive while the provided supplier executes.
    *
    * @param <T> the return type of the supplier
@@ -109,11 +123,14 @@ public class KeepAlive {
       throws ExecutionException, InterruptedException {
     // Since we shut this down every time it is called, set up a new one each time we call this
     // function
-    final ScheduledExecutorService keepAliveExecutors =
-        new ScheduledThreadPoolExecutor(Math.min(this.keepAliveDrivers.size(), MAX_DRIVERS));
+    final boolean isExecutorOwned = this.executor == null;
+    final ScheduledExecutorService executorToUse =
+        isExecutorOwned
+            ? new ScheduledThreadPoolExecutor(Math.min(this.keepAliveDrivers.size(), MAX_DRIVERS))
+            : this.executor;
 
     // Start the keep alive threads
-    this.keepAliveDrivers.forEach(driver -> this.setupKeepAlive(driver, keepAliveExecutors));
+    this.keepAliveDrivers.forEach(driver -> this.setupKeepAlive(driver, executorToUse));
 
     // Run the execution function
     final var executionFuture = this.setupExecutorThread(whileFunction);
@@ -121,15 +138,14 @@ public class KeepAlive {
       // Wait for the execution to finish with a max wait of x milliseconds
       return executionFuture.get(maxWait.toMillis(), TimeUnit.MILLISECONDS);
     } catch (TimeoutException e) {
-      // If the function takes too long, then we should inform the user and cancel keep alive
-      // threads
-      // This will keep executing the main execution, but stop the keep alive. We can accomplish
-      // this
-      // by shutting down the keepAliveExecutors
+      // If the function takes too long, then we should inform the user.
+      // If we own the executor, we shut it down to stop the keep-alive threads.
       log.warn(
           "While function timed out after {} milliseconds. Ending keep alive threads",
           maxWait.toMillis());
-      keepAliveExecutors.shutdown();
+      if (isExecutorOwned) {
+        executorToUse.shutdown();
+      }
       return executionFuture.get();
     } catch (ExecutionException e) {
       // If an exception or error happens during execution, the CompletableFuture throws an
@@ -145,8 +161,10 @@ public class KeepAlive {
       }
       throw e;
     } finally {
-      // This is a no-op if we already shut it down
-      keepAliveExecutors.shutdown();
+      // Only shut down the executor if this class created it.
+      if (isExecutorOwned) {
+        executorToUse.shutdown();
+      }
     }
   }
 
