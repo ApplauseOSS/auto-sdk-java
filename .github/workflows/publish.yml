@@ -1,0 +1,124 @@
+on:
+  workflow_call:
+    inputs:
+      javaVersion:
+        description: "Java version to use"
+        default: "21"
+        type: string
+      mavenProperties:
+        description: "Maven properties to use"
+        default: "-DskipGithub=true"
+        type: string
+      mavenTasks:
+        description: "Maven tasks to use"
+        default: "clean install deploy"
+        type: string
+      branch:
+        description: "Branch to publish to"
+        default: "master"
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up JDK ${{ inputs.javaVersion }}
+        uses: actions/setup-java@v5
+        with:
+          java-version: "${{ inputs.javaVersion }}"
+          distribution: "temurin"
+      - name: Set up Maven
+        uses: hb0730/maven-action@v1.0.2
+        with:
+          maven-version: 3.8.2
+      - name: Create Maven settings.xml
+        run: |
+          cat << 'EOF' > $HOME/.m2/settings.xml
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                              https://maven.apache.org/xsd/settings-1.0.0.xsd">
+            <servers>
+                <server>
+                    <id>s3.applause-public-repo</id>
+                    <username>${{ secrets.APPLAUSE_REPO_USER_NAME }}</username>
+                    <password>${{ secrets.APPLAUSE_REPO_PASSWORD }}</password>
+                </server>
+                <server>
+                    <id>s3.applause-public-snapshots</id>
+                    <username>${{ secrets.APPLAUSE_REPO_USER_NAME }}</username>
+                    <password>${{ secrets.APPLAUSE_REPO_PASSWORD }}</password>
+                </server>
+            </servers>
+
+
+            <profiles>
+              <profile>
+                <activation>
+                  <activeByDefault>true</activeByDefault>
+                </activation>
+
+                <repositories>
+                  <repository>
+                    <id>applause-public-repo</id>
+                    <name>Repository for Applause public artifacts (releases)</name>
+                    <url>https://repo.applause.com/repository/public</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                  </repository>
+                  <repository>
+                    <id>applause-public-snapshots</id>
+                    <name>Repository for Applause public artifacts (snapshots)</name>
+                    <url>https://repo.applause.com/repository/snapshots</url>
+                    <releases><enabled>false</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                  </repository>
+                </repositories>
+                <pluginRepositories>
+                  <pluginRepository>
+                    <id>applause-public-repo</id>
+                    <name>Repository for Applause public artifacts (releases)</name>
+                    <url>https://repo.applause.com/repository/public</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                  </pluginRepository>
+                </pluginRepositories>
+              </profile>
+            </profiles>
+          </settings>
+          EOF
+
+      - name: Publish
+        run: |
+          # Parse our version using build-helper and versions to strip SNAPSHOT
+          mvn build-helper:parse-version versions:set -DgenerateBackupPoms=false -DnewVersion=\\${parsedVersion.majorVersion}.\\${parsedVersion.minorVersion}.\\${parsedVersion.incrementalVersion}
+
+          # Write the current version
+          mvn help:evaluate -q -Dexpression=project.version -DforceStdout=true | tail -n 1 | tee VERSION
+
+          mvn ${{ inputs.mavenProperties }} ${{ inputs.mavenTasks }}
+
+          VERSION=`cat VERSION`
+
+          # Remove the org from the repo name
+          GITHUB_REPO_NAME=${GITHUB_REPOSITORY#*/}
+
+          git config --global --add safe.directory `pwd -P`
+          git commit -am "GHA: release version \${VERSION}"
+          git tag v\${VERSION} -am "GHA: publish public-$GITHUB_REPO_NAME v\${VERSION}"
+          git log -1
+          # git push origin v\${VERSION}
+          # git push origin HEAD:${{ inputs.branch }}
+
+          # Increment incremental version and set SNAPSHOT
+          mvn build-helper:parse-version versions:set -DgenerateBackupPoms=false -DnewVersion=\\${parsedVersion.majorVersion}.\\${parsedVersion.minorVersion}.\\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
+
+          # Write the SNAPSHOT version to VERSION
+          mvn help:evaluate -q -Dexpression=project.version -DforceStdout=true | tail -n 1 | tee VERSION
+
+          # Looks good! Now, for the git-fu for our SNAPSHOT version
+          VERSION=`cat VERSION`
+          git commit -am "GHA: SNAPSHOT version \${VERSION}"
+          git diff HEAD^ HEAD
+          # git push origin HEAD:${{ inputs.branch }}
