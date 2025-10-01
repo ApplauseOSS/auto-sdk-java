@@ -1,4 +1,5 @@
-name: Maven Publish Release
+name: Maven Publish Snapshot
+
 on:
   workflow_dispatch:
     inputs:
@@ -14,15 +15,13 @@ on:
         description: "Maven tasks to use"
         default: "clean install deploy"
         type: string
-      branch:
-        description: "Branch to publish to"
-        default: "master"
-        type: string
+
+permissions:
+  contents: read
 
 jobs:
-  publish:
+  build-and-publish:
     runs-on: ubuntu-latest
-    if: github.actor == 'agaffney' || github.actor == 'verbotenj' || github.actor == 'wolf31o2'
     steps:
       - uses: actions/checkout@v5
       - name: Set up JDK ${{ inputs.javaVersion }}
@@ -33,7 +32,8 @@ jobs:
       - name: Set up Maven
         uses: hb0730/maven-action@v1.0.2
         with:
-          maven-version: 3.8.2
+          maven-version: 3.8.9
+
       - name: Create Maven settings.xml
         run: |
           cat << 'EOF' > $HOME/.m2/settings.xml
@@ -53,40 +53,9 @@ jobs:
                 <password>${{ secrets.REPO_PUBLISH_AWS_SECRET_ACCESS_KEY }}</password>
               </server>
             </servers>
-
           </settings>
           EOF
 
       - name: Publish
         run: |
-          # Parse our version using build-helper and versions to strip SNAPSHOT
-          mvn build-helper:parse-version versions:set -DgenerateBackupPoms=false -DnewVersion=\\${parsedVersion.majorVersion}.\\${parsedVersion.minorVersion}.\\${parsedVersion.incrementalVersion}
-
-          # Write the current version
-          mvn help:evaluate -q -Dexpression=project.version -DforceStdout=true | tail -n 1 | tee VERSION
-
           mvn ${{ inputs.mavenProperties }} ${{ inputs.mavenTasks }}
-
-          VERSION=`cat VERSION`
-
-          # Remove the org from the repo name
-          GITHUB_REPO_NAME=${GITHUB_REPOSITORY#*/}
-
-          git config --global --add safe.directory `pwd -P`
-          git commit -am "GHA: release version \${VERSION}"
-          git tag v\${VERSION} -am "GHA: publish public-$GITHUB_REPO_NAME v\${VERSION}"
-          git log -1
-          git push origin v\${VERSION}
-          git push origin HEAD:${{ inputs.branch }}
-
-          # Increment incremental version and set SNAPSHOT
-          mvn build-helper:parse-version versions:set -DgenerateBackupPoms=false -DnewVersion=\\${parsedVersion.majorVersion}.\\${parsedVersion.minorVersion}.\\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
-
-          # Write the SNAPSHOT version to VERSION
-          mvn help:evaluate -q -Dexpression=project.version -DforceStdout=true | tail -n 1 | tee VERSION
-
-          # Looks good! Now, for the git-fu for our SNAPSHOT version
-          VERSION=`cat VERSION`
-          git commit -am "GHA: SNAPSHOT version \${VERSION}"
-          git diff HEAD^ HEAD
-          git push origin HEAD:${{ inputs.branch }}
