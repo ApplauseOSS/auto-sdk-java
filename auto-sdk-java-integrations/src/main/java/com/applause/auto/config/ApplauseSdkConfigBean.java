@@ -65,6 +65,13 @@ public interface ApplauseSdkConfigBean extends Config {
   Long applauseTestCycleId();
 
   /**
+   * An optional Applause (Internal) Test Run Name for reporting
+   *
+   * @return The Applause Test Run Name
+   */
+  String applauseTestRunName();
+
+  /**
    * A flag to specify whether test cycle cloning is enabled
    *
    * @return True if test cycle cloning is enabled

@@ -66,7 +66,8 @@ public class SessionInitializer implements ISessionInitializer {
           .setTestRailProjectId(testRailConfig.testRailProjectId());
     }
     if (testCycleConfig != null) {
-      testRunConfigurationParamDto.setItwTestCycleId(testCycleConfig.applauseTestCycleId());
+      testRunConfigurationParamDto.setApplauseTestCycleId(testCycleConfig.applauseTestCycleId());
+      testRunConfigurationParamDto.setApplauseTestRunName(testCycleConfig.applauseTestRunName());
     }
     // Add a unique ID generated on the client side that the server can use to determine
     // if the submission has been made before (to catch duplicate submissions)

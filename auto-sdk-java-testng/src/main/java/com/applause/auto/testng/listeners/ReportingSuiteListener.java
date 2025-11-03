@@ -73,7 +73,8 @@ public class ReportingSuiteListener implements ISuiteListener {
             ApplauseConfigHelper.getHttpProxy()));
     if (applauseConfigBean.applauseTestCycleId() != null) {
       ApplauseReporter.INSTANCE.enableTestCycleReporting(
-          new ApplauseTestCycleReportingConfig(applauseConfigBean.applauseTestCycleId()));
+          new ApplauseTestCycleReportingConfig(
+              applauseConfigBean.applauseTestCycleId(), applauseConfigBean.applauseTestRunName()));
     }
 
     final SdkConfigBean sdkConfigBean = EnvironmentConfigurationManager.INSTANCE.get();
