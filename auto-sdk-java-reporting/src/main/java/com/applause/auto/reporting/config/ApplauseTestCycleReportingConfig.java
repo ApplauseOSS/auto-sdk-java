@@ -17,11 +17,14 @@
  */
 package com.applause.auto.reporting.config;
 
+import javax.annotation.Nullable;
 import lombok.NonNull;
 
 /**
  * A DTO to configure Applause Test Cycle Reporting for an Applause Test Run
  *
  * @param applauseTestCycleId The Applause Test Cycle ID
+ * @param applauseTestRunName The Applause Test Run Name
  */
-public record ApplauseTestCycleReportingConfig(@NonNull Long applauseTestCycleId) {}
+public record ApplauseTestCycleReportingConfig(
+    @NonNull Long applauseTestCycleId, @Nullable String applauseTestRunName) {}

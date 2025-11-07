@@ -30,7 +30,8 @@ public class TestRunConfigurationParamDto {
   private boolean addAllTestsToPlan;
 
   private String driverConfig;
-  private Long itwTestCycleId;
+  private Long applauseTestCycleId;
+  private String applauseTestRunName;
   private Long productId;
   private String sdkVersion;
   private String testRailPlanName;
