@@ -60,19 +60,19 @@ jobs:
       - name: Publish
         run: |
           # Parse our version using build-helper and versions to strip SNAPSHOT
-          mvn build-helper:parse-version versions:set -DgenerateBackupPoms=false -DnewVersion=\\${parsedVersion.majorVersion}.\\${parsedVersion.minorVersion}.\\${parsedVersion.incrementalVersion}
+          mvn build-helper:parse-version versions:set -DgenerateBackupPoms=false -DnewVersion="\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.incrementalVersion}"
 
           # Write the current version
           mvn help:evaluate -q -Dexpression=project.version -DforceStdout=true | tail -n 1 | tee VERSION
 
           mvn ${{ inputs.mavenProperties }} ${{ inputs.mavenTasks }}
 
-          VERSION=`cat VERSION`
+          VERSION="$(cat VERSION)"
 
           # Remove the org from the repo name
-          GITHUB_REPO_NAME=${GITHUB_REPOSITORY#*/}
+          GITHUB_REPO_NAME="${GITHUB_REPOSITORY#*/}"
 
-          git config --global --add safe.directory `pwd -P`
+          git config --global --add safe.directory "$(pwd -P)"
           git commit -am "GHA: release version \${VERSION}"
           git tag v\${VERSION} -am "GHA: publish public-$GITHUB_REPO_NAME v\${VERSION}"
           git log -1
@@ -80,13 +80,13 @@ jobs:
           git push origin HEAD:${{ inputs.branch }}
 
           # Increment incremental version and set SNAPSHOT
-          mvn build-helper:parse-version versions:set -DgenerateBackupPoms=false -DnewVersion=\\${parsedVersion.majorVersion}.\\${parsedVersion.minorVersion}.\\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
+          mvn build-helper:parse-version versions:set -DgenerateBackupPoms=false -DnewVersion="\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT"
 
           # Write the SNAPSHOT version to VERSION
           mvn help:evaluate -q -Dexpression=project.version -DforceStdout=true | tail -n 1 | tee VERSION
 
           # Looks good! Now, for the git-fu for our SNAPSHOT version
-          VERSION=`cat VERSION`
+          VERSION="$(cat VERSION)"
           git commit -am "GHA: SNAPSHOT version \${VERSION}"
           git diff HEAD^ HEAD
           git push origin HEAD:${{ inputs.branch }}
