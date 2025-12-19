@@ -52,7 +52,7 @@
     <io.appium.version>9.5.0</io.appium.version>
     <!-- MUST update with Appium above to make sure the versions are compatible-->
     <org.seleniumhq.selenium.version>4.34.0</org.seleniumhq.selenium.version>
-    <log4j.version>2.24.3</log4j.version>
+    <log4j.version>2.25.3</log4j.version>
     <commons.io.version>2.19.0</commons.io.version>
     <org.apache.commons.version>3.17.0</org.apache.commons.version>
     <net.bytebuddy.version>1.17.6</net.bytebuddy.version>
