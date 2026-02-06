@@ -275,12 +275,7 @@ public abstract class BaseElement implements UIElement {
 
   @Override
   public boolean exists() {
-    boolean exists = true;
-    try {
-      this.underlying.isEnabled();
-    } catch (NoSuchElementException | TimeoutException | StaleElementReferenceException e) {
-      exists = false;
-    }
+    boolean exists = this.underlying.exists();
 
     logger.debug("{} {}.", this.getClass().getSimpleName(), exists ? "exists" : "does not exist");
     return exists;

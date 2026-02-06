@@ -556,11 +556,21 @@ public class LazyWebElement implements WebElement, UIElement {
     return this.pollingInterval;
   }
 
+  /**
+   * Checks if the element exists in the DOM. This is done by calling isEnabled() and catching any
+   * exceptions that indicate the element isn't present.
+   */
   @Override
-  @SuppressWarnings(
-      "PMD.LambdaCanBeMethodReference") // Lambda required to defer null check for lazy-loading
   public boolean exists() {
-    return runLazily(() -> this.underlying.isEnabled());
+    boolean exists = true;
+    try {
+      this.isEnabled();
+    } catch (NoSuchElementException | TimeoutException | StaleElementReferenceException e) {
+      exists = false;
+    }
+
+    logger.debug("{} {}.", this.getClass().getSimpleName(), exists ? "exists" : "does not exist");
+    return exists;
   }
 
   @Override

@@ -92,6 +92,8 @@ public class LazyWebElementTest {
     when(mockDriver.findElements(By.id("top-grand-child"))).thenReturn(List.of(grandChildMock));
     when(mockDriver.findElement(By.id("%s"))).thenThrow(new NoSuchElementException(""));
     when(mockDriver.findElements(By.id("%s"))).thenThrow(new NoSuchElementException(""));
+    when(mockDriver.findElement(By.id("no-such-element")))
+        .thenThrow(new NoSuchElementException(""));
 
     final var jQueryMock = mock(WebElement.class);
     when(jQueryMock.getAttribute("id")).thenReturn("fake-id");
@@ -463,5 +465,22 @@ public class LazyWebElementTest {
 
     logger.info("STEP 3: Get an attribute from the element, finding it on the page.");
     assertEquals(element.getAttribute("id"), "fake-id");
+  }
+
+  /**
+   * Validate that the exists() function does not throw a no such element exception when the element
+   * is not found, and instead returns false.
+   */
+  @Test
+  public void testExistsNoSuchElement() {
+    logger.info("STEP 1: Create a Locator for a non-existent element.");
+    Locator locator = new Locator(LocatedBy.id("no-such-element"), this.context.getPlatform());
+
+    logger.info("STEP 2: Create a LazyWebElement with the Locator.");
+    LazyWebElement lazy = new LazyWebElement(locator, this.context);
+
+    logger.info(
+        "STEP 3: Call exists() on the LazyWebElement, which should return false without throwing an exception.");
+    assertFalse(lazy.exists());
   }
 }
