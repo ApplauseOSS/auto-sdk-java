@@ -288,12 +288,7 @@ public abstract class BaseComponent implements UIElement {
           "Cannot check existence of component [%s] with no underlying element"
               .formatted(this.getClass().getSimpleName()));
     }
-    boolean exists = true;
-    try {
-      this.underlying.isEnabled();
-    } catch (NoSuchElementException | TimeoutException | StaleElementReferenceException e) {
-      exists = false;
-    }
+    boolean exists = this.underlying.exists();
 
     logger.debug("{} {}.", this.getClass().getSimpleName(), exists ? "exists" : "does not exist");
     return exists;
