@@ -54,4 +54,24 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-compile</id>
+            <configuration>
+              <compilerArgs>
+                <arg>-Xlint:all,-processing,-serial</arg>
+                <arg>-Alog4j.graalvm.groupId=${project.groupId}</arg>
+                <arg>-Alog4j.graalvm.artifactId=${project.artifactId}</arg>
+              </compilerArgs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
