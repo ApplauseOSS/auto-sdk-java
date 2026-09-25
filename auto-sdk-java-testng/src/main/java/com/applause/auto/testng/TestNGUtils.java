@@ -29,7 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.testng.IClass;
 import org.testng.ISuite;
 import org.testng.ITestContext;
@@ -259,7 +259,7 @@ public final class TestNGUtils {
     return Optional.ofNullable(testResult.getTestContext())
         .map(ITestContext::getSuite)
         .map(ISuite::getParallel)
-        .map(parallel -> StringUtils.equalsAnyIgnoreCase(parallel, mode.toString()))
+        .map(parallel -> Strings.CI.equalsAny(parallel, mode.toString()))
         .orElse(false);
   }
 

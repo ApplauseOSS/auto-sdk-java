@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -113,7 +113,7 @@ public final class MobileContextsUtils {
           Set<String> contexts = driver.getContextHandles();
           logger.info("Available contexts: " + contexts);
           return contexts.stream()
-              .anyMatch(context -> StringUtils.containsIgnoreCase(context, contextStringPart));
+              .anyMatch(context -> Strings.CI.contains(context, contextStringPart));
         },
         waitForContextTimeout,
         waitPollingInterval,
@@ -121,7 +121,7 @@ public final class MobileContextsUtils {
     Set<String> contexts = driver.getContextHandles();
     String neededContext =
         contexts.stream()
-            .filter(contextItem -> StringUtils.containsIgnoreCase(contextItem, contextStringPart))
+            .filter(contextItem -> Strings.CI.contains(contextItem, contextStringPart))
             .findFirst()
             .get();
     logger.info("Switching to context with name: " + neededContext);
